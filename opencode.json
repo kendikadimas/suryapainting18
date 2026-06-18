@@ -1,0 +1,19 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "provider": {
+    "genfity": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Genfity",
+      "options": {
+        "baseURL": "https://ai.genfity.com/v1",
+        "apiKey": "genfity_7c68067c9c396d26791daffc72290cf5ddfc8084"
+      },
+      "models": {
+        "genfity/gpt-5.5": { "name": "GPT-5.5" },
+        "genfity/claude-sonnet-4.6": { "name": "Claude Sonnet 4.6" },
+        "genfity/claude-sonnet-4.5": { "name": "Claude Sonnet 4.5" }, 
+        "genfity/claude-opus-4.8": { "name": "Claude Opus 4.8" }
+    }
+    }
+  }
+}

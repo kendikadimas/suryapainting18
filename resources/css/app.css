@@ -1,0 +1,218 @@
+@import 'tailwindcss';
+
+@source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
+@source '../../storage/framework/views/*.php';
+@source '../views';
+
+@theme {
+    /* FerrariSans substitute: Inter at weight 500 display / 400 body */
+    --font-sans: 'Inter', -apple-system, system-ui, sans-serif;
+    --font-display: 'Inter', sans-serif;
+
+    /* Brand voltage — Rosso Corsa, used scarcely */
+    --color-rosso: #da291c;
+    --color-rosso-active: #b01e0a;
+    --color-rosso-hover: #9d2211;
+
+    /* Surfaces — near-black canvas, never pure black */
+    --color-canvas: #181818;
+    --color-canvas-elevated: #303030;
+    --color-canvas-light: #ffffff;
+    --color-surface-soft-light: #f7f7f7;
+    --color-surface-strong-light: #ebebeb;
+
+    /* Hairlines */
+    --color-hairline: #303030;
+    --color-hairline-on-light: #d2d2d2;
+    --color-hairline-soft: #ebebeb;
+
+    /* Text */
+    --color-ink: #ffffff;
+    --color-body: #969696;
+    --color-body-on-light: #181818;
+    --color-muted: #666666;
+    --color-muted-soft: #8f8f8f;
+
+    /* Semantic */
+    --color-semantic-info: #4c98b9;
+    --color-semantic-success: #03904a;
+    --color-semantic-warning: #f13a2c;
+
+    /* Status colors reused by the tracker */
+    --color-status-pending: #f6e500;
+    --color-status-processing: #4c98b9;
+    --color-status-completed: #03904a;
+    --color-status-cancelled: #f13a2c;
+
+    /* --- Legacy tokens kept so the admin panel keeps rendering --- */
+    --color-brand-500: #da291c;
+    --color-brand-600: #b01e0a;
+}
+
+@layer base {
+    body {
+        font-family: theme(--font-sans);
+        background-color: var(--color-canvas);
+        color: var(--color-ink);
+    }
+    h1, h2, h3, .display {
+        font-family: theme(--font-display);
+        font-weight: 500;
+    }
+}
+
+@layer components {
+    /* Ferrari hero photo scrim — keeps display type legible over imagery */
+    .cinema-scrim {
+        background: linear-gradient(to top, rgba(0, 0, 0, 0.85) 0%, rgba(0, 0, 0, 0.35) 45%, rgba(0, 0, 0, 0.1) 100%);
+    }
+
+    /* Rosso Corsa atmospheric gradient for accent bands */
+    .rosso-grad {
+        background: linear-gradient(180deg, #a00c01 0%, #da291c 64%);
+    }
+
+    /* Dark atmospheric gradient for section transitions */
+    .dark-grad {
+        background: linear-gradient(180deg, #3c3c3c 0%, #030303 64%);
+    }
+
+    /* Uppercase tracked CTA label voice */
+    .label-up {
+        text-transform: uppercase;
+        letter-spacing: 1.1px;
+        font-weight: 600;
+    }
+
+    /* --- Legacy admin-panel classes (unchanged behaviour) --- */
+    .glass {
+        background: rgba(17, 17, 17, 0.85);
+        backdrop-filter: blur(14px);
+        -webkit-backdrop-filter: blur(14px);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+    .timeline-line {
+        background: linear-gradient(to bottom, #da291c 0%, #666666 100%);
+    }
+
+    /* Admin panel shared styles */
+    .admin-card {
+        background: #111;
+        border: 1px solid rgba(255,255,255,0.08);
+    }
+    .admin-input {
+        background: #0d0d0d;
+        border: 1px solid rgba(255,255,255,0.12);
+        color: #fff;
+        font-family: 'Inter', sans-serif;
+        font-size: 14px;
+        padding: 12px 16px;
+        outline: none;
+        width: 100%;
+        transition: border-color 0.25s;
+    }
+    .admin-input:focus {
+        border-color: #e82118;
+    }
+    .admin-input::placeholder {
+        color: #555;
+        font-weight: 400;
+    }
+    .admin-btn-red {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        background: #e82118;
+        color: #fff;
+        font-family: 'Barlow Condensed', sans-serif;
+        font-size: 13px;
+        font-weight: 800;
+        font-style: italic;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        padding: 13px 28px;
+        border: 2px solid #e82118;
+        transition: background 0.25s, transform 0.2s;
+        cursor: pointer;
+        text-decoration: none;
+    }
+    .admin-btn-red:hover {
+        background: #b5180f;
+        border-color: #b5180f;
+        transform: translateY(-1px);
+    }
+    .admin-btn-ghost {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        background: transparent;
+        color: rgba(255,255,255,0.7);
+        font-family: 'Barlow Condensed', sans-serif;
+        font-size: 12px;
+        font-weight: 700;
+        font-style: italic;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        padding: 12px 20px;
+        border: 1px solid rgba(255,255,255,0.15);
+        transition: border-color 0.25s, color 0.2s, background 0.2s;
+        cursor: pointer;
+        text-decoration: none;
+    }
+    .admin-btn-ghost:hover {
+        border-color: rgba(255,255,255,0.5);
+        color: #fff;
+        background: rgba(255,255,255,0.03);
+    }
+    .admin-label {
+        font-size: 10px;
+        font-weight: 700;
+        letter-spacing: 2.5px;
+        text-transform: uppercase;
+        color: #888;
+    }
+    .admin-heading {
+        font-family: 'Barlow Condensed', sans-serif;
+        font-weight: 900;
+        font-style: italic;
+        text-transform: uppercase;
+        line-height: 1;
+    }
+}
+
+/* Background utilities */
+@utility bg-app-admin {
+    background-color: var(--color-canvas);
+    background-image:
+        radial-gradient(circle at top right, rgba(218, 41, 28, 0.10), transparent 45%),
+        radial-gradient(circle at bottom left, rgba(48, 48, 48, 0.4), transparent 45%);
+}
+
+/* Staggered reveal on load */
+@keyframes rise {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+@utility rise {
+    opacity: 0;
+    animation: rise 0.9s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+/* Slow cinematic zoom on hero imagery */
+@keyframes slow-zoom {
+    from { transform: scale(1); }
+    to { transform: scale(1.08); }
+}
+@utility slow-zoom {
+    animation: slow-zoom 18s ease-out forwards;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .rise, .slow-zoom { animation: none !important; opacity: 1 !important; transform: none !important; }
+}
+
+[x-cloak] {
+    display: none !important;
+}
