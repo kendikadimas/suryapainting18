@@ -5,7 +5,7 @@ use App\Http\Controllers\AdminController;
 
 // Public tracking portal routes
 Route::get('/', [TrackController::class, 'index'])->name('home');
-Route::post('/track', [TrackController::class, 'search'])->name('track.search');
+Route::post('/track', [TrackController::class, 'search'])->name('track.search')->middleware('throttle:10,1');
 
 // Auth redirect (handles default auth middleware redirect)
 Route::get('/login', function () {
@@ -21,13 +21,17 @@ Route::prefix('admin')->group(function () {
 
     // Guest access (Login, Register, Forgot/Reset Password)
     Route::get('/login', [AdminController::class, 'showLoginForm'])->name('admin.login');
-    Route::post('/login', [AdminController::class, 'login'])->name('admin.login.submit');
     Route::get('/register', [AdminController::class, 'showRegisterForm'])->name('admin.register');
-    Route::post('/register', [AdminController::class, 'register'])->name('admin.register.submit');
     Route::get('/forgot-password', [AdminController::class, 'showForgotPasswordForm'])->name('admin.forgot-password');
-    Route::post('/forgot-password', [AdminController::class, 'sendResetLink'])->name('admin.forgot-password.submit');
     Route::get('/reset-password/{token}', [AdminController::class, 'showResetPasswordForm'])->name('admin.reset-password');
-    Route::post('/reset-password', [AdminController::class, 'resetPassword'])->name('admin.reset-password.submit');
+
+    // Rate-limited POST routes (5 attempts per minute)
+    Route::middleware(['throttle:5,1'])->group(function () {
+        Route::post('/login', [AdminController::class, 'login'])->name('admin.login.submit');
+        Route::post('/register', [AdminController::class, 'register'])->name('admin.register.submit');
+        Route::post('/forgot-password', [AdminController::class, 'sendResetLink'])->name('admin.forgot-password.submit');
+        Route::post('/reset-password', [AdminController::class, 'resetPassword'])->name('admin.reset-password.submit');
+    });
 
     // Authenticated access
     Route::middleware(['auth'])->group(function () {

@@ -13,7 +13,6 @@ class OrderTimeline extends Model
         'title',
         'description',
         'image_path',
-        'status',
     ];
 
     protected $appends = ['image_url'];

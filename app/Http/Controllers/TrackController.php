@@ -38,6 +38,9 @@ class TrackController extends Controller
             ], 404);
         }
 
+        // Hide sensitive fields from public response
+        $order->makeHidden(['customer_phone']);
+
         return response()->json([
             'success' => true,
             'order' => $order

@@ -47,12 +47,23 @@ class AdminController extends Controller
         if (Auth::check()) {
             return redirect()->route('admin.dashboard');
         }
+
+        // Block registration if any admin already exists
+        if (User::count() > 0) {
+            return redirect()->route('admin.login');
+        }
+
         return view('admin.register');
     }
 
     // Handle register request
     public function register(Request $request)
     {
+        // Block registration if any admin already exists
+        if (User::count() > 0) {
+            return redirect()->route('admin.login');
+        }
+
         $validated = $request->validate([
             'name' => ['required', 'string', 'max:150'],
             'email' => ['required', 'email', 'unique:users,email'],
@@ -122,6 +133,7 @@ class AdminController extends Controller
             function (User $user, string $password) {
                 $user->forceFill([
                     'password' => Hash::make($password),
+                    'remember_token' => \Illuminate\Support\Str::random(60),
                 ])->save();
             }
         );
