@@ -45,7 +45,6 @@ Route::prefix('admin')->group(function () {
         Route::delete('/orders/{id}', [AdminController::class, 'deleteOrder'])->name('admin.orders.delete');
         
         // Order timeline & status management
-        Route::patch('/orders/{id}/status', [AdminController::class, 'updateStatus'])->name('admin.orders.updateStatus');
         Route::post('/orders/{id}/timeline', [AdminController::class, 'addTimeline'])->name('admin.orders.addTimeline');
         Route::delete('/timeline/{id}', [AdminController::class, 'deleteTimeline'])->name('admin.orders.deleteTimeline');
 

@@ -320,25 +320,6 @@
                     </div>
                 </div>
 
-                <!-- Update Status -->
-                    <div class="admin-card">
-                        <div class="admin-card-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/><path d="M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16"/><path d="M16 16h5v5"/></svg>Perbarui Status Utama</div>
-                        <form action="{{ route('admin.orders.updateStatus', $order->id) }}" method="POST" class="status-form">
-                            @csrf @method('PATCH')
-                            <div class="status-form-row">
-                                <div class="status-form-field">
-                                    <select name="status" class="admin-select">
-                                        <option value="Pending" @selected($order->status === 'Pending')>Menunggu (Pending)</option>
-                                        <option value="Processing" @selected($order->status === 'Processing')>Diproses (Processing)</option>
-                                        <option value="Completed" @selected($order->status === 'Completed')>Selesai (Completed)</option>
-                                        <option value="Cancelled" @selected($order->status === 'Cancelled')>Dibatalkan (Cancelled)</option>
-                                    </select>
-                                </div>
-                                <button type="submit" class="btn-red-sm">Simpan</button>
-                            </div>
-                        </form>
-                    </div>
-
                 <!-- Add Timeline -->
                 <div class="admin-card">
                     <div class="admin-card-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="6" y1="3" x2="6" y2="15"/><circle cx="18" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><path d="M18 9a9 9 0 0 1-9 9"/></svg>Tambah Update Progres</div>
@@ -349,9 +330,8 @@
                             <input type="text" name="title" id="title" class="admin-input" placeholder="Contoh: Proses Produksi Awal, QC Selesai" required>
                         </div>
                         <div class="admin-field">
-                            <label for="status" class="form-label">Status Pesanan</label>
-                            <select name="status" id="status" class="admin-select">
-                                <option value="">— Tidak berubah —</option>
+                            <label for="status" class="form-label">Status Pesanan *</label>
+                            <select name="status" id="status" class="admin-select" required>
                                 <option value="Pending" @selected($order->status === 'Pending')>Menunggu (Pending)</option>
                                 <option value="Processing" @selected($order->status === 'Processing')>Diproses (Processing)</option>
                                 <option value="Completed" @selected($order->status === 'Completed')>Selesai (Completed)</option>
