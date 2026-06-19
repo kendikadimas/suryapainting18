@@ -41,6 +41,7 @@ Route::prefix('admin')->group(function () {
         // Orders management
         Route::post('/orders', [AdminController::class, 'storeOrder'])->name('admin.orders.store');
         Route::get('/orders/{id}', [AdminController::class, 'showOrder'])->name('admin.orders.show');
+        Route::patch('/orders/{id}', [AdminController::class, 'updateOrder'])->name('admin.orders.update');
         Route::delete('/orders/{id}', [AdminController::class, 'deleteOrder'])->name('admin.orders.delete');
         
         // Order timeline & status management

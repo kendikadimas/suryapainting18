@@ -199,6 +199,10 @@
                     @elseif($order->status === 'Completed')<span class="status-badge status-badge--completed">Selesai</span>
                     @elseif($order->status === 'Cancelled')<span class="status-badge status-badge--cancelled">Dibatalkan</span>
                     @endif
+                    <button @click="editModalOpen = true" class="btn-ghost-admin" style="font-size:10px;padding:6px 12px;letter-spacing:1.5px;">
+                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                        Edit Pesanan
+                    </button>
                 </div>
             </div>
         </div>
@@ -429,6 +433,61 @@
         </div>
     </main>
 
+    <!-- Edit Order Modal -->
+    <div x-show="editModalOpen" x-transition:opacity.duration.300ms class="fixed inset-0 z-50 flex items-center justify-center" style="display:none;background:rgba(0,0,0,0.88);padding:24px" @click="editModalOpen = false" @keydown.escape.window="editModalOpen = false" x-cloak>
+        <div @click.stop style="width:100%;max-width:480px;max-height:85vh;background:#111;border:1px solid rgba(255,255,255,0.1);position:relative;overflow:hidden;display:flex;flex-direction:column;">
+            <div style="position:absolute;top:0;left:0;right:0;height:3px;background:var(--pink);z-index:1;"></div>
+            <div style="display:flex;align-items:center;justify-content:space-between;padding:16px 20px;border-bottom:1px solid rgba(255,255,255,0.06);flex-shrink:0;">
+                <div style="font-family:'Barlow Condensed',sans-serif;font-size:18px;font-weight:800;font-style:italic;text-transform:uppercase;color:#fff;display:flex;align-items:center;gap:10px;">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--pink)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                    Edit Pesanan
+                </div>
+                <button @click="editModalOpen = false" style="background:none;border:none;color:rgba(255,255,255,0.3);cursor:pointer;padding:4px;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+            </div>
+            <form action="{{ route('admin.orders.update', $order->id) }}" method="POST" style="display:flex;flex-direction:column;flex:1;overflow:hidden;">
+                @csrf @method('PATCH')
+                <div style="padding:16px 20px;overflow-y:auto;flex:1;">
+                    <div style="margin-bottom:14px;">
+                        <label style="display:block;font-size:10px;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:#888;margin-bottom:8px;">Nomor Surat *</label>
+                        <input type="text" name="nomor_surat" value="{{ old('nomor_surat', $order->nomor_surat) }}" style="width:100%;padding:12px 16px;background:#0d0d0d;border:1px solid rgba(255,255,255,0.1);color:#fff;font-family:'Inter',sans-serif;font-size:14px;outline:none;" required>
+                    </div>
+                    <div style="margin-bottom:14px;">
+                        <label style="display:block;font-size:10px;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:#888;margin-bottom:8px;">Nama Pelanggan *</label>
+                        <input type="text" name="customer_name" value="{{ old('customer_name', $order->customer_name) }}" style="width:100%;padding:12px 16px;background:#0d0d0d;border:1px solid rgba(255,255,255,0.1);color:#fff;font-family:'Inter',sans-serif;font-size:14px;outline:none;" required>
+                    </div>
+                    <div style="margin-bottom:14px;">
+                        <label style="display:block;font-size:10px;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:#888;margin-bottom:8px;">No. HP / WhatsApp</label>
+                        <input type="tel" name="customer_phone" value="{{ old('customer_phone', $order->customer_phone) }}" style="width:100%;padding:12px 16px;background:#0d0d0d;border:1px solid rgba(255,255,255,0.1);color:#fff;font-family:'Inter',sans-serif;font-size:14px;outline:none;" placeholder="Contoh: 08123456789">
+                    </div>
+                    <div style="margin-bottom:14px;">
+                        <label style="display:block;font-size:10px;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:#888;margin-bottom:8px;">Nomor Plat</label>
+                        <input type="text" name="nomor_plat" value="{{ old('nomor_plat', $order->nomor_plat) }}" style="width:100%;padding:12px 16px;background:#0d0d0d;border:1px solid rgba(255,255,255,0.1);color:#fff;font-family:'Inter',sans-serif;font-size:14px;outline:none;" placeholder="Contoh: B 1234 ABC">
+                    </div>
+                    <div style="margin-bottom:14px;">
+                        <label style="display:block;font-size:10px;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:#888;margin-bottom:8px;">Tipe Motor</label>
+                        <select name="tipe_motor" style="width:100%;padding:12px 16px;background:#0d0d0d;border:1px solid rgba(255,255,255,0.1);color:#fff;font-family:'Inter',sans-serif;font-size:14px;outline:none;-webkit-appearance:none;appearance:none;cursor:pointer;background-image:url(&quot;data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%23555' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E&quot;);background-repeat:no-repeat;background-position:right 14px center;padding-right:40px;">
+                            <option value="" @selected(!$order->tipe_motor)>— Pilih Tipe Motor —</option>
+                            <option value="Matic" @selected($order->tipe_motor === 'Matic')>Matic</option>
+                            <option value="Kopling" @selected($order->tipe_motor === 'Kopling')>Kopling</option>
+                        </select>
+                    </div>
+                    <div style="margin-bottom:14px;">
+                        <label style="display:block;font-size:10px;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:#888;margin-bottom:8px;">Detail Motor</label>
+                        <input type="text" name="detail_motor" value="{{ old('detail_motor', $order->detail_motor) }}" style="width:100%;padding:12px 16px;background:#0d0d0d;border:1px solid rgba(255,255,255,0.1);color:#fff;font-family:'Inter',sans-serif;font-size:14px;outline:none;" placeholder="Contoh: Honda Beat 2020, warna merah">
+                    </div>
+                    <div style="margin-bottom:14px;">
+                        <label style="display:block;font-size:10px;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:#888;margin-bottom:8px;">Produk / Jasa *</label>
+                        <input type="text" name="product_name" value="{{ old('product_name', $order->product_name) }}" style="width:100%;padding:12px 16px;background:#0d0d0d;border:1px solid rgba(255,255,255,0.1);color:#fff;font-family:'Inter',sans-serif;font-size:14px;outline:none;" required>
+                    </div>
+                </div>
+                <div style="padding:14px 20px;border-top:1px solid rgba(255,255,255,0.06);flex-shrink:0;display:flex;gap:8px;">
+                    <button type="button" @click="editModalOpen = false" style="flex:1;background:transparent;border:1px solid rgba(255,255,255,0.12);color:rgba(255,255,255,0.6);font-family:'Barlow Condensed',sans-serif;font-size:12px;font-weight:700;font-style:italic;letter-spacing:2px;text-transform:uppercase;padding:11px 18px;cursor:pointer;text-align:center;">Batal</button>
+                    <button type="submit" style="flex:1;background:var(--pink);border:2px solid var(--pink);color:#fff;font-family:'Barlow Condensed',sans-serif;font-size:12px;font-weight:800;font-style:italic;letter-spacing:2px;text-transform:uppercase;padding:11px 18px;cursor:pointer;">Simpan</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <!-- Lightbox -->
     <div x-show="lightboxOpen" x-transition:opacity.duration.300ms class="lightbox-overlay" @click="lightboxOpen = false" @keydown.escape.window="lightboxOpen = false" x-cloak>
         <button class="lightbox-close" @click="lightboxOpen = false">&times;</button>
@@ -449,6 +508,7 @@
                 lightboxOpen:false,
                 lightboxImg:'',
                 lightboxTitle:'',
+                editModalOpen:false,
                 previewImage(e){
                     const f=e.target.files[0];
                     if(f){const r=new FileReader();r.onload=(ev)=>{this.imagePreview=ev.target.result};r.readAsDataURL(f)}

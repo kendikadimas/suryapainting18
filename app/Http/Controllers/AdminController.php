@@ -237,6 +237,26 @@ class AdminController extends Controller
         return view('admin.orders.show', compact('order'));
     }
 
+    // Update order data
+    public function updateOrder(Request $request, $id)
+    {
+        $order = Order::findOrFail($id);
+
+        $validated = $request->validate([
+            'nomor_surat' => 'required|string|max:100|unique:orders,nomor_surat,' . $order->id,
+            'customer_name' => 'required|string|max:150',
+            'customer_phone' => 'nullable|string|max:20',
+            'nomor_plat' => 'nullable|string|max:50',
+            'tipe_motor' => 'nullable|string|in:Matic,Kopling',
+            'detail_motor' => 'nullable|string|max:500',
+            'product_name' => 'required|string|max:255',
+        ]);
+
+        $order->update($validated);
+
+        return back()->with('success', 'Data pesanan berhasil diperbarui.');
+    }
+
     // Update main order status
     public function updateStatus(Request $request, $id)
     {
