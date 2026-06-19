@@ -47,5 +47,9 @@ Route::prefix('admin')->group(function () {
         Route::patch('/orders/{id}/status', [AdminController::class, 'updateStatus'])->name('admin.orders.updateStatus');
         Route::post('/orders/{id}/timeline', [AdminController::class, 'addTimeline'])->name('admin.orders.addTimeline');
         Route::delete('/timeline/{id}', [AdminController::class, 'deleteTimeline'])->name('admin.orders.deleteTimeline');
+
+        // Admin user management
+        Route::get('/add-admin', [AdminController::class, 'showAddAdminForm'])->name('admin.add-admin');
+        Route::post('/add-admin', [AdminController::class, 'storeAdmin'])->name('admin.add-admin.store');
     });
 });

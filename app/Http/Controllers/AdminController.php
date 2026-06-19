@@ -59,8 +59,8 @@ class AdminController extends Controller
     // Handle register request
     public function register(Request $request)
     {
-        // Block registration if any admin already exists
-        if (User::count() > 0) {
+        // Block public registration if any admin already exists
+        if (User::count() > 0 && !Auth::check()) {
             return redirect()->route('admin.login');
         }
 
@@ -76,9 +76,37 @@ class AdminController extends Controller
             'password' => Hash::make($validated['password']),
         ]);
 
-        Auth::login($user);
+        // Auto-login only for first-time registration (no admin exists yet)
+        if (User::count() === 1) {
+            Auth::login($user);
+            return redirect()->route('admin.dashboard')->with('success', 'Akun admin berhasil dibuat. Selamat datang!');
+        }
 
-        return redirect()->route('admin.dashboard')->with('success', 'Akun admin berhasil dibuat. Selamat datang!');
+        return redirect()->route('admin.dashboard')->with('success', 'Akun admin baru berhasil ditambahkan.');
+    }
+
+    // Show add admin form (authenticated only)
+    public function showAddAdminForm()
+    {
+        return view('admin.add-admin');
+    }
+
+    // Store new admin (authenticated only)
+    public function storeAdmin(Request $request)
+    {
+        $validated = $request->validate([
+            'name' => ['required', 'string', 'max:150'],
+            'email' => ['required', 'email', 'unique:users,email'],
+            'password' => ['required', 'min:8', 'confirmed'],
+        ]);
+
+        User::create([
+            'name' => $validated['name'],
+            'email' => $validated['email'],
+            'password' => Hash::make($validated['password']),
+        ]);
+
+        return redirect()->route('admin.dashboard')->with('success', 'Akun admin baru berhasil ditambahkan.');
     }
 
     // Show forgot password page
