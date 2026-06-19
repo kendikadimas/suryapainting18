@@ -28,6 +28,14 @@
         @media(min-width:640px){.admin-nav-status{display:flex}}
         .admin-nav-dot{width:7px;height:7px;background:var(--pink);border-radius:50%;animation:pulse-dot 2s ease-in-out infinite}
         @keyframes pulse-dot{0%,100%{opacity:1}50%{opacity:0.3}}
+        .sidebar-trigger{display:none;background:transparent;border:none;color:rgba(255,255,255,0.5);cursor:pointer;padding:6px;align-items:center}
+        .sidebar-trigger:hover{color:#fff}
+        @media(max-width:640px){
+            .sidebar-trigger{display:flex}
+            .admin-nav-desktop{display:none!important}
+            .admin-nav-inner{gap:8px}
+            .admin-nav-badge{display:none}
+        }
         .admin-main{flex:1;max-width:1280px;width:100%;margin:0 auto;padding:40px 24px}
         @media(min-width:1024px){.admin-main{padding:48px}}
         .admin-header{display:flex;flex-wrap:wrap;align-items:flex-start;justify-content:space-between;gap:24px;margin-bottom:40px}
@@ -210,20 +218,56 @@
         }
     </style>
 </head>
-<body x-data="{ orderModalOpen: false }">
+<body x-data="{ orderModalOpen: false, sidebarOpen: false }">
+    <!-- Sidebar Overlay -->
+    <div x-show="sidebarOpen" x-transition:opacity.duration.200ms class="fixed inset-0 z-40 bg-black/60" @click="sidebarOpen = false" style="display:none;"></div>
+    <!-- Sidebar -->
+    <div x-show="sidebarOpen" x-transition:enter="transition duration-250 ease-out" x-transition:enter-start="-translate-x-full" x-transition:enter-end="translate-x-0" x-transition:leave="transition duration-200 ease-in" x-transition:leave-start="translate-x-0" x-transition:leave-end="-translate-x-full" class="fixed top-0 left-0 z-50 w-64 h-full bg-[#0a0a0a] border-r border-white/6 flex flex-col" style="display:none;">
+        <div class="flex items-center justify-between px-5 h-[56px] border-b border-white/6 flex-shrink-0">
+            <span class="font-bold text-sm text-white tracking-wider uppercase" style="font-family:'Barlow Condensed',sans-serif;">Menu Admin</span>
+            <button @click="sidebarOpen = false" class="text-white/40 hover:text-white p-1"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+        </div>
+        <div class="flex-1 overflow-y-auto py-4 px-3 flex flex-col gap-1">
+            <a href="{{ route('admin.dashboard') }}" class="flex items-center gap-3 px-3 py-3 text-white/70 hover:text-white hover:bg-white/5 transition-colors text-sm font-medium no-underline" style="font-family:'Inter',sans-serif;">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+                Dashboard
+            </a>
+            <a href="{{ route('admin.add-admin') }}" class="flex items-center gap-3 px-3 py-3 text-white/70 hover:text-white hover:bg-white/5 transition-colors text-sm font-medium no-underline" style="font-family:'Inter',sans-serif;">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><line x1="20" y1="8" x2="20" y2="14"/><line x1="23" y1="11" x2="17" y2="11"/></svg>
+                Tambah Admin
+            </a>
+            <a href="{{ route('home') }}" class="flex items-center gap-3 px-3 py-3 text-white/70 hover:text-white hover:bg-white/5 transition-colors text-sm font-medium no-underline" style="font-family:'Inter',sans-serif;">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+                Lihat Website
+            </a>
+        </div>
+        <div class="px-3 py-4 border-t border-white/6">
+            <form action="{{ route('admin.logout') }}" method="POST">
+                @csrf
+                <button type="submit" class="flex items-center gap-3 w-full px-3 py-3 text-white/50 hover:text-white hover:bg-white/5 transition-colors text-sm font-medium bg-transparent border-none cursor-pointer" style="font-family:'Inter',sans-serif;">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+                    Keluar
+                </button>
+            </form>
+        </div>
+    </div>
+
     <nav class="admin-nav">
         <div class="admin-nav-inner">
+            <button @click="sidebarOpen = true" class="sidebar-trigger" aria-label="Menu">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+            </button>
             <a href="{{ route('home') }}" class="admin-nav-brand">
                 <img src="/assets/01-logo-suryapainting18.png" alt="SuryaPainting18" style="height:32px;width:auto;">
                 <span class="admin-nav-badge">Panel Admin</span>
             </a>
             <div class="admin-nav-right">
                 <span class="admin-nav-status"><span class="admin-nav-dot"></span>Admin Aktif</span>
-                <a href="{{ route('admin.add-admin') }}" class="btn-ghost-admin">
+                <a href="{{ route('admin.add-admin') }}" class="btn-ghost-admin admin-nav-desktop">
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><line x1="20" y1="8" x2="20" y2="14"/><line x1="23" y1="11" x2="17" y2="11"/></svg>
                     Tambah Admin
                 </a>
-                <form action="{{ route('admin.logout') }}" method="POST">@csrf<button type="submit" class="btn-ghost-admin"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>Keluar</button></form>
+                <form action="{{ route('admin.logout') }}" method="POST" class="admin-nav-desktop">@csrf<button type="submit" class="btn-ghost-admin"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>Keluar</button></form>
             </div>
         </div>
     </nav>
