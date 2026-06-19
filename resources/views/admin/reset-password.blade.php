@@ -77,7 +77,12 @@
                             <div class="form-input-icon">
                                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
                             </div>
+                            @if(request('email'))
+                            <input type="email" name="email" id="email" value="{{ request('email') }}" class="form-input" style="background:#111;color:rgba(255,255,255,0.5);cursor:not-allowed;" readonly required>
+                            <p style="font-size:10px;color:#555;margin-top:6px;letter-spacing:0.5px;">Email dari link reset password. Tidak dapat diubah.</p>
+                            @else
                             <input type="email" name="email" id="email" value="{{ old('email') }}" class="form-input" placeholder="nama@email.com" required autofocus>
+                            @endif
                         </div>
                     </div>
                     <div class="form-group">
@@ -86,7 +91,7 @@
                             <div class="form-input-icon">
                                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
                             </div>
-                            <input type="password" name="password" id="password" class="form-input" placeholder="Minimal 8 karakter" required>
+                            <input type="password" name="password" id="password" class="form-input" placeholder="Minimal 8 karakter" required @if(request('email')) autofocus @endif>
                         </div>
                     </div>
                     <div class="form-group">

@@ -24,7 +24,10 @@ class AdminResetPassword extends Notification
 
     public function toMail(object $notifiable): MailMessage
     {
-        $url = route('admin.reset-password', $this->token);
+        $url = route('admin.reset-password', [
+            'token' => $this->token,
+            'email' => $notifiable->email,
+        ]);
 
         return (new MailMessage)
             ->subject('Reset Password - SuryaPainting18 Admin')
