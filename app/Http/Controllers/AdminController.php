@@ -7,7 +7,6 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Password;
-use Illuminate\Support\Facades\Storage;
 use App\Models\Order;
 use App\Models\OrderTimeline;
 use App\Models\User;
@@ -218,12 +217,16 @@ class AdminController extends Controller
         $validated = $request->validate([
             'title' => 'required|string|max:255',
             'description' => 'nullable|string',
-            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:5120', // Max 5MB
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp,heic,heif|max:10240',
         ]);
 
         $imagePath = null;
         if ($request->hasFile('image')) {
-            $imagePath = $this->storeImageAsWebp($request->file('image'));
+            try {
+                $imagePath = $this->storeImageAsWebp($request->file('image'));
+            } catch (\Throwable $e) {
+                report($e);
+            }
         }
 
         OrderTimeline::create([
@@ -233,31 +236,52 @@ class AdminController extends Controller
             'image_path' => $imagePath,
         ]);
 
-
         return back()->with('success', 'Progres baru berhasil ditambahkan ke timeline.');
     }
 
     // Convert uploaded image to WebP and store it.
-    // Returns the relative storage path (e.g. "orders/abc123.webp").
-    private function storeImageAsWebp($file): string
+    // Returns the relative storage path (e.g. "orders/abc123.webp") or null on failure.
+    private function storeImageAsWebp($file): ?string
     {
-        $manager = new \Intervention\Image\ImageManager(
-            new \Intervention\Image\Drivers\Gd\Driver()
-        );
+        $dir = storage_path('app/public/orders');
+        if (!is_dir($dir)) {
+            mkdir($dir, 0755, true);
+        }
 
-        $image   = $manager->decodePath($file->getRealPath());
-        $quality = 80;
-        $hash    = uniqid('', true);
-        $name    = 'orders/' . $hash . '.webp';
+        try {
+            $hash    = uniqid('', true);
+            $name    = 'orders/' . $hash . '.webp';
+            $quality = 80;
 
-        $encoded = $image->encodeUsingFileExtension('webp', quality: $quality);
+            $driver = extension_loaded('imagick')
+                ? new \Intervention\Image\Drivers\Imagick\Driver()
+                : new \Intervention\Image\Drivers\Gd\Driver();
 
-        \Illuminate\Support\Facades\Storage::disk('public')->put(
-            $name,
-            (string) $encoded
-        );
+            $manager = new \Intervention\Image\ImageManager($driver);
+            $image   = $manager->read($file->getRealPath());
+            $encoded = $image->toWebp($quality);
 
-        return $name;
+            file_put_contents(storage_path('app/public/' . $name), (string) $encoded);
+
+            return $name;
+        } catch (\Throwable $e) {
+            report($e);
+
+            // Fallback: store original file as-is
+            $ext  = strtolower($file->getClientOriginalExtension() ?: 'jpg');
+            $hash = uniqid('', true);
+            $name = 'orders/' . $hash . '.' . $ext;
+            $destination = storage_path('app/public/' . $name);
+
+            // Try move_uploaded_file first (for direct uploads), fallback to copy
+            if (is_uploaded_file($file->getRealPath())) {
+                move_uploaded_file($file->getRealPath(), $destination);
+            } else {
+                copy($file->getRealPath(), $destination);
+            }
+
+            return $name;
+        }
     }
 
 
@@ -266,9 +290,11 @@ class AdminController extends Controller
     {
         $timeline = OrderTimeline::findOrFail($id);
         
-        // Delete image if exists
         if ($timeline->image_path) {
-            Storage::disk('public')->delete($timeline->image_path);
+            $path = storage_path('app/public/' . $timeline->image_path);
+            if (file_exists($path)) {
+                unlink($path);
+            }
         }
 
         $timeline->delete();
@@ -281,10 +307,12 @@ class AdminController extends Controller
     {
         $order = Order::findOrFail($id);
         
-        // Delete associated timeline images
         foreach ($order->timeline as $timeline) {
             if ($timeline->image_path) {
-                Storage::disk('public')->delete($timeline->image_path);
+                $path = storage_path('app/public/' . $timeline->image_path);
+                if (file_exists($path)) {
+                    unlink($path);
+                }
             }
         }
 

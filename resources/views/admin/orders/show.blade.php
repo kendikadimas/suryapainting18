@@ -54,6 +54,9 @@
         .admin-field-label{font-size:10px;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:var(--gray);display:block;margin-bottom:4px}
         .admin-field-value{font-weight:700;font-size:15px;color:#fff}
         .admin-field-divider{border-bottom:1px solid rgba(255,255,255,0.06);padding-bottom:16px;margin-bottom:16px}
+        .admin-field-box{background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.07);padding:12px 14px;margin-bottom:6px;display:flex;align-items:baseline;justify-content:space-between}
+        .admin-field-box .admin-field-label{font-size:9px;margin-bottom:0;min-width:80px}
+        .admin-field-box .admin-field-value{font-size:13px;text-align:right}
         .admin-input{width:100%;padding:12px 16px;background:#0d0d0d;border:1px solid rgba(255,255,255,0.1);color:#fff;font-family:'Inter',sans-serif;font-size:14px;outline:none;transition:border-color 0.25s}
         .admin-input:focus{border-color:var(--pink)}
         .admin-input::placeholder{color:#444}
@@ -112,7 +115,7 @@
         @media(min-width:1024px){.grid-layout{grid-template-columns:5fr 7fr;gap:32px}.info-stack{gap:32px}}
         @media(max-width:640px){
             .admin-nav-inner{padding:0 14px;height:56px}
-            .admin-main{padding:20px 10px}
+            .admin-main{padding:20px 16px}
             .page-header{margin-bottom:24px}
             .page-heading{font-size:22px}
             .admin-card{padding:20px 16px;background:#131313;border-color:rgba(255,255,255,0.06)}
@@ -125,6 +128,9 @@
             .admin-field-divider{padding-bottom:14px;margin-bottom:14px}
             .admin-field-label{font-size:9px;letter-spacing:2px}
             .admin-field-value{font-size:14px}
+            .admin-field-box{padding:10px 12px;margin-bottom:5px}
+            .admin-field-box .admin-field-label{font-size:9px;min-width:75px}
+            .admin-field-box .admin-field-value{font-size:13px}
             .timeline-card{padding:16px 14px;background:rgba(255,255,255,0.02)}
             .timeline-card-title{font-size:13px;padding-right:0}
             .timeline-card-desc{font-size:12px}
@@ -149,9 +155,12 @@
             .timeline-card{padding:14px 12px}
             .timeline-card-title{font-size:12px}
             .btn-ghost-admin{padding:8px 14px;font-size:10px;letter-spacing:1.5px}
+            .admin-field-box{padding:8px 10px}
+            .admin-field-box .admin-field-label{font-size:8px;min-width:65px}
+            .admin-field-box .admin-field-value{font-size:12px}
         }
         @media(max-width:380px){
-            .admin-main{padding:16px 8px}
+            .admin-main{padding:16px 12px}
             .admin-card{padding:14px 10px}
             .page-heading{font-size:18px}
             .grid-layout{gap:12px}
@@ -214,11 +223,11 @@
                 <!-- Order Info -->
                 <div class="admin-card">
                     <div class="admin-card-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>Informasi Pesanan</div>
-                    <div class="admin-field admin-field-divider">
+                    <div class="admin-field-box">
                         <span class="admin-field-label">Nomor Surat</span>
                         <span class="admin-field-value">{{ $order->nomor_surat }}</span>
                     </div>
-                    <div class="admin-field admin-field-divider">
+                    <div class="admin-field-box">
                         <span class="admin-field-label">Nama Pelanggan</span>
                         <span class="admin-field-value">{{ $order->customer_name }}</span>
                     </div>
@@ -242,32 +251,32 @@
                             <span class="admin-field-value" style="color:#555;font-weight:400;font-size:13px;">Tidak ada nomor HP</span>
                         @endif
                     </div>
-                    <div class="admin-field admin-field-divider">
-                        <span class="admin-field-label">Nomor Plat Kendaraan</span>
+                    <div class="admin-field-box">
+                        <span class="admin-field-label">Nomor Plat</span>
                         @if($order->nomor_plat)
                             <span class="admin-field-value">{{ $order->nomor_plat }}</span>
                         @else
-                            <span class="admin-field-value" style="color:#555;font-weight:400;font-size:13px;">Tidak ada</span>
+                            <span class="admin-field-value" style="color:#555;font-weight:400;font-size:12px;">—</span>
                         @endif
                     </div>
-                    <div class="admin-field admin-field-divider">
+                    <div class="admin-field-box">
                         <span class="admin-field-label">Tipe Motor</span>
                         @if($order->tipe_motor)
                             <span class="admin-field-value">{{ $order->tipe_motor }}</span>
                         @else
-                            <span class="admin-field-value" style="color:#555;font-weight:400;font-size:13px;">Tidak ada</span>
+                            <span class="admin-field-value" style="color:#555;font-weight:400;font-size:12px;">—</span>
                         @endif
                     </div>
-                    <div class="admin-field admin-field-divider">
-                        <span class="admin-field-label">Detail Motor</span>
+                    <div class="admin-field-box">
+                        <span class="admin-field-label">Detail</span>
                         @if($order->detail_motor)
                             <span class="admin-field-value">{{ $order->detail_motor }}</span>
                         @else
-                            <span class="admin-field-value" style="color:#555;font-weight:400;font-size:13px;">Tidak ada</span>
+                            <span class="admin-field-value" style="color:#555;font-weight:400;font-size:12px;">—</span>
                         @endif
                     </div>
-                    <div class="admin-field admin-field-divider">
-                        <span class="admin-field-label">Produk / Jasa</span>
+                    <div class="admin-field-box">
+                        <span class="admin-field-label">Produk</span>
                         <span class="admin-field-value">{{ $order->product_name }}</span>
                     </div>
                     <div class="admin-field admin-field-divider">
@@ -296,9 +305,9 @@
                             @endif
                         </div>
                     </div>
-                    <div class="admin-field">
-                        <span class="admin-field-label">Tanggal Pendaftaran</span>
-                        <span class="admin-field-value">{{ $order->created_at->format('d F Y, H:i') }}</span>
+                    <div class="admin-field-box">
+                        <span class="admin-field-label">Tanggal</span>
+                        <span class="admin-field-value">{{ $order->created_at->format('d/m/Y H:i') }}</span>
                     </div>
                 </div>
 

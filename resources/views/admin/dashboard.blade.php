@@ -110,6 +110,9 @@
         .mobile-order-row{display:flex;align-items:baseline;justify-content:space-between;padding:7px 0}
         .mobile-order-label{font-size:9px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--gray);flex-shrink:0;margin-right:16px}
         .mobile-order-value{font-size:12px;font-weight:600;color:#fff;text-align:right;line-height:1.4}
+        .mobile-order-field{background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.07);padding:10px 12px;margin-bottom:5px;display:flex;align-items:baseline;justify-content:space-between}
+        .mobile-order-field .mobile-order-label{min-width:70px;font-size:9px}
+        .mobile-order-field .mobile-order-value{font-size:12px}
         .mobile-order-footer{display:flex;align-items:center;justify-content:space-between;padding-top:12px;margin-top:8px;border-top:1px solid rgba(255,255,255,0.06);gap:8px}
         .status-badge-mobile{display:inline-flex;align-items:center;gap:5px;font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;padding:5px 10px;border:1px solid;white-space:nowrap}
         .modal-overlay{position:fixed;inset:0;z-index:50;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,0.88);padding:24px}
@@ -144,7 +147,7 @@
         @media(min-width:769px){.mobile-cards{display:none!important}}
         @media(max-width:640px){
             .admin-nav-inner{padding:0 14px;height:56px}
-            .admin-main{padding:20px 10px}
+            .admin-main{padding:20px 16px}
             .admin-header{gap:14px;margin-bottom:24px}
             .admin-heading{font-size:24px}
             .admin-subheading{font-size:11px}
@@ -155,16 +158,16 @@
             .filter-input{padding:10px 12px 10px 34px;font-size:13px}
             .filter-submit{flex:1;font-size:12px;padding:10px 18px}
             .filter-count{font-size:11px;text-align:center}
-            .orders-table-wrap{margin:0 -10px;border-radius:0}
-            .mobile-cards{display:flex;flex-direction:column;gap:10px}
+            .orders-table-wrap{margin:0 -16px;border-radius:0}
+            .mobile-cards{display:flex;flex-direction:column;gap:12px}
             .mobile-order-card{padding:16px 14px;background:#131313;border-left-width:4px;margin-bottom:0}
-            .mobile-order-card:not(:last-child)::after{bottom:-6px;left:14px;right:14px;background:linear-gradient(to right,transparent,rgba(238,20,177,0.15),transparent)}
+            .mobile-order-card:not(:last-child)::after{bottom:-7px;left:14px;right:14px;background:linear-gradient(to right,transparent,rgba(238,20,177,0.15),transparent)}
             .mobile-order-code{font-size:15px;letter-spacing:2px}
             .mobile-order-phone{font-size:12px;margin-top:3px}
             .mobile-order-header{margin-bottom:14px;gap:12px}
-            .mobile-order-row{padding:8px 0}
-            .mobile-order-label{font-size:10px;letter-spacing:2px;min-width:80px}
-            .mobile-order-value{font-size:13px;font-weight:600}
+            .mobile-order-field{padding:10px 12px;margin-bottom:5px}
+            .mobile-order-field .mobile-order-label{font-size:9px;min-width:70px}
+            .mobile-order-field .mobile-order-value{font-size:13px}
             .mobile-order-footer{padding-top:12px;margin-top:10px;flex-wrap:wrap;gap:10px}
             .mobile-order-footer .timeline-count{width:100%;font-size:11px}
             .status-badge-mobile{font-size:10px;padding:6px 12px}
@@ -188,8 +191,13 @@
             .modal-field select{font-size:13px;padding:10px 14px}
         }
         @media(max-width:400px){
+            .admin-main{padding:16px 12px}
+            .orders-table-wrap{margin:0 -12px}
             .mobile-order-card{padding:14px 12px;margin-bottom:0}
             .mobile-order-card:not(:last-child)::after{bottom:-7px;left:10px;right:10px}
+            .mobile-order-field{padding:8px 10px}
+            .mobile-order-field .mobile-order-label{font-size:8px;min-width:60px}
+            .mobile-order-field .mobile-order-value{font-size:12px}
             .mobile-order-header{flex-direction:column;align-items:flex-start;gap:8px}
             .mobile-order-code{font-size:14px}
             .admin-header-label{font-size:9px;letter-spacing:2px}
@@ -317,21 +325,21 @@
                         @elseif($order->status === 'Cancelled')<span class="status-badge-mobile" style="color:var(--pink);border-color:rgba(238,20,177,0.3);background:rgba(238,20,177,0.08)">Batal</span>
                         @endif
                     </div>
-                    <div class="mobile-order-row" style="padding-top:4px;">
+                    <div class="mobile-order-field">
                         <span class="mobile-order-label">Pelanggan</span>
                         <span class="mobile-order-value">{{ $order->customer_name }}</span>
                     </div>
-                    <div class="mobile-order-row">
+                    <div class="mobile-order-field">
                         <span class="mobile-order-label">Produk</span>
                         <span class="mobile-order-value">{{ $order->product_name }}</span>
                     </div>
                     @if($order->nomor_plat || $order->tipe_motor)
-                    <div class="mobile-order-row" style="border-bottom:1px solid rgba(255,255,255,0.04);padding-bottom:10px;">
+                    <div class="mobile-order-field">
                         <span class="mobile-order-label">Motor</span>
                         <span class="mobile-order-value">@if($order->tipe_motor){{ $order->tipe_motor }}@endif @if($order->nomor_plat) &middot; {{ $order->nomor_plat }}@endif</span>
                     </div>
                     @endif
-                    <div class="mobile-order-row" style="padding-top:4px;">
+                    <div class="mobile-order-field">
                         <span class="mobile-order-label">Tanggal</span>
                         <span class="mobile-order-value" style="font-size:11px;color:#666;">{{ $order->created_at->format('d/m/Y H:i') }}</span>
                     </div>
