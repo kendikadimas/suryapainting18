@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Password;
+use Illuminate\Support\Facades\Storage;
 use App\Models\Order;
 use App\Models\OrderTimeline;
 use App\Models\User;
@@ -243,44 +244,37 @@ class AdminController extends Controller
     // Returns the relative storage path (e.g. "orders/abc123.webp") or null on failure.
     private function storeImageAsWebp($file): ?string
     {
-        $dir = storage_path('app/public/orders');
-        if (!is_dir($dir)) {
-            mkdir($dir, 0755, true);
-        }
-
         try {
-            $hash    = uniqid('', true);
-            $name    = 'orders/' . $hash . '.webp';
-            $quality = 80;
-
             $driver = extension_loaded('imagick')
                 ? new \Intervention\Image\Drivers\Imagick\Driver()
                 : new \Intervention\Image\Drivers\Gd\Driver();
 
             $manager = new \Intervention\Image\ImageManager($driver);
             $image   = $manager->read($file->getRealPath());
-            $encoded = $image->toWebp($quality);
 
-            file_put_contents(storage_path('app/public/' . $name), (string) $encoded);
+            $hash    = uniqid('', true);
+            $name    = 'orders/' . $hash . '.webp';
+            $quality = 80;
+
+            Storage::disk('public')->put($name, $image->toWebp($quality)->toString());
 
             return $name;
         } catch (\Throwable $e) {
             report($e);
 
-            // Fallback: store original file as-is
-            $ext  = strtolower($file->getClientOriginalExtension() ?: 'jpg');
-            $hash = uniqid('', true);
-            $name = 'orders/' . $hash . '.' . $ext;
-            $destination = storage_path('app/public/' . $name);
+            // Fallback: store original file when WebP conversion fails (e.g. HEIC on GD)
+            try {
+                $ext  = strtolower($file->getClientOriginalExtension() ?: 'jpg');
+                $hash = uniqid('', true);
+                $name = 'orders/' . $hash . '.' . $ext;
 
-            // Try move_uploaded_file first (for direct uploads), fallback to copy
-            if (is_uploaded_file($file->getRealPath())) {
-                move_uploaded_file($file->getRealPath(), $destination);
-            } else {
-                copy($file->getRealPath(), $destination);
+                Storage::disk('public')->putFileAs('orders', $file, $hash . '.' . $ext);
+
+                return $name;
+            } catch (\Throwable $e2) {
+                report($e2);
+                return null;
             }
-
-            return $name;
         }
     }
 
@@ -289,12 +283,9 @@ class AdminController extends Controller
     public function deleteTimeline($id)
     {
         $timeline = OrderTimeline::findOrFail($id);
-        
+
         if ($timeline->image_path) {
-            $path = storage_path('app/public/' . $timeline->image_path);
-            if (file_exists($path)) {
-                unlink($path);
-            }
+            Storage::disk('public')->delete($timeline->image_path);
         }
 
         $timeline->delete();
@@ -306,13 +297,10 @@ class AdminController extends Controller
     public function deleteOrder($id)
     {
         $order = Order::findOrFail($id);
-        
+
         foreach ($order->timeline as $timeline) {
             if ($timeline->image_path) {
-                $path = storage_path('app/public/' . $timeline->image_path);
-                if (file_exists($path)) {
-                    unlink($path);
-                }
+                Storage::disk('public')->delete($timeline->image_path);
             }
         }
 
