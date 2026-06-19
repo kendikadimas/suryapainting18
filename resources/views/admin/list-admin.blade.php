@@ -39,8 +39,8 @@
         .alert-error-icon{width:20px;height:20px;background:var(--pink);border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0}
         .alert-error-icon svg{width:12px;height:12px;color:#fff}
         .alert-error p{font-size:13px;color:rgba(255,255,255,0.7)}
-        .admin-card{background:#111;border:1px solid rgba(255,255,255,0.08);overflow:hidden}
-        @media(max-width:640px){.admin-card{margin:0 -16px;border-radius:0;border-left:none;border-right:none}}
+        .admin-card{background:#111;border:1px solid rgba(255,255,255,0.08);overflow:hidden;overflow-x:auto}
+        @media(max-width:640px){.admin-card{margin:0 -16px;border-radius:0;border-left:none;border-right:none;-webkit-overflow-scrolling:touch}}
         .admin-table{width:100%;border-collapse:collapse;text-align:left}
         .admin-table th{padding:12px 16px;font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#555;border-bottom:1px solid rgba(255,255,255,0.06);background:rgba(255,255,255,0.02)}
         .admin-table td{padding:14px 16px;border-bottom:1px solid rgba(255,255,255,0.04);font-size:13px}
@@ -58,12 +58,17 @@
         .empty-state{padding:60px 24px;text-align:center}
         .empty-state svg{width:40px;height:40px;color:#444;margin-bottom:16px}
         .empty-state p{font-size:13px;color:#555}
+        @media(max-width:500px){.col-date{display:none}}
         @media(max-width:640px){
-            .admin-table td:first-child,.admin-table th:first-child{padding-left:14px}
-            .admin-table td:last-child,.admin-table th:last-child{padding-right:14px}
-            .admin-table td{padding:12px 10px;font-size:12px}
-            .admin-table th{padding:10px;font-size:8px}
-            .admin-email{font-size:11px}
+            .admin-table td:first-child,.admin-table th:first-child{padding-left:12px}
+            .admin-table td:last-child,.admin-table th:last-child{padding-right:8px}
+            .admin-table td{padding:10px 6px;font-size:12px}
+            .admin-table th{padding:8px 6px;font-size:8px;white-space:nowrap}
+            .admin-email{font-size:10px;word-break:break-all}
+            .admin-name{font-size:12px}
+            .btn-delete-admin{width:30px;height:30px}
+            .btn-delete-admin svg{width:11px;height:11px}
+            .badge-self{font-size:7px;padding:2px 6px}
         }
     </style>
 </head>
@@ -113,7 +118,7 @@
                     <tr>
                         <th>Nama</th>
                         <th>Email</th>
-                        <th style="text-align:center;">Terdaftar</th>
+                        <th style="text-align:center;" class="col-date">Terdaftar</th>
                         <th style="text-align:right;">Aksi</th>
                     </tr>
                 </thead>
@@ -127,7 +132,7 @@
                             @endif
                         </td>
                         <td><span class="admin-email">{{ $admin->email }}</span></td>
-                        <td style="text-align:center;"><span class="admin-date">{{ $admin->created_at->format('d/m/Y') }}</span></td>
+                        <td style="text-align:center;" class="col-date"><span class="admin-date">{{ $admin->created_at->format('d/m/Y') }}</span></td>
                         <td style="text-align:right;">
                             @if($admin->id !== Auth::id())
                                 <form action="{{ route('admin.delete-admin', $admin->id) }}" method="POST" onsubmit="return confirm('Hapus admin {{ addslashes($admin->name) }}?')">
