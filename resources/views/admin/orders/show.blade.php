@@ -102,10 +102,6 @@
         .status-form-row{display:flex;gap:8px}
         .status-form-field{flex:1;min-width:0}
         @media(max-width:640px){.status-form-row{flex-direction:column}}
-        .sidebar-trigger{display:none;background:transparent;border:none;color:rgba(255,255,255,0.5);cursor:pointer;padding:6px;align-items:center}
-        .sidebar-trigger:hover{color:#fff}
-        .sidebar-link{display:flex;align-items:center;gap:12px;padding:11px 14px;color:rgba(255,255,255,0.55);text-decoration:none;font-family:'Inter',sans-serif;font-size:13px;font-weight:500;border-radius:8px;border-left:3px solid transparent;transition:all 0.15s}
-        .sidebar-link:hover{color:#fff;background:rgba(255,255,255,0.04)}
         .lightbox-overlay{position:fixed;inset:0;z-index:200;background:rgba(0,0,0,0.96);display:flex;align-items:center;justify-content:center;padding:16px}
         .lightbox-close{position:absolute;top:20px;right:24px;background:none;border:none;color:rgba(255,255,255,0.6);font-size:36px;cursor:pointer;line-height:1;transition:color 0.2s}
         .lightbox-close:hover{color:#fff}
@@ -118,9 +114,7 @@
         .info-stack{gap:24px}
         @media(min-width:1024px){.grid-layout{grid-template-columns:5fr 7fr;gap:32px}.info-stack{gap:32px}}
         @media(max-width:640px){
-            .sidebar-trigger{display:flex}
-            .admin-nav-desktop{display:none!important}
-            .admin-nav-inner{padding:0 14px;height:56px;gap:8px}
+            .admin-nav-inner{padding:0 14px;height:56px}
             .admin-main{padding:20px 16px}
             .page-header{margin-bottom:24px}
             .page-heading{font-size:22px}

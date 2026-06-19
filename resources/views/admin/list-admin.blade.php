@@ -58,11 +58,6 @@
         .empty-state{padding:60px 24px;text-align:center}
         .empty-state svg{width:40px;height:40px;color:#444;margin-bottom:16px}
         .empty-state p{font-size:13px;color:#555}
-        .sidebar-trigger{display:none;background:transparent;border:none;color:rgba(255,255,255,0.5);cursor:pointer;padding:6px;align-items:center}
-        .sidebar-trigger:hover{color:#fff}
-        .sidebar-link{display:flex;align-items:center;gap:12px;padding:11px 14px;color:rgba(255,255,255,0.55);text-decoration:none;font-family:'Inter',sans-serif;font-size:13px;font-weight:500;border-radius:8px;border-left:3px solid transparent;transition:all 0.15s}
-        .sidebar-link:hover{color:#fff;background:rgba(255,255,255,0.04)}
-        @media(max-width:640px){.sidebar-trigger{display:flex}.admin-nav-desktop{display:none!important}.admin-nav-inner{gap:8px}}
         @media(max-width:500px){.col-date{display:none}}
         @media(max-width:640px){
             .admin-table td:first-child,.admin-table th:first-child{padding-left:12px}

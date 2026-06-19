@@ -25,10 +25,10 @@
             Lihat Website
         </a>
     </div>
-    <div class="px-3 py-4 border-t border-white/6">
+    <div class="px-4 py-4 border-t border-white/6">
         <form action="{{ route('admin.logout') }}" method="POST">
             @csrf
-            <button type="submit" class="flex items-center gap-3 w-full px-4 py-3 text-white/40 hover:text-[var(--pink)] transition-colors text-sm font-medium bg-transparent border-none cursor-pointer rounded-lg hover:bg-white/3" style="font-family:'Inter',sans-serif;">
+            <button type="submit" class="sidebar-logout">
                 <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
                 Keluar
             </button>

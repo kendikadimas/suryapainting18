@@ -28,15 +28,6 @@
         @media(min-width:640px){.admin-nav-status{display:flex}}
         .admin-nav-dot{width:7px;height:7px;background:var(--pink);border-radius:50%;animation:pulse-dot 2s ease-in-out infinite}
         @keyframes pulse-dot{0%,100%{opacity:1}50%{opacity:0.3}}
-        .sidebar-trigger{display:none;background:transparent;border:none;color:rgba(255,255,255,0.5);cursor:pointer;padding:6px;align-items:center}
-        .sidebar-trigger:hover{color:#fff}
-        .sidebar-link{display:flex;align-items:center;gap:12px;padding:11px 14px;color:rgba(255,255,255,0.55);text-decoration:none;font-family:'Inter',sans-serif;font-size:13px;font-weight:500;border-radius:8px;border-left:3px solid transparent;transition:all 0.15s}
-        .sidebar-link:hover{color:#fff;background:rgba(255,255,255,0.04)}
-        @media(max-width:640px){
-            .sidebar-trigger{display:flex}
-            .admin-nav-desktop{display:none!important}
-            .admin-nav-inner{gap:8px}
-        }
         .admin-main{flex:1;max-width:1280px;width:100%;margin:0 auto;padding:40px 24px}
         @media(min-width:1024px){.admin-main{padding:48px}}
         .admin-header{display:flex;flex-wrap:wrap;align-items:flex-start;justify-content:space-between;gap:24px;margin-bottom:40px}
