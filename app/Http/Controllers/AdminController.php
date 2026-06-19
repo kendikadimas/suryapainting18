@@ -109,6 +109,27 @@ class AdminController extends Controller
         return redirect()->route('admin.dashboard')->with('success', 'Akun admin baru berhasil ditambahkan.');
     }
 
+    // List all admins
+    public function listAdmins()
+    {
+        $admins = User::orderBy('created_at', 'desc')->get();
+        return view('admin.list-admin', compact('admins'));
+    }
+
+    // Delete an admin (cannot delete self)
+    public function deleteAdmin($id)
+    {
+        $admin = User::findOrFail($id);
+
+        if ($admin->id === Auth::id()) {
+            return back()->withErrors(['Tidak dapat menghapus akun sendiri.']);
+        }
+
+        $admin->delete();
+
+        return back()->with('success', 'Akun admin berhasil dihapus.');
+    }
+
     // Show forgot password page
     public function showForgotPasswordForm()
     {

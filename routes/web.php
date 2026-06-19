@@ -51,5 +51,7 @@ Route::prefix('admin')->group(function () {
         // Admin user management
         Route::get('/add-admin', [AdminController::class, 'showAddAdminForm'])->name('admin.add-admin');
         Route::post('/add-admin', [AdminController::class, 'storeAdmin'])->name('admin.add-admin.store');
+        Route::get('/list-admin', [AdminController::class, 'listAdmins'])->name('admin.list-admin');
+        Route::delete('/delete-admin/{id}', [AdminController::class, 'deleteAdmin'])->name('admin.delete-admin');
     });
 });
