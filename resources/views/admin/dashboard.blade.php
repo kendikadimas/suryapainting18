@@ -46,13 +46,13 @@
         .alert-success-text{font-size:13px;color:rgba(255,255,255,0.7)}
         .alert-close{position:absolute;top:12px;right:14px;background:none;border:none;color:rgba(255,255,255,0.3);cursor:pointer;padding:4px;transition:color 0.2s}
         .alert-close:hover{color:#fff}
-        .filter-bar{background:#111;border:1px solid rgba(255,255,255,0.08);padding:20px 24px;margin-bottom:4px;display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:space-between}
-        .filter-form{display:flex;gap:8px;width:100%}
-        @media(min-width:768px){.filter-form{width:auto;flex-grow:1;max-width:480px}}
+        .filter-bar{background:#111;border:1px solid rgba(255,255,255,0.08);padding:14px 18px;margin-bottom:4px;display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between}
+        .filter-form{display:flex;gap:6px;width:100%}
+        @media(min-width:768px){.filter-form{width:auto;flex-grow:1;max-width:400px}}
         .filter-input-wrap{flex:1;position:relative}
-        .filter-input-icon{position:absolute;left:12px;top:50%;transform:translateY(-50%);color:#555;display:flex}
-        .filter-input-icon svg{width:14px;height:14px}
-        .filter-input{width:100%;padding:10px 14px 10px 38px;background:#0d0d0d;border:1px solid rgba(255,255,255,0.1);color:#fff;font-family:'Inter',sans-serif;font-size:13px;outline:none;transition:border-color 0.25s}
+        .filter-input-icon{position:absolute;left:10px;top:50%;transform:translateY(-50%);color:#555;display:flex}
+        .filter-input-icon svg{width:13px;height:13px}
+        .filter-input{width:100%;padding:8px 12px 8px 34px;background:#0d0d0d;border:1px solid rgba(255,255,255,0.1);color:#fff;font-family:'Inter',sans-serif;font-size:12px;outline:none;transition:border-color 0.25s}
         .filter-input:focus{border-color:var(--pink)}
         .filter-input::placeholder{color:#444;font-weight:400}
         .filter-submit{display:inline-flex;align-items:center;justify-content:center;background:transparent;border:1px solid rgba(255,255,255,0.12);color:rgba(255,255,255,0.6);font-family:'Barlow Condensed',sans-serif;font-size:11px;font-weight:700;font-style:italic;letter-spacing:2px;text-transform:uppercase;padding:10px 18px;cursor:pointer;transition:border-color 0.25s,color 0.2s;white-space:nowrap}
@@ -70,18 +70,18 @@
         .orders-empty p{font-size:13px;color:#555;max-width:360px;margin:0 auto}
         .orders-table{width:100%;border-collapse:collapse;text-align:left}
         .orders-table thead{border-bottom:1px solid rgba(255,255,255,0.08);background:rgba(255,255,255,0.02)}
-        .orders-table th{padding:14px 20px;font-size:9px;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:#555}
-        .orders-table th:first-child{padding-left:24px}
-        .orders-table th:last-child{padding-right:24px;text-align:right}
-        .orders-table td{padding:18px 20px;border-bottom:1px solid rgba(255,255,255,0.04)}
-        .orders-table td:first-child{padding-left:24px}
-        .orders-table td:last-child{padding-right:24px;text-align:right}
+        .orders-table th{padding:10px 16px;font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#555}
+        .orders-table th:first-child{padding-left:20px}
+        .orders-table th:last-child{padding-right:20px;text-align:right}
+        .orders-table td{padding:12px 16px;border-bottom:1px solid rgba(255,255,255,0.04)}
+        .orders-table td:first-child{padding-left:20px}
+        .orders-table td:last-child{padding-right:20px;text-align:right}
         .orders-table tbody tr{transition:background 0.2s}
         .orders-table tbody tr:hover{background:rgba(255,255,255,0.02)}
-        .order-code{font-family:'Barlow Condensed',sans-serif;font-size:14px;font-weight:800;letter-spacing:2px;text-transform:uppercase;color:#fff;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);padding:4px 10px;display:inline-block}
+        .order-code{font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:800;letter-spacing:1.5px;text-transform:uppercase;color:#fff;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);padding:3px 8px;display:inline-block}
         .order-customer-name{font-weight:700;font-size:13px;color:#fff}
-        .order-date{font-size:11px;color:#555;margin-top:2px}
-        .order-product{font-size:13px;font-weight:600;color:rgba(255,255,255,0.7)}
+        .order-date{font-size:10px;color:#555;margin-top:2px}
+        .order-product{font-size:12px;font-weight:600;color:rgba(255,255,255,0.7)}
         .status-badge{display:inline-block;font-size:9px;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;padding:5px 12px;border:1px solid}
         .status-badge--pending{color:#f6e500;border-color:rgba(246,229,0,0.25);background:rgba(246,229,0,0.08)}
         .status-badge--processing{color:#4c98b9;border-color:rgba(76,152,185,0.25);background:rgba(76,152,185,0.08)}
@@ -98,23 +98,23 @@
         .action-wa{display:inline-flex;align-items:center;justify-content:center;width:34px;height:34px;background:transparent;border:1px solid rgba(37,211,102,0.3);color:#25d366;cursor:pointer;transition:border-color 0.2s,background 0.2s;text-decoration:none;flex-shrink:0}
         .action-wa:hover{border-color:#25d366;background:rgba(37,211,102,0.1)}
         .action-wa svg{width:14px;height:14px}
-        .mobile-order-card{padding:24px;border-bottom:1px solid rgba(255,255,255,0.06)}
-        .mobile-order-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
-        .mobile-order-row{display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid rgba(255,255,255,0.04)}
+        .mobile-order-card{padding:14px 16px;border-bottom:1px solid rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.05);border-radius:2px;margin-bottom:4px}
+        .mobile-order-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+        .mobile-order-row{display:flex;align-items:center;justify-content:space-between;padding:6px 0}
         .mobile-order-row:last-of-type{border-bottom:none}
-        .mobile-order-label{font-size:10px;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:var(--gray);margin-bottom:0}
-        .mobile-order-footer{display:flex;align-items:center;justify-content:space-between;padding-top:14px;border-top:1px solid rgba(255,255,255,0.06)}
+        .mobile-order-label{font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--gray);margin-bottom:0}
+        .mobile-order-footer{display:flex;align-items:center;justify-content:space-between;padding-top:10px;border-top:1px solid rgba(255,255,255,0.06);gap:8px}
         .modal-overlay{position:fixed;inset:0;z-index:50;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,0.88);padding:24px}
-        .modal-card{width:100%;max-width:460px;background:#111;border:1px solid rgba(255,255,255,0.1);position:relative;overflow:hidden}
-        .modal-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--pink)}
-        .modal-header{display:flex;align-items:center;justify-content:space-between;padding:20px 24px;border-bottom:1px solid rgba(255,255,255,0.06)}
+        .modal-card{width:100%;max-width:440px;max-height:85vh;background:#111;border:1px solid rgba(255,255,255,0.1);position:relative;overflow:hidden;display:flex;flex-direction:column}
+        .modal-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--pink);z-index:1}
+        .modal-header{display:flex;align-items:center;justify-content:space-between;padding:16px 20px;border-bottom:1px solid rgba(255,255,255,0.06);flex-shrink:0}
         .modal-title{font-family:'Barlow Condensed',sans-serif;font-size:20px;font-weight:800;font-style:italic;text-transform:uppercase;color:#fff;display:flex;align-items:center;gap:10px}
         .modal-title svg{width:18px;height:18px;color:var(--pink)}
         .modal-close{background:none;border:none;color:rgba(255,255,255,0.3);cursor:pointer;padding:4px;transition:color 0.2s}
         .modal-close:hover{color:#fff}
         .modal-close svg{width:20px;height:20px}
-        .modal-body{padding:24px}
-        .modal-field{margin-bottom:20px}
+        .modal-body{padding:16px 20px;overflow-y:auto;flex:1}
+        .modal-field{margin-bottom:14px}
         .modal-field label{display:block;font-size:10px;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:#888;margin-bottom:8px}
         .modal-field input{width:100%;padding:12px 16px;background:#0d0d0d;border:1px solid rgba(255,255,255,0.1);color:#fff;font-family:'Inter',sans-serif;font-size:14px;outline:none;transition:border-color 0.25s}
         .modal-field input:focus{border-color:var(--pink)}
@@ -135,28 +135,41 @@
         @media(max-width:768px){.orders-table{display:none}.mobile-cards{display:block!important}}
         @media(min-width:769px){.mobile-cards{display:none!important}}
         @media(max-width:640px){
-            .admin-nav-inner{padding:0 16px;height:60px}
-            .admin-main{padding:24px 16px}
-            .admin-header{gap:16px;margin-bottom:28px}
-            .admin-heading{font-size:26px}
-            .admin-subheading{font-size:12px}
+            .admin-nav-inner{padding:0 12px;height:56px}
+            .admin-main{padding:20px 12px}
+            .admin-header{gap:14px;margin-bottom:24px}
+            .admin-heading{font-size:24px}
+            .admin-subheading{font-size:11px}
             .btn-red-admin{padding:12px 20px;font-size:12px;width:100%;justify-content:center}
-            .filter-bar{padding:16px}
+            .filter-bar{padding:12px}
             .filter-form{flex-wrap:wrap}
             .filter-input-wrap{min-width:100%}
             .filter-submit{flex:1}
-            .orders-table-wrap{margin:0 -16px;border-radius:0}
-            .mobile-order-card{padding:20px 16px}
-            .mobile-order-footer{flex-wrap:wrap;gap:12px}
+            .orders-table-wrap{margin:0 -12px;border-radius:0}
+            .mobile-order-card{padding:12px}
+            .mobile-order-footer{flex-wrap:wrap;gap:10px}
             .mobile-order-footer .timeline-count{width:100%}
-            .admin-pagination{gap:2px;flex-wrap:wrap}
+            .admin-pagination{gap:2px;flex-wrap:wrap;margin-top:24px}
             .admin-pagination a,.admin-pagination span{min-width:32px;height:32px;font-size:11px;padding:0 8px}
+            .order-code{font-size:12px;letter-spacing:1px;padding:3px 8px}
+            .order-customer-name{font-size:12px}
+            .order-product{font-size:12px}
+            .modal-card{max-width:100%;max-height:90vh;margin:0}
+            .modal-header{padding:14px 16px}
+            .modal-body{padding:12px 16px}
+            .modal-title{font-size:17px}
+            .modal-field label{font-size:9px;letter-spacing:1.5px;margin-bottom:6px}
+            .modal-field input{font-size:13px;padding:10px 14px}
+            .modal-field select{font-size:13px;padding:10px 14px}
         }
         @media(max-width:400px){
-            .mobile-order-card{padding:16px 12px}
-            .mobile-order-header{flex-direction:column;align-items:flex-start;gap:8px}
+            .mobile-order-card{padding:10px}
+            .mobile-order-header{flex-direction:column;align-items:flex-start;gap:6px}
             .admin-header-label{font-size:9px;letter-spacing:2px}
-            .admin-heading{font-size:22px}
+            .admin-heading{font-size:20px}
+            .action-manage{font-size:10px;padding:5px 10px;letter-spacing:1px}
+            .action-delete{width:28px;height:28px}
+            .action-wa{width:28px;height:28px}
         }
     </style>
 </head>
