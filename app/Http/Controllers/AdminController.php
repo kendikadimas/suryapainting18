@@ -165,6 +165,13 @@ class AdminController extends Controller
         if (Auth::check()) {
             return redirect()->route('admin.dashboard');
         }
+
+        // If no email in query string, link is invalid
+        if (!request('email')) {
+            return redirect()->route('admin.forgot-password')
+                ->withErrors(['email' => 'Link reset password tidak valid. Silakan minta ulang.']);
+        }
+
         return view('admin.reset-password', ['token' => $token]);
     }
 
