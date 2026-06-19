@@ -31,6 +31,20 @@ php artisan config:cache
 php artisan route:cache
 php artisan view:cache
 
+# Sync public folder ke public_html
+echo "📂 Syncing public files to public_html..."
+rsync -av --delete \
+    --exclude='storage' \
+    --exclude='.htaccess' \
+    /home/suryapai/suryapainting18/public/ \
+    /home/suryapai/public_html/
+
+# Pastikan storage symlink ada
+if [ ! -L /home/suryapai/suryapainting18/public/storage ]; then
+    echo "🔗 Creating storage symlink..."
+    php artisan storage:link
+fi
+
 # Pastikan permission storage benar
 echo "🔐 Fixing permissions..."
 chmod -R 775 storage bootstrap/cache
