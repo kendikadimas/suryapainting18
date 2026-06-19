@@ -886,12 +886,14 @@
         .galeri-track::-webkit-scrollbar { display: none; }
         .galeri-track .galeri-item {
             scroll-snap-align: start;
-            flex: 0 0 calc(33.333% - 3px);
+            flex: 0 0 calc(50% - 2px);
             aspect-ratio: 4/3;
         }
+        @media (min-width: 1024px) {
+            .galeri-track .galeri-item { flex: 0 0 calc(33.333% - 3px); }
+        }
         @media (max-width: 767px) {
-            .galeri-track .galeri-item { flex: 0 0 80%; }
-            .galeri-item img { object-fit: contain !important; }
+            .galeri-track .galeri-item { flex: 0 0 85%; }
         }
         .galeri-arrow {
             position: absolute;
@@ -944,9 +946,10 @@
         .galeri-overlay {
             position: absolute;
             inset: 0;
-            background: linear-gradient(to top, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.15) 55%, transparent 100%);
-            opacity: 0.75;
+            background: linear-gradient(to top, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0.1) 45%, transparent 75%);
+            opacity: 0.8;
             transition: opacity 0.3s;
+        }
         }
         .galeri-item:hover .galeri-overlay { opacity: 1; }
         .galeri-caption {
