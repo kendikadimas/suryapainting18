@@ -13,7 +13,7 @@
     <style>
         :root{--pink:#ee14b1;--pink-dark:#c0108f;--dark:#0d0d0d;--gray:#888;--border:rgba(255,255,255,0.08)}
         *{box-sizing:border-box;margin:0;padding:0}
-        body{font-family:'Inter',sans-serif;background-color:var(--dark);color:#fff;min-height:100vh;display:flex;flex-direction:column;overflow-x:hidden}
+        body{font-family:'Inter',sans-serif;background-color:#0a0a0a;color:#fff;min-height:100vh;display:flex;flex-direction:column;overflow-x:hidden;background-image:radial-gradient(ellipse at 50% 0%,rgba(238,20,177,0.04) 0%,transparent 60%),radial-gradient(ellipse at 80% 100%,rgba(238,20,177,0.03) 0%,transparent 50%);background-attachment:fixed}
         .admin-nav{position:sticky;top:0;z-index:40;background:rgba(10,10,10,0.97);backdrop-filter:blur(20px);border-bottom:1px solid rgba(255,255,255,0.06)}
         .admin-nav-inner{max-width:1280px;margin:0 auto;padding:0 24px;height:68px;display:flex;align-items:center;justify-content:space-between}
         @media(min-width:1024px){.admin-nav-inner{padding:0 48px}}
@@ -47,6 +47,7 @@
         .alert-error-icon{width:20px;height:20px;background:var(--pink);border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px}
         .alert-error-icon svg{width:12px;height:12px;color:#fff}
         .admin-card{background:#111;border:1px solid rgba(255,255,255,0.08);padding:28px;position:relative}
+        .info-stack .admin-card:not(:last-child)::after{content:'';position:absolute;bottom:-12px;left:20px;right:20px;height:1px;background:linear-gradient(to right,transparent,rgba(238,20,177,0.1),transparent)}
         .admin-card-title{font-family:'Barlow Condensed',sans-serif;font-size:16px;font-weight:800;font-style:italic;text-transform:uppercase;color:#fff;display:flex;align-items:center;gap:10px;margin-bottom:20px}
         .admin-card-title svg{width:16px;height:16px;color:var(--pink)}
         .admin-field{margin-bottom:16px}
@@ -107,36 +108,54 @@
         .admin-footer{border-top:1px solid rgba(255,255,255,0.06);background:#070707;padding:24px 0}
         .admin-footer p{font-size:11px;color:#444;letter-spacing:1px;text-align:center}
         .grid-layout{display:grid;grid-template-columns:1fr;gap:28px}
-        @media(min-width:1024px){.grid-layout{grid-template-columns:5fr 7fr;gap:32px}}
+        .info-stack{gap:24px}
+        @media(min-width:1024px){.grid-layout{grid-template-columns:5fr 7fr;gap:32px}.info-stack{gap:32px}}
         @media(max-width:640px){
-            .admin-nav-inner{padding:0 16px;height:60px}
-            .admin-main{padding:24px 16px}
+            .admin-nav-inner{padding:0 14px;height:56px}
+            .admin-main{padding:20px 10px}
             .page-header{margin-bottom:24px}
             .page-heading{font-size:22px}
-            .admin-card{padding:20px 16px}
+            .admin-card{padding:20px 16px;background:#131313;border-color:rgba(255,255,255,0.06)}
             .page-header-label{font-size:9px;letter-spacing:2px}
-            .grid-layout{gap:20px}
-            .admin-card-title{font-size:14px}
-            .timeline-card{padding:16px}
+            .grid-layout{gap:16px}
+            .info-stack{gap:16px}
+            .info-stack .admin-card:not(:last-child)::after{bottom:-9px;left:16px;right:16px}
+            .admin-card-title{font-size:15px;margin-bottom:18px}
+            .admin-field{margin-bottom:14px}
+            .admin-field-divider{padding-bottom:14px;margin-bottom:14px}
+            .admin-field-label{font-size:9px;letter-spacing:2px}
+            .admin-field-value{font-size:14px}
+            .timeline-card{padding:16px 14px;background:rgba(255,255,255,0.02)}
             .timeline-card-title{font-size:13px;padding-right:0}
-            .timeline-wrap{padding-left:20px;margin-left:6px}
+            .timeline-card-desc{font-size:12px}
+            .timeline-wrap{padding-left:20px;margin-left:6px;border-left-width:2px}
             .timeline-node{left:-28px;width:12px;height:12px}
             .timeline-item{padding-bottom:24px}
-            .timeline-delete{opacity:1;position:static;display:flex;margin-top:12px}
-            .btn-red-sm{padding:10px 18px;font-size:11px;width:100%;justify-content:center}
+            .timeline-delete{opacity:1;position:absolute;top:12px;right:12px;width:32px;height:32px;margin-top:0}
+            .btn-red-sm{padding:11px 18px;font-size:12px;width:100%;justify-content:center}
             .btn-outline-sm{width:100%;justify-content:center}
-            .upload-zone{padding:18px}
+            .upload-zone{padding:20px 16px}
             .upload-zone p{font-size:11px}
+            .status-form-row{flex-direction:column;gap:6px}
+            .admin-input{padding:11px 14px;font-size:13px}
+            .admin-select{padding:11px 14px;font-size:13px}
+            .form-label{font-size:9px;letter-spacing:1.5px;margin-bottom:6px}
         }
         @media(max-width:480px){
             .page-header-label .page-header-label-line{width:24px}
-            .admin-field-value{font-size:14px}
-            .modal-card{width:calc(100% - 0px)}
+            .admin-field-value{font-size:13px}
+            .admin-card{padding:16px 14px}
+            .admin-card-title{font-size:14px}
+            .timeline-card{padding:14px 12px}
+            .timeline-card-title{font-size:12px}
+            .btn-ghost-admin{padding:8px 14px;font-size:10px;letter-spacing:1.5px}
         }
         @media(max-width:380px){
-            .admin-main{padding:16px 12px}
-            .admin-card{padding:16px 12px}
-            .page-heading{font-size:20px}
+            .admin-main{padding:16px 8px}
+            .admin-card{padding:14px 10px}
+            .page-heading{font-size:18px}
+            .grid-layout{gap:12px}
+            .admin-nav-inner{padding:0 10px}
         }
         [x-cloak]{display:none!important}
     </style>
@@ -191,7 +210,7 @@
         @endif
 
         <div class="grid-layout">
-            <div style="display:grid;grid-template-columns:1fr;gap:32px;">
+            <div style="display:grid;grid-template-columns:1fr;gap:24px;" class="info-stack">
                 <!-- Order Info -->
                 <div class="admin-card">
                     <div class="admin-card-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>Informasi Pesanan</div>
@@ -284,7 +303,7 @@
                 </div>
 
                 <!-- Update Status -->
-                    <div class="admin-card" style="padding:28px;">
+                    <div class="admin-card">
                         <div class="admin-card-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/><path d="M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16"/><path d="M16 16h5v5"/></svg>Perbarui Status Utama</div>
                         <form action="{{ route('admin.orders.updateStatus', $order->id) }}" method="POST" class="status-form">
                             @csrf @method('PATCH')
@@ -349,7 +368,7 @@
             </div>
 
             <!-- Timeline -->
-            <div class="admin-card" style="padding:28px 32px;">
+            <div class="admin-card">
                 <div class="admin-card-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>Riwayat Progres Saat Ini</div>
 
                 @if($order->timeline->isEmpty())

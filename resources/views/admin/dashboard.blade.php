@@ -13,7 +13,7 @@
     <style>
         :root{--pink:#ee14b1;--pink-dark:#c0108f;--dark:#0d0d0d;--gray:#888;}
         *{box-sizing:border-box;margin:0;padding:0}
-        body{font-family:'Inter',sans-serif;background-color:var(--dark);color:#fff;min-height:100vh;display:flex;flex-direction:column;overflow-x:hidden}
+        body{font-family:'Inter',sans-serif;background-color:#0a0a0a;color:#fff;min-height:100vh;display:flex;flex-direction:column;overflow-x:hidden;background-image:radial-gradient(ellipse at 50% 0%,rgba(238,20,177,0.04) 0%,transparent 60%),radial-gradient(ellipse at 80% 100%,rgba(238,20,177,0.03) 0%,transparent 50%);background-attachment:fixed}
         .admin-nav{position:sticky;top:0;z-index:40;background:rgba(10,10,10,0.97);backdrop-filter:blur(20px);border-bottom:1px solid rgba(255,255,255,0.06)}
         .admin-nav-inner{max-width:1280px;margin:0 auto;padding:0 24px;height:68px;display:flex;align-items:center;justify-content:space-between}
         @media(min-width:1024px){.admin-nav-inner{padding:0 48px}}
@@ -98,12 +98,20 @@
         .action-wa{display:inline-flex;align-items:center;justify-content:center;width:34px;height:34px;background:transparent;border:1px solid rgba(37,211,102,0.3);color:#25d366;cursor:pointer;transition:border-color 0.2s,background 0.2s;text-decoration:none;flex-shrink:0}
         .action-wa:hover{border-color:#25d366;background:rgba(37,211,102,0.1)}
         .action-wa svg{width:14px;height:14px}
-        .mobile-order-card{padding:14px 16px;border-bottom:1px solid rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.05);border-radius:2px;margin-bottom:4px}
-        .mobile-order-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
-        .mobile-order-row{display:flex;align-items:center;justify-content:space-between;padding:6px 0}
-        .mobile-order-row:last-of-type{border-bottom:none}
-        .mobile-order-label{font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--gray);margin-bottom:0}
-        .mobile-order-footer{display:flex;align-items:center;justify-content:space-between;padding-top:10px;border-top:1px solid rgba(255,255,255,0.06);gap:8px}
+        .mobile-order-card{padding:14px;border-left:3px solid transparent;margin-bottom:6px;background:#111;position:relative}
+        .mobile-order-card:not(:last-child)::after{content:'';position:absolute;bottom:-4px;left:12px;right:12px;height:1px;background:linear-gradient(to right,transparent,rgba(238,20,177,0.12),transparent)}
+        .mobile-order-card--pending{border-left-color:#f6e500}
+        .mobile-order-card--processing{border-left-color:#4c98b9}
+        .mobile-order-card--completed{border-left-color:#03904a}
+        .mobile-order-card--cancelled{border-left-color:var(--pink)}
+        .mobile-order-header{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:12px}
+        .mobile-order-code{font-family:'Barlow Condensed',sans-serif;font-size:15px;font-weight:800;letter-spacing:1px;text-transform:uppercase;color:#fff}
+        .mobile-order-phone{font-size:11px;color:#25d366;font-weight:600;margin-top:2px}
+        .mobile-order-row{display:flex;align-items:baseline;justify-content:space-between;padding:7px 0}
+        .mobile-order-label{font-size:9px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--gray);flex-shrink:0;margin-right:16px}
+        .mobile-order-value{font-size:12px;font-weight:600;color:#fff;text-align:right;line-height:1.4}
+        .mobile-order-footer{display:flex;align-items:center;justify-content:space-between;padding-top:12px;margin-top:8px;border-top:1px solid rgba(255,255,255,0.06);gap:8px}
+        .status-badge-mobile{display:inline-flex;align-items:center;gap:5px;font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;padding:5px 10px;border:1px solid;white-space:nowrap}
         .modal-overlay{position:fixed;inset:0;z-index:50;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,0.88);padding:24px}
         .modal-card{width:100%;max-width:440px;max-height:85vh;background:#111;border:1px solid rgba(255,255,255,0.1);position:relative;overflow:hidden;display:flex;flex-direction:column}
         .modal-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--pink);z-index:1}
@@ -135,42 +143,62 @@
         @media(max-width:768px){.orders-table{display:none}.mobile-cards{display:block!important}}
         @media(min-width:769px){.mobile-cards{display:none!important}}
         @media(max-width:640px){
-            .admin-nav-inner{padding:0 12px;height:56px}
-            .admin-main{padding:20px 12px}
+            .admin-nav-inner{padding:0 14px;height:56px}
+            .admin-main{padding:20px 10px}
             .admin-header{gap:14px;margin-bottom:24px}
             .admin-heading{font-size:24px}
             .admin-subheading{font-size:11px}
             .btn-red-admin{padding:12px 20px;font-size:12px;width:100%;justify-content:center}
-            .filter-bar{padding:12px}
-            .filter-form{flex-wrap:wrap}
+            .filter-bar{padding:10px 12px;flex-direction:column;gap:8px;align-items:stretch}
+            .filter-form{flex-wrap:wrap;max-width:100%}
             .filter-input-wrap{min-width:100%}
-            .filter-submit{flex:1}
-            .orders-table-wrap{margin:0 -12px;border-radius:0}
-            .mobile-order-card{padding:12px}
-            .mobile-order-footer{flex-wrap:wrap;gap:10px}
-            .mobile-order-footer .timeline-count{width:100%}
-            .admin-pagination{gap:2px;flex-wrap:wrap;margin-top:24px}
-            .admin-pagination a,.admin-pagination span{min-width:32px;height:32px;font-size:11px;padding:0 8px}
+            .filter-input{padding:10px 12px 10px 34px;font-size:13px}
+            .filter-submit{flex:1;font-size:12px;padding:10px 18px}
+            .filter-count{font-size:11px;text-align:center}
+            .orders-table-wrap{margin:0 -10px;border-radius:0}
+            .mobile-cards{display:flex;flex-direction:column;gap:10px}
+            .mobile-order-card{padding:16px 14px;background:#131313;border-left-width:4px;margin-bottom:0}
+            .mobile-order-card:not(:last-child)::after{bottom:-6px;left:14px;right:14px;background:linear-gradient(to right,transparent,rgba(238,20,177,0.15),transparent)}
+            .mobile-order-code{font-size:15px;letter-spacing:2px}
+            .mobile-order-phone{font-size:12px;margin-top:3px}
+            .mobile-order-header{margin-bottom:14px;gap:12px}
+            .mobile-order-row{padding:8px 0}
+            .mobile-order-label{font-size:10px;letter-spacing:2px;min-width:80px}
+            .mobile-order-value{font-size:13px;font-weight:600}
+            .mobile-order-footer{padding-top:12px;margin-top:10px;flex-wrap:wrap;gap:10px}
+            .mobile-order-footer .timeline-count{width:100%;font-size:11px}
+            .status-badge-mobile{font-size:10px;padding:6px 12px}
+            .action-manage{font-size:11px;padding:8px 16px;letter-spacing:2px;min-height:36px;align-items:center}
+            .action-delete{width:36px;height:36px}
+            .action-wa{width:36px;height:36px}
+            .admin-pagination{gap:3px;flex-wrap:wrap;margin-top:28px}
+            .admin-pagination a,.admin-pagination span{min-width:36px;height:36px;font-size:12px;padding:0 10px}
             .order-code{font-size:12px;letter-spacing:1px;padding:3px 8px}
             .order-customer-name{font-size:12px}
             .order-product{font-size:12px}
             .modal-card{max-width:100%;max-height:90vh;margin:0}
             .modal-header{padding:14px 16px}
             .modal-body{padding:12px 16px}
-            .modal-footer{padding:12px 16px}
+            .modal-footer{padding:12px 16px;flex-direction:column-reverse;gap:6px}
             .modal-title{font-size:17px}
+            .modal-btn-cancel{width:100%}
+            .modal-btn-submit{width:100%}
             .modal-field label{font-size:9px;letter-spacing:1.5px;margin-bottom:6px}
             .modal-field input{font-size:13px;padding:10px 14px}
             .modal-field select{font-size:13px;padding:10px 14px}
         }
         @media(max-width:400px){
-            .mobile-order-card{padding:10px}
-            .mobile-order-header{flex-direction:column;align-items:flex-start;gap:6px}
+            .mobile-order-card{padding:14px 12px;margin-bottom:0}
+            .mobile-order-card:not(:last-child)::after{bottom:-7px;left:10px;right:10px}
+            .mobile-order-header{flex-direction:column;align-items:flex-start;gap:8px}
+            .mobile-order-code{font-size:14px}
             .admin-header-label{font-size:9px;letter-spacing:2px}
             .admin-heading{font-size:20px}
-            .action-manage{font-size:10px;padding:5px 10px;letter-spacing:1px}
-            .action-delete{width:28px;height:28px}
-            .action-wa{width:28px;height:28px}
+            .action-manage{font-size:10px;padding:8px 12px;letter-spacing:1px}
+            .action-delete{width:34px;height:34px}
+            .action-wa{width:34px;height:34px}
+            .filter-bar{padding:8px 10px}
+            .status-badge-mobile{font-size:9px;padding:5px 10px}
         }
     </style>
 </head>
@@ -267,34 +295,61 @@
                     </tbody>
                 </table>
             </div>
-            <div class="mobile-cards">
+            <div class="mobile-cards" style="display:none;">
                 @foreach($orders as $order)
-                <div class="mobile-order-card">
+                <div class="mobile-order-card mobile-order-card--{{ strtolower($order->status) }}">
                     <div class="mobile-order-header">
-                        <span class="order-code">{{ $order->nomor_surat }}</span>
-                        @if($order->status === 'Pending')<span class="status-badge status-badge--pending">Menunggu</span>
-                        @elseif($order->status === 'Processing')<span class="status-badge status-badge--processing">Diproses</span>
-                        @elseif($order->status === 'Completed')<span class="status-badge status-badge--completed">Selesai</span>
-                        @elseif($order->status === 'Cancelled')<span class="status-badge status-badge--cancelled">Dibatalkan</span>
+                        <div style="min-width:0;">
+                            <div class="mobile-order-code" style="display:flex;align-items:center;gap:8px;">
+                                <span style="width:8px;height:8px;background:currentColor;border-radius:2px;flex-shrink:0;opacity:0.8;"></span>
+                                {{ $order->nomor_surat }}
+                            </div>
+                            @if($order->customer_phone)
+                                <div class="mobile-order-phone" style="display:flex;align-items:center;gap:5px;">
+                                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+                                    {{ $order->customer_phone }}
+                                </div>
+                            @endif
+                        </div>
+                        @if($order->status === 'Pending')<span class="status-badge-mobile" style="color:#f6e500;border-color:rgba(246,229,0,0.3);background:rgba(246,229,0,0.08)">Menunggu</span>
+                        @elseif($order->status === 'Processing')<span class="status-badge-mobile" style="color:#4c98b9;border-color:rgba(76,152,185,0.3);background:rgba(76,152,185,0.08)">Diproses</span>
+                        @elseif($order->status === 'Completed')<span class="status-badge-mobile" style="color:#03904a;border-color:rgba(3,144,74,0.3);background:rgba(3,144,74,0.08)">Selesai</span>
+                        @elseif($order->status === 'Cancelled')<span class="status-badge-mobile" style="color:var(--pink);border-color:rgba(238,20,177,0.3);background:rgba(238,20,177,0.08)">Batal</span>
                         @endif
                     </div>
-                    <div class="mobile-order-row"><div class="mobile-order-label">Pelanggan</div><div class="order-customer-name">{{ $order->customer_name }}</div></div>
-                    <div class="mobile-order-row"><div class="mobile-order-label">Produk / Jasa</div><div class="order-product">{{ $order->product_name }}</div></div>
+                    <div class="mobile-order-row" style="padding-top:4px;">
+                        <span class="mobile-order-label">Pelanggan</span>
+                        <span class="mobile-order-value">{{ $order->customer_name }}</span>
+                    </div>
+                    <div class="mobile-order-row">
+                        <span class="mobile-order-label">Produk</span>
+                        <span class="mobile-order-value">{{ $order->product_name }}</span>
+                    </div>
+                    @if($order->nomor_plat || $order->tipe_motor)
+                    <div class="mobile-order-row" style="border-bottom:1px solid rgba(255,255,255,0.04);padding-bottom:10px;">
+                        <span class="mobile-order-label">Motor</span>
+                        <span class="mobile-order-value">@if($order->tipe_motor){{ $order->tipe_motor }}@endif @if($order->nomor_plat) &middot; {{ $order->nomor_plat }}@endif</span>
+                    </div>
+                    @endif
+                    <div class="mobile-order-row" style="padding-top:4px;">
+                        <span class="mobile-order-label">Tanggal</span>
+                        <span class="mobile-order-value" style="font-size:11px;color:#666;">{{ $order->created_at->format('d/m/Y H:i') }}</span>
+                    </div>
                     <div class="mobile-order-footer">
-                        <span class="timeline-count"><span class="timeline-count-dot"></span>{{ $order->timeline_count }} Update</span>
-                        <div style="display:flex;gap:8px;align-items:center;">
+                        <span class="timeline-count"><span class="timeline-count-dot"></span>{{ $order->timeline_count }} Progress</span>
+                        <div style="display:flex;gap:6px;align-items:center;">
                             @if($order->customer_phone)
                                 @php
                                     $waPhone = preg_replace('/[^0-9]/', '', $order->customer_phone);
                                     if (str_starts_with($waPhone, '0')) $waPhone = '62' . substr($waPhone, 1);
-                                    $waMsg = urlencode("Halo *{$order->customer_name}*, pesanan Anda telah terdaftar.\n\nNomor Surat: *{$order->nomor_surat}*\nProduk: {$order->product_name}\n\nGunakan nomor surat atau nomor HP Anda untuk melacak progres pengerjaan di website kami.");
+                                    $waMsg = urlencode("Halo Kak *{$order->customer_name}*, pesanan Anda telah terdaftar.\n\nNomor Surat: *{$order->nomor_surat}*\nProduk: {$order->product_name}\n\nGunakan nomor surat atau nomor HP Anda untuk melacak progres pengerjaan di website kami:\nhttps://suryapainting18indonesia.com\n\nTerima kasih telah mempercayakan pengerjaan kepada SuryaPainting18 🙏");
                                 @endphp
-                                <a href="https://wa.me/{{ $waPhone }}?text={{ $waMsg }}" target="_blank" rel="noopener" class="action-wa" title="Kirim kode via WA" style="width:30px;height:30px;">
-                                    <svg viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+                                <a href="https://wa.me/{{ $waPhone }}?text={{ $waMsg }}" target="_blank" rel="noopener" class="action-wa" title="Kirim kode via WhatsApp" style="width:36px;height:36px;">
+                                    <svg style="width:15px;height:15px" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
                                 </a>
                             @endif
-                            <a href="{{ route('admin.orders.show', $order->id) }}" class="action-manage" style="padding:6px 12px;">Kelola</a>
-                            <form action="{{ route('admin.orders.delete', $order->id) }}" method="POST" class="inline" onsubmit="return confirm('Hapus pesanan ini?')">@csrf @method('DELETE')<button type="submit" class="action-delete" style="width:30px;height:30px;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg></button></form>
+                            <a href="{{ route('admin.orders.show', $order->id) }}" class="action-manage">Kelola</a>
+                            <form action="{{ route('admin.orders.delete', $order->id) }}" method="POST" onsubmit="return confirm('Hapus pesanan ini?')">@csrf @method('DELETE')<button type="submit" class="action-delete"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg></button></form>
                         </div>
                     </div>
                 </div>
