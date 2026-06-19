@@ -340,6 +340,16 @@
                             <input type="text" name="title" id="title" class="admin-input" placeholder="Contoh: Proses Produksi Awal, QC Selesai" required>
                         </div>
                         <div class="admin-field">
+                            <label for="status" class="form-label">Status Pesanan</label>
+                            <select name="status" id="status" class="admin-select">
+                                <option value="">— Tidak berubah —</option>
+                                <option value="Pending" @selected($order->status === 'Pending')>Menunggu (Pending)</option>
+                                <option value="Processing" @selected($order->status === 'Processing')>Diproses (Processing)</option>
+                                <option value="Completed" @selected($order->status === 'Completed')>Selesai (Completed)</option>
+                                <option value="Cancelled" @selected($order->status === 'Cancelled')>Dibatalkan (Cancelled)</option>
+                            </select>
+                        </div>
+                        <div class="admin-field">
                             <label for="description" class="form-label">Keterangan / Detail</label>
                             <textarea name="description" id="description" rows="3" class="admin-input" placeholder="Tuliskan catatan progres produk secara detail di sini..." style="resize:vertical;min-height:80px;"></textarea>
                         </div>

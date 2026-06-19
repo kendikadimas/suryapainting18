@@ -218,8 +218,14 @@ class AdminController extends Controller
         $validated = $request->validate([
             'title' => 'required|string|max:255',
             'description' => 'nullable|string',
+            'status' => 'nullable|string|in:Pending,Processing,Completed,Cancelled',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp,heic,heif|max:10240',
         ]);
+
+        // Update order status if a new one is provided
+        if (!empty($validated['status'])) {
+            $order->update(['status' => $validated['status']]);
+        }
 
         $imagePath = null;
         if ($request->hasFile('image')) {
