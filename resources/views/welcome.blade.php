@@ -1972,9 +1972,7 @@
             <div class="layanan-cards">
                 <a href="#kontak" class="layanan-card" x-data="layananSlider(['/assets/velg.jpeg', '/assets/velg2.jpeg', '/assets/velg3.jpeg'])" style="text-decoration:none;color:inherit;display:block;">
                     <div class="layanan-card-img">
-                        <template x-for="(img, i) in images" :key="i">
-                            <img :src="img" alt="Velg Motor" loading="lazy" x-show="current === i" :style="current === i ? 'opacity:1; z-index:2' : 'opacity:0; z-index:1'">
-                        </template>
+                        <img :src="images[current]" alt="Velg Motor" loading="lazy">
                     </div>
                     <div class="layanan-card-dots">
                         <template x-for="(img, i) in images" :key="i">
@@ -1990,9 +1988,7 @@
                 </a>
                 <a href="#kontak" class="layanan-card" x-data="layananSlider(['/assets/body.jpeg', '/assets/produk1.jpeg'])" style="text-decoration:none;color:inherit;display:block;">
                     <div class="layanan-card-img">
-                        <template x-for="(img, i) in images" :key="i">
-                            <img :src="img" alt="Body Motor" loading="lazy" x-show="current === i" :style="current === i ? 'opacity:1; z-index:2' : 'opacity:0; z-index:1'">
-                        </template>
+                        <img :src="images[current]" alt="Body Motor" loading="lazy">
                     </div>
                     <div class="layanan-card-dots">
                         <template x-for="(img, i) in images" :key="i">
@@ -2008,9 +2004,7 @@
                 </a>
                 <a href="#kontak" class="layanan-card" x-data="layananSlider(['/assets/fairing.jpeg', '/assets/produk3.jpeg'])" style="text-decoration:none;color:inherit;display:block;">
                     <div class="layanan-card-img">
-                        <template x-for="(img, i) in images" :key="i">
-                            <img :src="img" alt="Fairing" loading="lazy" x-show="current === i" :style="current === i ? 'opacity:1; z-index:2' : 'opacity:0; z-index:1'">
-                        </template>
+                        <img :src="images[current]" alt="Fairing" loading="lazy">
                     </div>
                     <div class="layanan-card-dots">
                         <template x-for="(img, i) in images" :key="i">
@@ -2026,9 +2020,7 @@
                 </a>
                 <a href="#kontak" class="layanan-card" x-data="layananSlider(['/assets/carbon1.jpeg', '/assets/carbon2.jpeg', '/assets/carbon3.jpeg', '/assets/carbon4.jpeg'])" style="text-decoration:none;color:inherit;display:block;">
                     <div class="layanan-card-img">
-                        <template x-for="(img, i) in images" :key="i">
-                            <img :src="img" alt="Carbon WTP" loading="lazy" x-show="current === i" :style="current === i ? 'opacity:1; z-index:2' : 'opacity:0; z-index:1'">
-                        </template>
+                        <img :src="images[current]" alt="Carbon WTP" loading="lazy">
                     </div>
                     <div class="layanan-card-dots">
                         <template x-for="(img, i) in images" :key="i">
