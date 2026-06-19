@@ -58,6 +58,11 @@
         .empty-state{padding:60px 24px;text-align:center}
         .empty-state svg{width:40px;height:40px;color:#444;margin-bottom:16px}
         .empty-state p{font-size:13px;color:#555}
+        .sidebar-trigger{display:none;background:transparent;border:none;color:rgba(255,255,255,0.5);cursor:pointer;padding:6px;align-items:center}
+        .sidebar-trigger:hover{color:#fff}
+        .sidebar-link{display:flex;align-items:center;gap:12px;padding:11px 14px;color:rgba(255,255,255,0.55);text-decoration:none;font-family:'Inter',sans-serif;font-size:13px;font-weight:500;border-radius:8px;border-left:3px solid transparent;transition:all 0.15s}
+        .sidebar-link:hover{color:#fff;background:rgba(255,255,255,0.04)}
+        @media(max-width:640px){.sidebar-trigger{display:flex}.admin-nav-desktop{display:none!important}.admin-nav-inner{gap:8px}}
         @media(max-width:500px){.col-date{display:none}}
         @media(max-width:640px){
             .admin-table td:first-child,.admin-table th:first-child{padding-left:12px}
@@ -72,23 +77,8 @@
         }
     </style>
 </head>
-<body>
-    <nav class="admin-nav">
-        <div class="admin-nav-inner">
-            <a href="{{ route('admin.dashboard') }}" class="admin-nav-brand">
-                <img src="/assets/01-logo-suryapainting18.png" alt="SuryaPainting18" style="height:32px;width:auto;">
-            </a>
-            <div>
-                <a href="{{ route('admin.add-admin') }}" class="btn-ghost-admin" style="font-size:10px;padding:6px 12px;letter-spacing:1.5px;">
-                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><line x1="20" y1="8" x2="20" y2="14"/><line x1="23" y1="11" x2="17" y2="11"/></svg>
-                </a>
-                <a href="{{ route('admin.dashboard') }}" class="btn-ghost-admin">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="m12 19-7-7 7-7"/><path d="M19 12H5"/></svg>
-                    Dashboard
-                </a>
-            </div>
-        </div>
-    </nav>
+<body x-data="{ sidebarOpen: false }">
+    @include('admin.partials.navbar')
 
     <main class="admin-main">
         <div class="page-header">

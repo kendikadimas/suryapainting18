@@ -102,6 +102,10 @@
         .status-form-row{display:flex;gap:8px}
         .status-form-field{flex:1;min-width:0}
         @media(max-width:640px){.status-form-row{flex-direction:column}}
+        .sidebar-trigger{display:none;background:transparent;border:none;color:rgba(255,255,255,0.5);cursor:pointer;padding:6px;align-items:center}
+        .sidebar-trigger:hover{color:#fff}
+        .sidebar-link{display:flex;align-items:center;gap:12px;padding:11px 14px;color:rgba(255,255,255,0.55);text-decoration:none;font-family:'Inter',sans-serif;font-size:13px;font-weight:500;border-radius:8px;border-left:3px solid transparent;transition:all 0.15s}
+        .sidebar-link:hover{color:#fff;background:rgba(255,255,255,0.04)}
         .lightbox-overlay{position:fixed;inset:0;z-index:200;background:rgba(0,0,0,0.96);display:flex;align-items:center;justify-content:center;padding:16px}
         .lightbox-close{position:absolute;top:20px;right:24px;background:none;border:none;color:rgba(255,255,255,0.6);font-size:36px;cursor:pointer;line-height:1;transition:color 0.2s}
         .lightbox-close:hover{color:#fff}
@@ -114,7 +118,9 @@
         .info-stack{gap:24px}
         @media(min-width:1024px){.grid-layout{grid-template-columns:5fr 7fr;gap:32px}.info-stack{gap:32px}}
         @media(max-width:640px){
-            .admin-nav-inner{padding:0 14px;height:56px}
+            .sidebar-trigger{display:flex}
+            .admin-nav-desktop{display:none!important}
+            .admin-nav-inner{padding:0 14px;height:56px;gap:8px}
             .admin-main{padding:20px 16px}
             .page-header{margin-bottom:24px}
             .page-heading{font-size:22px}
@@ -170,25 +176,7 @@
     </style>
 </head>
 <body x-data="orderManager()">
-    <nav class="admin-nav">
-        <div class="admin-nav-inner">
-            <a href="{{ route('admin.dashboard') }}" class="admin-nav-brand">
-                <img src="/assets/01-logo-suryapainting18.png" alt="SuryaPainting18" style="height:32px;width:auto;">
-            </a>
-            <div style="display:flex;align-items:center;gap:12px;">
-                <a href="{{ route('admin.list-admin') }}" class="btn-ghost-admin" style="font-size:10px;padding:6px 12px;letter-spacing:1.5px;">
-                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-                </a>
-                <a href="{{ route('admin.add-admin') }}" class="btn-ghost-admin" style="font-size:10px;padding:6px 12px;letter-spacing:1.5px;">
-                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><line x1="20" y1="8" x2="20" y2="14"/><line x1="23" y1="11" x2="17" y2="11"/></svg>
-                </a>
-                <a href="{{ route('admin.dashboard') }}" class="btn-ghost-admin">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m12 19-7-7 7-7"/><path d="M19 12H5"/></svg>
-                    Kembali ke Dashboard
-                </a>
-            </div>
-        </div>
-    </nav>
+    @include('admin.partials.navbar')
 
     <main class="admin-main">
         <div class="page-header">
@@ -492,6 +480,7 @@
                 lightboxImg:'',
                 lightboxTitle:'',
                 editModalOpen:false,
+                sidebarOpen:false,
                 previewImage(e){
                     const f=e.target.files[0];
                     if(f){const r=new FileReader();r.onload=(ev)=>{this.imagePreview=ev.target.result};r.readAsDataURL(f)}

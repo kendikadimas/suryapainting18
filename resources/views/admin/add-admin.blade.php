@@ -52,22 +52,16 @@
         .form-input::placeholder{color:#444;font-weight:400}
         .btn-red-admin{display:inline-flex;align-items:center;justify-content:center;gap:10px;width:100%;background:var(--pink);color:#fff;font-family:'Barlow Condensed',sans-serif;font-size:14px;font-weight:800;font-style:italic;letter-spacing:2.5px;text-transform:uppercase;padding:15px 28px;border:2px solid var(--pink);cursor:pointer;transition:background 0.25s,transform 0.2s}
         .btn-red-admin:hover{background:var(--pink-dark);border-color:var(--pink-dark);transform:translateY(-1px)}
+        .sidebar-trigger{display:none;background:transparent;border:none;color:rgba(255,255,255,0.5);cursor:pointer;padding:6px;align-items:center}
+        .sidebar-trigger:hover{color:#fff}
+        .sidebar-link{display:flex;align-items:center;gap:12px;padding:11px 14px;color:rgba(255,255,255,0.55);text-decoration:none;font-family:'Inter',sans-serif;font-size:13px;font-weight:500;border-radius:8px;border-left:3px solid transparent;transition:all 0.15s}
+        .sidebar-link:hover{color:#fff;background:rgba(255,255,255,0.04)}
+        @media(max-width:640px){.sidebar-trigger{display:flex}.admin-nav-desktop{display:none!important}.admin-nav-inner{gap:8px}}
         @media(max-width:480px){.form-input{padding:11px 14px 11px 38px;font-size:13px}.btn-red-admin{padding:13px 24px;font-size:13px}}
     </style>
 </head>
-<body>
-    <nav class="admin-nav">
-        <div class="admin-nav-inner">
-            <a href="{{ route('admin.dashboard') }}" class="admin-nav-brand">
-                <img src="/assets/01-logo-suryapainting18.png" alt="SuryaPainting18" style="height:32px;width:auto;">
-                <span class="admin-nav-badge">Panel Admin</span>
-            </a>
-            <a href="{{ route('admin.dashboard') }}" class="btn-ghost-admin">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m12 19-7-7 7-7"/><path d="M19 12H5"/></svg>
-                Kembali ke Dashboard
-            </a>
-        </div>
-    </nav>
+<body x-data="{ sidebarOpen: false }">
+    @include('admin.partials.navbar')
 
     <main class="admin-main">
         <div class="page-header">
