@@ -152,9 +152,11 @@ class AdminController extends Controller
 
         if ($search) {
             $query->where(function($q) use ($search) {
-                $q->where('order_code', 'LIKE', "%{$search}%")
+                $q->where('nomor_surat', 'LIKE', "%{$search}%")
                   ->orWhere('customer_name', 'LIKE', "%{$search}%")
-                  ->orWhere('product_name', 'LIKE', "%{$search}%");
+                  ->orWhere('customer_phone', 'LIKE', "%{$search}%")
+                  ->orWhere('product_name', 'LIKE', "%{$search}%")
+                  ->orWhere('nomor_plat', 'LIKE', "%{$search}%");
             });
         }
 
@@ -167,14 +169,17 @@ class AdminController extends Controller
     public function storeOrder(Request $request)
     {
         $validated = $request->validate([
+            'nomor_surat' => 'required|string|max:100|unique:orders,nomor_surat',
             'customer_name' => 'required|string|max:150',
             'customer_phone' => 'nullable|string|max:20',
+            'nomor_plat' => 'nullable|string|max:50',
+            'tipe_motor' => 'nullable|string|in:Matic,Kopling',
+            'detail_motor' => 'nullable|string|max:500',
             'product_name' => 'required|string|max:255',
         ]);
 
         $order = Order::create($validated);
 
-        // Add an initial timeline item automatically
         OrderTimeline::create([
             'order_id' => $order->id,
             'title' => 'Pesanan Dibuat',
@@ -182,7 +187,7 @@ class AdminController extends Controller
         ]);
 
         return redirect()->route('admin.orders.show', $order->id)
-            ->with('success', "Pesanan baru berhasil dibuat dengan Kode: {$order->order_code}");
+            ->with('success', "Pesanan baru berhasil dibuat dengan Nomor Surat: {$order->nomor_surat}");
     }
 
     // Show order details and edit timeline page

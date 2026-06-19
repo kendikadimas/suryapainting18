@@ -8,35 +8,33 @@ use App\Models\Order;
 
 class TrackController extends Controller
 {
-    // Render public landing page
     public function index()
     {
         return view('welcome');
     }
 
-    // Search and return order progress timeline (AJAX)
     public function search(Request $request)
     {
-        $code = trim($request->input('order_code'));
-        
-        if (empty($code)) {
+        $query = trim($request->input('order_code'));
+
+        if (empty($query)) {
             return response()->json([
                 'success' => false,
-                'message' => 'Masukkan kode pesanan terlebih dahulu.'
+                'message' => 'Masukkan nomor surat atau nomor HP terlebih dahulu.'
             ], 400);
         }
 
-        // Normalize input and match order code case-insensitively
-        $code = strtoupper($code);
-
         $order = Order::with(['timeline' => function($q) {
-            $q->orderBy('created_at', 'asc'); // Chronological order
-        }])->whereRaw('UPPER(order_code) = ?', [$code])->first();
+            $q->orderBy('created_at', 'asc');
+        }])->where(function($q) use ($query) {
+            $q->where('nomor_surat', 'LIKE', $query)
+              ->orWhere('customer_phone', 'LIKE', $query);
+        })->first();
 
         if (!$order) {
             return response()->json([
                 'success' => false,
-                'message' => 'Kode pesanan tidak ditemukan. Silakan periksa kembali kode Anda.'
+                'message' => 'Pesanan tidak ditemukan. Periksa kembali nomor surat atau nomor HP Anda.'
             ], 404);
         }
 

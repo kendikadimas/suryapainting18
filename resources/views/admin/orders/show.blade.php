@@ -160,7 +160,7 @@
                 <div class="page-header-label"><span class="page-header-label-line"></span>Kelola Progres</div>
                 <h1 class="page-heading">Kelola Progres Pesanan</h1>
                 <div style="margin-top:10px;display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
-                    <span class="page-heading-code">{{ $order->order_code }}</span>
+                    <span class="page-heading-code">{{ $order->nomor_surat }}</span>
                     @if($order->status === 'Pending')<span class="status-badge status-badge--pending">Menunggu</span>
                     @elseif($order->status === 'Processing')<span class="status-badge status-badge--processing">Diproses</span>
                     @elseif($order->status === 'Completed')<span class="status-badge status-badge--completed">Selesai</span>
@@ -196,6 +196,10 @@
                 <div class="admin-card">
                     <div class="admin-card-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>Informasi Pesanan</div>
                     <div class="admin-field admin-field-divider">
+                        <span class="admin-field-label">Nomor Surat</span>
+                        <span class="admin-field-value">{{ $order->nomor_surat }}</span>
+                    </div>
+                    <div class="admin-field admin-field-divider">
                         <span class="admin-field-label">Nama Pelanggan</span>
                         <span class="admin-field-value">{{ $order->customer_name }}</span>
                     </div>
@@ -205,7 +209,7 @@
                             @php
                                 $waPhone = preg_replace('/[^0-9]/', '', $order->customer_phone);
                                 if (str_starts_with($waPhone, '0')) $waPhone = '62' . substr($waPhone, 1);
-                                $waMsg = urlencode("Halo Kak *{$order->customer_name}*, pesanan Anda telah terdaftar.\n\nKode Pesanan: *{$order->order_code}*\nProduk: {$order->product_name}\n\nGunakan kode tersebut untuk melacak progres pengerjaan di website kami:\nhttps://suryapainting18indonesia.com\n\nTerima kasih telah mempercayakan pengerjaan kepada SuryaPainting18 🙏");
+                                $waMsg = urlencode("Halo Kak *{$order->customer_name}*, pesanan Anda telah terdaftar.\n\nNomor Surat: *{$order->nomor_surat}*\nProduk: {$order->product_name}\n\nGunakan nomor surat atau nomor HP Anda untuk melacak progres pengerjaan di website kami:\nhttps://suryapainting18indonesia.com\n\nTerima kasih telah mempercayakan pengerjaan kepada SuryaPainting18 🙏");
                             @endphp
                             <div style="display:flex;align-items:center;gap:12px;margin-top:4px;">
                                 <span class="admin-field-value" style="color:#25d366;">{{ $order->customer_phone }}</span>
@@ -217,6 +221,30 @@
                             </div>
                         @else
                             <span class="admin-field-value" style="color:#555;font-weight:400;font-size:13px;">Tidak ada nomor HP</span>
+                        @endif
+                    </div>
+                    <div class="admin-field admin-field-divider">
+                        <span class="admin-field-label">Nomor Plat Kendaraan</span>
+                        @if($order->nomor_plat)
+                            <span class="admin-field-value">{{ $order->nomor_plat }}</span>
+                        @else
+                            <span class="admin-field-value" style="color:#555;font-weight:400;font-size:13px;">Tidak ada</span>
+                        @endif
+                    </div>
+                    <div class="admin-field admin-field-divider">
+                        <span class="admin-field-label">Tipe Motor</span>
+                        @if($order->tipe_motor)
+                            <span class="admin-field-value">{{ $order->tipe_motor }}</span>
+                        @else
+                            <span class="admin-field-value" style="color:#555;font-weight:400;font-size:13px;">Tidak ada</span>
+                        @endif
+                    </div>
+                    <div class="admin-field admin-field-divider">
+                        <span class="admin-field-label">Detail Motor</span>
+                        @if($order->detail_motor)
+                            <span class="admin-field-value">{{ $order->detail_motor }}</span>
+                        @else
+                            <span class="admin-field-value" style="color:#555;font-weight:400;font-size:13px;">Tidak ada</span>
                         @endif
                     </div>
                     <div class="admin-field admin-field-divider">

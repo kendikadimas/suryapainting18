@@ -115,11 +115,11 @@
             left: 0;
             right: 0;
             z-index: 100;
+            background: rgba(10,10,10,0.97);
+            backdrop-filter: blur(20px);
             transition: background 0.3s, box-shadow 0.3s;
         }
         #main-header.scrolled {
-            background: rgba(10,10,10,0.97);
-            backdrop-filter: blur(20px);
             box-shadow: 0 1px 0 rgba(255,255,255,0.06);
         }
 
@@ -735,7 +735,8 @@
             grid-template-columns: repeat(2, 1fr);
             gap: 4px;
         }
-        @media (min-width: 768px) { .layanan-cards { grid-template-columns: repeat(3, 1fr); } }
+        @media (min-width: 768px) { .layanan-cards { grid-template-columns: repeat(2, 1fr); } }
+        @media (min-width: 1024px) { .layanan-cards { grid-template-columns: repeat(4, 1fr); } }
 
         .layanan-card {
             position: relative;
@@ -749,16 +750,15 @@
             position: absolute;
             inset: 0;
             background: linear-gradient(160deg, #2a1a1a 0%, #0d0d0d 100%);
-            display: flex;
-            align-items: center;
-            justify-content: center;
             overflow: hidden;
         }
         .layanan-card-img img {
+            position: absolute;
+            inset: 0;
             width: 100%;
             height: 100%;
             object-fit: cover;
-            transition: transform 0.7s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            transition: transform 0.7s cubic-bezier(0.25, 0.46, 0.45, 0.94), opacity 0.5s;
             display: block;
         }
         .layanan-card:hover .layanan-card-img img { transform: scale(1.08); }
@@ -823,6 +823,25 @@
             transition: width 0.2s;
         }
         .layanan-card:hover .layanan-card-learn::before { width: 32px; }
+
+        .layanan-card-dots {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            z-index: 5;
+            display: flex;
+            gap: 6px;
+        }
+        .layanan-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.4);
+            transition: background 0.2s;
+        }
+        .layanan-dot--active {
+            background: var(--red);
+        }
 
         /* ===== GALERI ===== */
         #galeri {
@@ -1951,9 +1970,16 @@
 
             <!-- Cards -->
             <div class="layanan-cards">
-                <a href="#kontak" class="layanan-card" style="text-decoration:none;color:inherit;display:block;">
+                <a href="#kontak" class="layanan-card" x-data="layananSlider(['/assets/velg.jpeg', '/assets/velg2.jpeg', '/assets/velg3.jpeg'])" style="text-decoration:none;color:inherit;display:block;">
                     <div class="layanan-card-img">
-                        <img src="/assets/velg4.jpeg" alt="Velg Motor" loading="lazy">
+                        <template x-for="(img, i) in images" :key="i">
+                            <img :src="img" alt="Velg Motor" loading="lazy" x-show="current === i" :style="current === i ? 'opacity:1; z-index:2' : 'opacity:0; z-index:1'">
+                        </template>
+                    </div>
+                    <div class="layanan-card-dots">
+                        <template x-for="(img, i) in images" :key="i">
+                            <span class="layanan-dot" :class="{ 'layanan-dot--active': current === i }"></span>
+                        </template>
                     </div>
                     <div class="layanan-card-scrim"></div>
                     <div class="layanan-card-body">
@@ -1962,9 +1988,16 @@
                         <span class="layanan-card-learn">Tanya Harga</span>
                     </div>
                 </a>
-                <a href="#kontak" class="layanan-card" style="text-decoration:none;color:inherit;display:block;">
+                <a href="#kontak" class="layanan-card" x-data="layananSlider(['/assets/body.jpeg', '/assets/produk1.jpeg'])" style="text-decoration:none;color:inherit;display:block;">
                     <div class="layanan-card-img">
-                        <img src="/assets/body.jpeg" alt="Body Motor" loading="lazy">
+                        <template x-for="(img, i) in images" :key="i">
+                            <img :src="img" alt="Body Motor" loading="lazy" x-show="current === i" :style="current === i ? 'opacity:1; z-index:2' : 'opacity:0; z-index:1'">
+                        </template>
+                    </div>
+                    <div class="layanan-card-dots">
+                        <template x-for="(img, i) in images" :key="i">
+                            <span class="layanan-dot" :class="{ 'layanan-dot--active': current === i }"></span>
+                        </template>
                     </div>
                     <div class="layanan-card-scrim"></div>
                     <div class="layanan-card-body">
@@ -1973,14 +2006,39 @@
                         <span class="layanan-card-learn">Tanya Harga</span>
                     </div>
                 </a>
-                <a href="#kontak" class="layanan-card" style="text-decoration:none;color:inherit;display:block;">
+                <a href="#kontak" class="layanan-card" x-data="layananSlider(['/assets/fairing.jpeg', '/assets/produk3.jpeg'])" style="text-decoration:none;color:inherit;display:block;">
                     <div class="layanan-card-img">
-                        <img src="/assets/fairing.jpeg" alt="Fairing" loading="lazy">
+                        <template x-for="(img, i) in images" :key="i">
+                            <img :src="img" alt="Fairing" loading="lazy" x-show="current === i" :style="current === i ? 'opacity:1; z-index:2' : 'opacity:0; z-index:1'">
+                        </template>
+                    </div>
+                    <div class="layanan-card-dots">
+                        <template x-for="(img, i) in images" :key="i">
+                            <span class="layanan-dot" :class="{ 'layanan-dot--active': current === i }"></span>
+                        </template>
                     </div>
                     <div class="layanan-card-scrim"></div>
                     <div class="layanan-card-body">
                         <h3>Fairing</h3>
                         <p>Cat fairing dengan presisi tinggi, warna konsisten, dan permukaan mulus tanpa noda.</p>
+                        <span class="layanan-card-learn">Tanya Harga</span>
+                    </div>
+                </a>
+                <a href="#kontak" class="layanan-card" x-data="layananSlider(['/assets/carbon1.jpeg', '/assets/carbon2.jpeg', '/assets/carbon3.jpeg', '/assets/carbon4.jpeg'])" style="text-decoration:none;color:inherit;display:block;">
+                    <div class="layanan-card-img">
+                        <template x-for="(img, i) in images" :key="i">
+                            <img :src="img" alt="Carbon WTP" loading="lazy" x-show="current === i" :style="current === i ? 'opacity:1; z-index:2' : 'opacity:0; z-index:1'">
+                        </template>
+                    </div>
+                    <div class="layanan-card-dots">
+                        <template x-for="(img, i) in images" :key="i">
+                            <span class="layanan-dot" :class="{ 'layanan-dot--active': current === i }"></span>
+                        </template>
+                    </div>
+                    <div class="layanan-card-scrim"></div>
+                    <div class="layanan-card-body">
+                        <h3>Carbon WTP</h3>
+                        <p>Finishing carbon WTP premium dengan tampilan serat karbon yang tajam, mengkilap, dan elegan untuk motor kesayanganmu.</p>
                         <span class="layanan-card-learn">Tanya Harga</span>
                     </div>
                 </a>
@@ -2010,15 +2068,6 @@
                 </button>
                 <div class="galeri-track" x-ref="track">
                     <button type="button" class="galeri-item"
-                            @click="openLightbox('/assets/body.jpeg', 'Hasil Repaint — Body Motor')">
-                        <img src="/assets/body.jpeg" alt="Hasil repaint body motor SuryaPainting18" loading="lazy">
-                        <div class="galeri-overlay"></div>
-                        <div class="galeri-caption">
-                            <span class="label-tag">Body</span>
-                            <h3>Repaint Body Motor</h3>
-                        </div>
-                    </button>
-                    <button type="button" class="galeri-item"
                             @click="openLightbox('/assets/velg.jpeg', 'Hasil Repaint — Velg Motor')">
                         <img src="/assets/velg.jpeg" alt="Hasil repaint velg motor SuryaPainting18" loading="lazy">
                         <div class="galeri-overlay"></div>
@@ -2028,39 +2077,21 @@
                         </div>
                     </button>
                     <button type="button" class="galeri-item"
-                            @click="openLightbox('/assets/velg2.jpeg', 'Hasil Repaint — Velg Motor')">
-                        <img src="/assets/velg2.jpeg" alt="Hasil repaint velg motor SuryaPainting18" loading="lazy">
+                            @click="openLightbox('/assets/carbon2.jpeg', 'Carbon WTP — Hasil 2')">
+                        <img src="/assets/carbon2.jpeg" alt="Hasil Carbon WTP SuryaPainting18" loading="lazy">
                         <div class="galeri-overlay"></div>
                         <div class="galeri-caption">
-                            <span class="label-tag">Velg</span>
-                            <h3>Repaint Velg Custom 2</h3>
+                            <span class="label-tag">Carbon WTP</span>
+                            <h3>Carbon WTP 2</h3>
                         </div>
                     </button>
                     <button type="button" class="galeri-item"
-                            @click="openLightbox('/assets/fairing.jpeg', 'Hasil Repaint — Fairing Motor')">
-                        <img src="/assets/fairing.jpeg" alt="Hasil repaint fairing motor SuryaPainting18" loading="lazy">
+                            @click="openLightbox('/assets/body.jpeg', 'Hasil Repaint — Body Motor')">
+                        <img src="/assets/body.jpeg" alt="Hasil repaint body motor SuryaPainting18" loading="lazy">
                         <div class="galeri-overlay"></div>
                         <div class="galeri-caption">
-                            <span class="label-tag">Fairing</span>
-                            <h3>Repaint Fairing Motor</h3>
-                        </div>
-                    </button>
-                    <button type="button" class="galeri-item"
-                            @click="openLightbox('/assets/velg3.jpeg', 'Hasil Repaint — Velg Motor')">
-                        <img src="/assets/velg3.jpeg" alt="Hasil repaint velg motor SuryaPainting18" loading="lazy">
-                        <div class="galeri-overlay"></div>
-                        <div class="galeri-caption">
-                            <span class="label-tag">Velg</span>
-                            <h3>Repaint Velg Custom 3</h3>
-                        </div>
-                    </button>
-                    <button type="button" class="galeri-item"
-                            @click="openLightbox('/assets/velg4.jpeg', 'Hasil Repaint — Velg Motor')">
-                        <img src="/assets/velg4.jpeg" alt="Hasil repaint velg motor SuryaPainting18" loading="lazy">
-                        <div class="galeri-overlay"></div>
-                        <div class="galeri-caption">
-                            <span class="label-tag">Velg</span>
-                            <h3>Repaint Velg Custom 4</h3>
+                            <span class="label-tag">Body</span>
+                            <h3>Repaint Body Motor</h3>
                         </div>
                     </button>
                     <button type="button" class="galeri-item"
@@ -2073,12 +2104,30 @@
                         </div>
                     </button>
                     <button type="button" class="galeri-item"
-                            @click="openLightbox('/assets/produk2.jpeg', 'Hasil Repaint — Box CVT')">
-                        <img src="/assets/produk2.jpeg" alt="Hasil repaint box CVT SuryaPainting18" loading="lazy">
+                            @click="openLightbox('/assets/fairing.jpeg', 'Hasil Repaint — Fairing Motor')">
+                        <img src="/assets/fairing.jpeg" alt="Hasil repaint fairing motor SuryaPainting18" loading="lazy">
                         <div class="galeri-overlay"></div>
                         <div class="galeri-caption">
-                            <span class="label-tag">Body</span>
-                            <h3>Repaint Box CVT</h3>
+                            <span class="label-tag">Fairing</span>
+                            <h3>Repaint Fairing Motor</h3>
+                        </div>
+                    </button>
+                    <button type="button" class="galeri-item"
+                            @click="openLightbox('/assets/carbon4.jpeg', 'Carbon WTP — Hasil 4')">
+                        <img src="/assets/carbon4.jpeg" alt="Hasil Carbon WTP SuryaPainting18" loading="lazy">
+                        <div class="galeri-overlay"></div>
+                        <div class="galeri-caption">
+                            <span class="label-tag">Carbon WTP</span>
+                            <h3>Carbon WTP 4</h3>
+                        </div>
+                    </button>
+                    <button type="button" class="galeri-item"
+                            @click="openLightbox('/assets/velg2.jpeg', 'Hasil Repaint — Velg Motor')">
+                        <img src="/assets/velg2.jpeg" alt="Hasil repaint velg motor SuryaPainting18" loading="lazy">
+                        <div class="galeri-overlay"></div>
+                        <div class="galeri-caption">
+                            <span class="label-tag">Velg</span>
+                            <h3>Repaint Velg Custom 2</h3>
                         </div>
                     </button>
                     <button type="button" class="galeri-item"
@@ -2088,6 +2137,51 @@
                         <div class="galeri-caption">
                             <span class="label-tag">Fairing</span>
                             <h3>Repaint Fairing</h3>
+                        </div>
+                    </button>
+                    <button type="button" class="galeri-item"
+                            @click="openLightbox('/assets/carbon1.jpeg', 'Carbon WTP — Hasil 1')">
+                        <img src="/assets/carbon1.jpeg" alt="Hasil Carbon WTP SuryaPainting18" loading="lazy">
+                        <div class="galeri-overlay"></div>
+                        <div class="galeri-caption">
+                            <span class="label-tag">Carbon WTP</span>
+                            <h3>Carbon WTP 1</h3>
+                        </div>
+                    </button>
+                    <button type="button" class="galeri-item"
+                            @click="openLightbox('/assets/velg3.jpeg', 'Hasil Repaint — Velg Motor')">
+                        <img src="/assets/velg3.jpeg" alt="Hasil repaint velg motor SuryaPainting18" loading="lazy">
+                        <div class="galeri-overlay"></div>
+                        <div class="galeri-caption">
+                            <span class="label-tag">Velg</span>
+                            <h3>Repaint Velg Custom 3</h3>
+                        </div>
+                    </button>
+                    <button type="button" class="galeri-item"
+                            @click="openLightbox('/assets/produk2.jpeg', 'Hasil Repaint — Box CVT')">
+                        <img src="/assets/produk2.jpeg" alt="Hasil repaint box CVT SuryaPainting18" loading="lazy">
+                        <div class="galeri-overlay"></div>
+                        <div class="galeri-caption">
+                            <span class="label-tag">Body</span>
+                            <h3>Repaint Box CVT</h3>
+                        </div>
+                    </button>
+                    <button type="button" class="galeri-item"
+                            @click="openLightbox('/assets/carbon3.jpeg', 'Carbon WTP — Hasil 3')">
+                        <img src="/assets/carbon3.jpeg" alt="Hasil Carbon WTP SuryaPainting18" loading="lazy">
+                        <div class="galeri-overlay"></div>
+                        <div class="galeri-caption">
+                            <span class="label-tag">Carbon WTP</span>
+                            <h3>Carbon WTP 3</h3>
+                        </div>
+                    </button>
+                    <button type="button" class="galeri-item"
+                            @click="openLightbox('/assets/velg4.jpeg', 'Hasil Repaint — Velg Motor')">
+                        <img src="/assets/velg4.jpeg" alt="Hasil repaint velg motor SuryaPainting18" loading="lazy">
+                        <div class="galeri-overlay"></div>
+                        <div class="galeri-caption">
+                            <span class="label-tag">Velg</span>
+                            <h3>Repaint Velg Custom 4</h3>
                         </div>
                     </button>
                 </div>
@@ -2173,14 +2267,14 @@
                     <h2 class="lacak-title">Lacak Progres<br><span style="color:var(--red);">Pesananmu.</span></h2>
                     <p class="lacak-desc">
                         Sudah menitipkan motormu? Pantau setiap tahap pengerjaan secara real-time lengkap dengan foto dokumentasi.
-                        Masukkan kode pesanan yang kami berikan.
+                        Masukkan nomor surat atau nomor HP yang terdaftar.
                     </p>
 
                     <form @submit.prevent="trackOrder" style="display:contents;">
                         <div class="track-form">
                             <input type="text"
                                    x-model="orderCode"
-                                   placeholder="Contoh: ORD-A3B9C2"
+                                   placeholder="Nomor Surat atau No. HP"
                                    class="track-input"
                                    required>
                             <button type="submit" class="track-btn" :disabled="loading">
@@ -2217,15 +2311,15 @@
                          style="border:2px dashed #ddd;padding:52px 32px;text-align:center;color:#bbb;">
                         <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="margin:0 auto 14px;display:block;color:#ccc;"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
                         <p style="font-family:'Barlow Condensed',sans-serif;font-size:16px;font-weight:700;font-style:italic;text-transform:uppercase;letter-spacing:1px;color:#bbb;">Hasil Pencarian<br>Muncul di Sini</p>
-                        <p style="font-size:12px;color:#ccc;margin-top:8px;">Masukkan kode pesanan dan klik Lacak Status</p>
+                         <p style="font-size:12px;color:#ccc;margin-top:8px;">Masukkan nomor surat atau no. HP dan klik Lacak Status</p>
                     </div>
 
                     <!-- Found -->
                     <div x-show="orderData" x-transition.duration.400ms class="track-result">
                         <div class="track-result-header">
                             <div>
-                                <div class="track-result-code-label">Kode Pesanan</div>
-                                <div class="track-result-code" x-text="orderData?.order_code"></div>
+                                <div class="track-result-code-label">Nomor Surat</div>
+                                <div class="track-result-code" x-text="orderData?.nomor_surat"></div>
                             </div>
                             <span class="track-status-badge"
                                   :style="`color: var(--color-status-${orderData?.status?.toLowerCase()}); border-color: var(--color-status-${orderData?.status?.toLowerCase()});`"
@@ -2239,6 +2333,14 @@
                             <div>
                                 <span class="track-info-label">Produk / Jasa</span>
                                 <span class="track-info-val" x-text="orderData?.product_name"></span>
+                            </div>
+                            <div x-show="orderData?.tipe_motor">
+                                <span class="track-info-label">Tipe Motor</span>
+                                <span class="track-info-val" x-text="orderData?.tipe_motor"></span>
+                            </div>
+                            <div x-show="orderData?.detail_motor">
+                                <span class="track-info-label">Detail Motor</span>
+                                <span class="track-info-val" x-text="orderData?.detail_motor"></span>
                             </div>
                         </div>
                         <div class="track-timeline-wrap">
@@ -2573,7 +2675,7 @@
                                 'Content-Type': 'application/json',
                                 'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
                             },
-                            body: JSON.stringify({ order_code: this.orderCode.toUpperCase() })
+                            body: JSON.stringify({ order_code: this.orderCode })
                         });
                         const data = await response.json();
                         if (response.ok && data.success) {
@@ -2612,6 +2714,18 @@
                     this.lightboxImg = imgUrl;
                     this.lightboxTitle = title;
                     this.lightboxOpen = true;
+                }
+            }
+        }
+
+        function layananSlider(images) {
+            return {
+                current: 0,
+                images: images,
+                init() {
+                    setInterval(() => {
+                        this.current = (this.current + 1) % this.images.length;
+                    }, 3000);
                 }
             }
         }
