@@ -114,15 +114,15 @@
         .modal-close:hover{color:#fff}
         .modal-close svg{width:20px;height:20px}
         .modal-body{padding:16px 20px;overflow-y:auto;flex:1}
+        .modal-footer{padding:14px 20px;border-top:1px solid rgba(255,255,255,0.06);flex-shrink:0;display:flex;gap:8px}
         .modal-field{margin-bottom:14px}
         .modal-field label{display:block;font-size:10px;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:#888;margin-bottom:8px}
         .modal-field input{width:100%;padding:12px 16px;background:#0d0d0d;border:1px solid rgba(255,255,255,0.1);color:#fff;font-family:'Inter',sans-serif;font-size:14px;outline:none;transition:border-color 0.25s}
         .modal-field input:focus{border-color:var(--pink)}
         .modal-field input::placeholder{color:#444}
-        .modal-actions{display:flex;gap:8px;padding-top:8px}
-        .modal-btn-cancel{flex:1;background:transparent;border:1px solid rgba(255,255,255,0.12);color:rgba(255,255,255,0.6);font-family:'Barlow Condensed',sans-serif;font-size:12px;font-weight:700;font-style:italic;letter-spacing:2px;text-transform:uppercase;padding:12px 20px;cursor:pointer;transition:border-color 0.2s,color 0.2s}
+        .modal-btn-cancel{flex:1;background:transparent;border:1px solid rgba(255,255,255,0.12);color:rgba(255,255,255,0.6);font-family:'Barlow Condensed',sans-serif;font-size:12px;font-weight:700;font-style:italic;letter-spacing:2px;text-transform:uppercase;padding:11px 18px;cursor:pointer;transition:border-color 0.2s,color 0.2s;text-align:center}
         .modal-btn-cancel:hover{border-color:rgba(255,255,255,0.3);color:#fff}
-        .modal-btn-submit{flex:1;background:var(--pink);border:2px solid var(--pink);color:#fff;font-family:'Barlow Condensed',sans-serif;font-size:12px;font-weight:800;font-style:italic;letter-spacing:2px;text-transform:uppercase;padding:12px 20px;cursor:pointer;transition:background 0.25s,transform 0.15s}
+        .modal-btn-submit{flex:1;background:var(--pink);border:2px solid var(--pink);color:#fff;font-family:'Barlow Condensed',sans-serif;font-size:12px;font-weight:800;font-style:italic;letter-spacing:2px;text-transform:uppercase;padding:11px 18px;cursor:pointer;transition:background 0.25s,transform 0.15s}
         .modal-btn-submit:hover{background:var(--pink-dark);border-color:var(--pink-dark);transform:translateY(-1px)}
         .admin-footer{border-top:1px solid rgba(255,255,255,0.06);background:#070707;padding:24px 0}
         .admin-footer-inner{max-width:1280px;margin:0 auto;padding:0 24px;text-align:center}
@@ -157,6 +157,7 @@
             .modal-card{max-width:100%;max-height:90vh;margin:0}
             .modal-header{padding:14px 16px}
             .modal-body{padding:12px 16px}
+            .modal-footer{padding:12px 16px}
             .modal-title{font-size:17px}
             .modal-field label{font-size:9px;letter-spacing:1.5px;margin-bottom:6px}
             .modal-field input{font-size:13px;padding:10px 14px}
@@ -309,8 +310,9 @@
                 <div class="modal-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/><path d="m3.3 7 8.7 5 8.7-5"/><path d="M12 22V12"/></svg>Buat Pesanan Baru</div>
                 <button @click="orderModalOpen = false" class="modal-close"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
             </div>
-            <form action="{{ route('admin.orders.store') }}" method="POST" class="modal-body">
+            <form action="{{ route('admin.orders.store') }}" method="POST" style="display:flex;flex-direction:column;flex:1;overflow:hidden;">
                 @csrf
+                <div class="modal-body">
                 <div class="modal-field"><label for="nomor_surat">Nomor Surat *</label><input type="text" name="nomor_surat" id="nomor_surat" placeholder="Contoh: 001" required></div>
                 <div class="modal-field"><label for="customer_name">Nama Pelanggan *</label><input type="text" name="customer_name" id="customer_name" placeholder="Contoh: Budi Santoso" required></div>
                 <div class="modal-field"><label for="customer_phone">No. HP / WhatsApp</label><input type="tel" name="customer_phone" id="customer_phone" placeholder="Contoh: 08123456789"></div>
@@ -324,7 +326,8 @@
                 </div>
                 <div class="modal-field"><label for="detail_motor">Detail Motor</label><input type="text" name="detail_motor" id="detail_motor" placeholder="Contoh: Honda Beat 2020, warna merah"></div>
                 <div class="modal-field"><label for="product_name">Produk / Jasa *</label><input type="text" name="product_name" id="product_name" placeholder="Contoh: Cat Velg Motor Beat" required></div>
-                <div class="modal-actions">
+                </div>
+                <div class="modal-footer">
                     <button type="button" @click="orderModalOpen = false" class="modal-btn-cancel">Batal</button>
                     <button type="submit" class="modal-btn-submit">Simpan Order</button>
                 </div>
