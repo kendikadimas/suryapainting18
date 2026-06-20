@@ -139,7 +139,7 @@ class OrdersExport implements FromCollection, WithHeadings, WithMapping, WithSty
 
                 // 1. Company Banner Header (Row 1)
                 $sheet->mergeCells('A1:L1');
-                $sheet->setCellValue('A1', '🎨   SuryaPainting18');
+                $sheet->setCellValue('A1', 'SuryaPainting18');
                 $sheet->getStyle('A1')->applyFromArray([
                     'font' => [
                         'bold' => true,
@@ -153,7 +153,7 @@ class OrdersExport implements FromCollection, WithHeadings, WithMapping, WithSty
                     ],
                     'fill' => [
                         'fillType' => Fill::FILL_SOLID,
-                        'startColor' => ['rgb' => '0F2A4A'],
+                        'startColor' => ['rgb' => '3C096C'],
                     ],
                 ]);
                 $sheet->getRowDimension(1)->setRowHeight(35);
@@ -163,7 +163,7 @@ class OrdersExport implements FromCollection, WithHeadings, WithMapping, WithSty
                 $sheet->setCellValue('A2', 'Jasa Pengecatan Motor Profesional  ·  suryapainting18indonesia.com');
                 $sheet->getStyle('A2')->applyFromArray([
                     'font' => [
-                        'color' => ['rgb' => 'A8C8F0'],
+                        'color' => ['rgb' => 'FFD166'],
                         'size' => 9.5,
                         'name' => 'Calibri',
                     ],
@@ -173,17 +173,17 @@ class OrdersExport implements FromCollection, WithHeadings, WithMapping, WithSty
                     ],
                     'fill' => [
                         'fillType' => Fill::FILL_SOLID,
-                        'startColor' => ['rgb' => '163D6E'],
+                        'startColor' => ['rgb' => '5A189A'],
                     ],
                 ]);
                 $sheet->getRowDimension(2)->setRowHeight(20);
 
-                // 3. Pink Divider (Row 3)
+                // 3. Pink Divider (Row 3) - Now Yellow
                 $sheet->mergeCells('A3:L3');
                 $sheet->getStyle('A3')->applyFromArray([
                     'fill' => [
                         'fillType' => Fill::FILL_SOLID,
-                        'startColor' => ['rgb' => 'EE14B1'],
+                        'startColor' => ['rgb' => 'FFD166'],
                     ],
                 ]);
                 $sheet->getRowDimension(3)->setRowHeight(4);
@@ -212,12 +212,12 @@ class OrdersExport implements FromCollection, WithHeadings, WithMapping, WithSty
                     ],
                     'fill' => [
                         'fillType' => Fill::FILL_SOLID,
-                        'startColor' => ['rgb' => 'F7F9FC'],
+                        'startColor' => ['rgb' => 'F6F2FC'],
                     ],
                     'borders' => [
                         'bottom' => [
                             'borderStyle' => Border::BORDER_THIN,
-                            'color' => ['rgb' => 'DDE4EF'],
+                            'color' => ['rgb' => 'E5DCF2'],
                         ],
                     ],
                 ]);
@@ -243,12 +243,12 @@ class OrdersExport implements FromCollection, WithHeadings, WithMapping, WithSty
                         ],
                         'fill' => [
                             'fillType' => Fill::FILL_SOLID,
-                            'startColor' => ['rgb' => '0F2A4A'],
+                            'startColor' => ['rgb' => '3C096C'],
                         ],
                         'borders' => [
                             'outline' => [
                                 'borderStyle' => Border::BORDER_THIN,
-                                'color' => ['rgb' => '1A4070'],
+                                'color' => ['rgb' => '240046'],
                             ],
                         ],
                     ]);
@@ -257,7 +257,7 @@ class OrdersExport implements FromCollection, WithHeadings, WithMapping, WithSty
 
                 // 7. Data Styling (Rows 8 to endRowIndex)
                 for ($r = 8; $r <= $endRowIndex; $r++) {
-                    $bgColor = (($r - 8) % 2 === 0) ? 'FFFFFF' : 'EEF4FB';
+                    $bgColor = (($r - 8) % 2 === 0) ? 'FFFFFF' : 'F6F2FC';
                     
                     $statusVal = $sheet->getCell("I{$r}")->getValue();
                     $statusBg = 'FFFFFF';
@@ -296,7 +296,7 @@ class OrdersExport implements FromCollection, WithHeadings, WithMapping, WithSty
                             'borders' => [
                                 'outline' => [
                                     'borderStyle' => Border::BORDER_THIN,
-                                    'color' => ['rgb' => 'C8D8EC'],
+                                    'color' => ['rgb' => 'E5DCF2'],
                                 ],
                             ],
                         ];
@@ -306,7 +306,7 @@ class OrdersExport implements FromCollection, WithHeadings, WithMapping, WithSty
                         }
                         if ($c === 2) {
                             $style['font']['bold'] = true;
-                            $style['font']['color'] = ['rgb' => '0F2A4A'];
+                            $style['font']['color'] = ['rgb' => '3C096C'];
                         }
                         if ($c === 3) {
                             $style['font']['bold'] = true;
@@ -322,7 +322,7 @@ class OrdersExport implements FromCollection, WithHeadings, WithMapping, WithSty
                         }
                         if ($c === 11) {
                             $style['font']['bold'] = true;
-                            $style['font']['color'] = ['rgb' => '0F2A4A'];
+                            $style['font']['color'] = ['rgb' => '3C096C'];
                         }
 
                         $sheet->getStyle($cellRef)->applyFromArray($style);
@@ -346,12 +346,12 @@ class OrdersExport implements FromCollection, WithHeadings, WithMapping, WithSty
                     ],
                     'fill' => [
                         'fillType' => Fill::FILL_SOLID,
-                        'startColor' => ['rgb' => '0F2A4A'],
+                        'startColor' => ['rgb' => '3C096C'],
                     ],
                     'borders' => [
                         'outline' => [
                             'borderStyle' => Border::BORDER_THIN,
-                            'color' => ['rgb' => '1A4070'],
+                            'color' => ['rgb' => '240046'],
                         ],
                     ],
                 ];
@@ -364,8 +364,8 @@ class OrdersExport implements FromCollection, WithHeadings, WithMapping, WithSty
                 $sheet->getStyle("A{$footRow}")->getAlignment()->setVertical(Alignment::VERTICAL_CENTER);
                 $sheet->getStyle("K{$footRow}")->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
                 $sheet->getStyle("K{$footRow}")->getAlignment()->setVertical(Alignment::VERTICAL_CENTER);
-                $sheet->getStyle("K{$footRow}")->getStyle([
-                    'font' => ['color' => ['rgb' => 'A8D8F0']],
+                $sheet->getStyle("K{$footRow}")->applyFromArray([
+                    'font' => ['color' => ['rgb' => 'FFD166']],
                 ]);
 
                 $sheet->getRowDimension($footRow)->setRowHeight(22);
@@ -387,7 +387,7 @@ class OrdersExport implements FromCollection, WithHeadings, WithMapping, WithSty
                     'borders' => [
                         'top' => [
                             'borderStyle' => Border::BORDER_THIN,
-                            'color' => ['rgb' => 'E0E8F4'],
+                            'color' => ['rgb' => 'E5DCF2'],
                         ],
                     ],
                 ]);

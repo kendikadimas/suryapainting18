@@ -325,7 +325,7 @@ class AdminController extends Controller
 
         $rowsHtml = '';
         foreach ($orders as $index => $order) {
-            $bgColor = ($index % 2 === 0) ? '#ffffff' : '#eef4fb';
+            $bgColor = ($index % 2 === 0) ? '#ffffff' : '#f6f2fc';
             
             $statusLabel = match($order->status) {
                 'Pending'    => 'Menunggu',
@@ -362,7 +362,7 @@ class AdminController extends Controller
             $rowsHtml .= "
             <tr style=\"background:{$bgColor};\">
                 <td style=\"text-align:center;color:#666;font-size:9pt;\">" . ($index + 1) . "</td>
-                <td style=\"font-weight:bold;color:#0f2a4a;text-align:center;\">" . e($order->nomor_surat) . "</td>
+                <td style=\"font-weight:bold;color:#3c096c;text-align:center;\">" . e($order->nomor_surat) . "</td>
                 <td style=\"font-weight:bold;\">" . e($order->customer_name) . "</td>
                 <td style=\"color:#1a7a3a;font-size:9.5pt;\">" . e($order->customer_phone ?: '—') . "</td>
                 <td style=\"text-align:center;\">" . e($order->nomor_plat ?: '—') . "</td>
@@ -371,7 +371,7 @@ class AdminController extends Controller
                 <td>" . e($order->product_name) . "</td>
                 <td style=\"{$statusStyle}\">{$statusLabel}</td>
                 <td style=\"text-align:center;font-size:9.5pt;\">{$duration}</td>
-                <td style=\"text-align:center;font-weight:bold;color:#0f2a4a;\">{$order->timeline_count}</td>
+                <td style=\"text-align:center;font-weight:bold;color:#3c096c;\">{$order->timeline_count}</td>
                 <td style=\"text-align:center;font-size:9pt;color:#555;\">" . $order->created_at->format('d/m/Y H:i') . "</td>
             </tr>";
         }
@@ -386,14 +386,14 @@ class AdminController extends Controller
             <meta charset=\"UTF-8\">
             <style>
                 * { font-family: Calibri, Arial, sans-serif; }
-                .co-banner { background: #0f2a4a; color: #ffffff; font-size: 18pt; font-weight: bold; text-align: center; padding: 14px 10px 6px; }
-                .co-sub { background: #163d6e; color: #a8c8f0; font-size: 9pt; text-align: center; padding: 4px 10px 12px; }
-                .co-divider { background: #ee14b1; height: 4px; font-size: 1pt; }
-                .meta-row { background: #f7f9fc; font-size: 9pt; color: #555; padding: 5px 10px; border-bottom: 1px solid #dde4ef; }
+                .co-banner { background: #3c096c; color: #ffffff; font-size: 18pt; font-weight: bold; text-align: center; padding: 14px 10px 6px; }
+                .co-sub { background: #5a189a; color: #ffd166; font-size: 9pt; text-align: center; padding: 4px 10px 12px; }
+                .co-divider { background: #ffd166; height: 4px; font-size: 1pt; }
+                .meta-row { background: #f6f2fc; font-size: 9pt; color: #555; padding: 5px 10px; border-bottom: 1px solid #e5dcf2; }
                 .meta-label { color: #999; font-weight: bold; }
                 table.data-table { border-collapse: collapse; width: 100%; margin-top: 12px; }
-                table.data-table thead th { background: #0f2a4a; color: #ffffff; font-size: 10pt; font-weight: bold; text-align: center; padding: 9px 12px; border: 1px solid #1a4070; white-space: nowrap; }
-                table.data-table tbody td { border: 1px solid #c8d8ec; padding: 7px 11px; font-size: 10pt; vertical-align: middle; }
+                table.data-table thead th { background: #3c096c; color: #ffffff; font-size: 10pt; font-weight: bold; text-align: center; padding: 9px 12px; border: 1px solid #240046; white-space: nowrap; }
+                table.data-table tbody td { border: 1px solid #e5dcf2; padding: 7px 11px; font-size: 10pt; vertical-align: middle; }
             </style>
         </head>
         <body>
@@ -405,13 +405,13 @@ class AdminController extends Controller
                 <td colspan=\"12\" class=\"co-sub\" align=\"center\" style=\"text-align:center;border:none;\">Jasa Pengecatan Motor Profesional &nbsp;·&nbsp; suryapainting18indonesia.com</td>
             </tr>
             <tr>
-                <td colspan=\"12\" class=\"co-divider\" style=\"background:#ee14b1;height:4px;font-size:1pt;border:none;padding:0;\">&nbsp;</td>
+                <td colspan=\"12\" class=\"co-divider\" style=\"background:#ffd166;height:4px;font-size:1pt;border:none;padding:0;\">&nbsp;</td>
             </tr>
             <tr style=\"height:6px;font-size:1pt;\">
                 <td colspan=\"12\" style=\"border:none;\">&nbsp;</td>
             </tr>
             <tr>
-                <td colspan=\"12\" class=\"meta-row\" align=\"center\" style=\"text-align:center;background:#f7f9fc;font-size:9pt;color:#555;padding:8px 10px;border-bottom:1px solid #dde4ef;\">
+                <td colspan=\"12\" class=\"meta-row\" align=\"center\" style=\"text-align:center;background:#f6f2fc;font-size:9pt;color:#555;padding:8px 10px;border-bottom:1px solid #e5dcf2;\">
                     {$metaText}
                 </td>
             </tr>
@@ -439,12 +439,12 @@ class AdminController extends Controller
             </tbody>
             <tfoot>
                 <tr>
-                    <td colspan=\"10\" style=\"background:#0f2a4a;color:#ffffff;font-weight:bold;font-size:10pt;padding:9px 12px;border:1px solid #1a4070;text-align:right;\">Total Pesanan</td>
-                    <td style=\"background:#0f2a4a;color:#a8d8f0;font-weight:bold;font-size:10pt;padding:9px 12px;border:1px solid #1a4070;text-align:center;\">{$totalCount}</td>
-                    <td style=\"background:#0f2a4a;color:#ffffff;font-weight:bold;font-size:10pt;padding:9px 12px;border:1px solid #1a4070;\">&nbsp;</td>
+                    <td colspan=\"10\" style=\"background:#3c096c;color:#ffffff;font-weight:bold;font-size:10pt;padding:9px 12px;border:1px solid #240046;text-align:right;\">Total Pesanan</td>
+                    <td style=\"background:#3c096c;color:#ffd166;font-weight:bold;font-size:10pt;padding:9px 12px;border:1px solid #240046;text-align:center;\">{$totalCount}</td>
+                    <td style=\"background:#3c096c;color:#ffffff;font-weight:bold;font-size:10pt;padding:9px 12px;border:1px solid #240046;\">&nbsp;</td>
                 </tr>
                 <tr>
-                    <td colspan=\"12\" align=\"center\" style=\"text-align:center;font-size:8pt;color:#bbb;padding:16px 6px 6px;border:none;border-top:1px solid #e0e8f4;\">
+                    <td colspan=\"12\" align=\"center\" style=\"text-align:center;font-size:8pt;color:#bbb;padding:16px 6px 6px;border:none;border-top:1px solid #e5dcf2;\">
                         &copy; {$copyrightYear} SuryaPainting18 &nbsp;&mdash;&nbsp; Dokumen ini digenerate otomatis oleh sistem pada " . now()->format('d/m/Y H:i') . " WIB
                     </td>
                 </tr>
