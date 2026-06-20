@@ -226,7 +226,15 @@
                 <button type="submit" class="filter-submit">Filter</button>
                 @if($search)<a href="{{ route('admin.dashboard') }}" class="filter-reset"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg></a>@endif
             </form>
-            <div class="filter-count"><strong>{{ $orders->firstItem() ?? 0 }}</strong>&#8211;<strong>{{ $orders->lastItem() ?? 0 }}</strong> dari <strong>{{ $orders->total() }}</strong> pesanan</div>
+            <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
+                <div class="filter-count"><strong>{{ $orders->firstItem() ?? 0 }}</strong>&#8211;<strong>{{ $orders->lastItem() ?? 0 }}</strong> dari <strong>{{ $orders->total() }}</strong> pesanan</div>
+                <a href="{{ route('admin.orders.export', $search ? ['search' => $search] : []) }}"
+                   title="Download semua pesanan{{ $search ? ' (hasil filter)' : '' }} sebagai Excel"
+                   style="display:inline-flex;align-items:center;gap:7px;background:transparent;border:1px solid rgba(3,144,74,0.4);color:#03904a;font-family:'Barlow Condensed',sans-serif;font-size:11px;font-weight:700;font-style:italic;letter-spacing:2px;text-transform:uppercase;padding:8px 14px;text-decoration:none;transition:background 0.2s,color 0.2s;white-space:nowrap;">
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                    Export Excel{{ $search ? ' (filter)' : '' }}
+                </a>
+            </div>
         </div>
         <div class="orders-table-wrap">
             @if($orders->isEmpty())

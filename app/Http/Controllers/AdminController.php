@@ -248,6 +248,43 @@ class AdminController extends Controller
         return view('admin.dashboard', compact('orders', 'search'));
     }
 
+    // Export all (filtered) orders as an Excel-compatible HTML table file
+    public function exportOrders(Request $request)
+    {
+        $search = $request->input('search');
+        $query  = Order::withCount('timeline');
+
+        if ($search) {
+            $query->where(function ($q) use ($search) {
+                $q->where('nomor_surat',    'LIKE', "%{$search}%")
+                  ->orWhere('customer_name',  'LIKE', "%{$search}%")
+                  ->orWhere('customer_phone', 'LIKE', "%{$search}%")
+                  ->orWhere('product_name',   'LIKE', "%{$search}%")
+                  ->orWhere('nomor_plat',     'LIKE', "%{$search}%");
+            });
+        }
+
+        $orders   = $query->orderBy('created_at', 'desc')->get();
+        $filename = 'pesanan-suryapainting18-' . now()->format('Y-m-d') . '.xls';
+
+        return response()
+            ->view('admin.orders.export-excel', compact('orders', 'search'))
+            ->header('Content-Type',        'application/vnd.ms-excel; charset=utf-8')
+            ->header('Content-Disposition', 'attachment; filename="' . $filename . '"')
+            ->header('Pragma',  'no-cache')
+            ->header('Expires', '0');
+    }
+
+    // Return a printable order letter view for a single order
+    public function printOrder($id)
+    {
+        $order = Order::with(['timeline' => function ($q) {
+            $q->orderBy('created_at', 'asc');
+        }])->findOrFail($id);
+
+        return view('admin.orders.print', compact('order'));
+    }
+
     // Create a new order
     public function storeOrder(Request $request)
     {
