@@ -14,16 +14,7 @@
         :root{--pink:#ee14b1;--pink-dark:#c0108f;--dark:#0d0d0d;--gray:#888;--border:rgba(255,255,255,0.08)}
         *{box-sizing:border-box;margin:0;padding:0}
         body{font-family:'Inter',sans-serif;background-color:#0a0a0a;color:#fff;min-height:100vh;display:flex;flex-direction:column;overflow-x:hidden;background-image:radial-gradient(ellipse at 50% 0%,rgba(238,20,177,0.04) 0%,transparent 60%),radial-gradient(ellipse at 80% 100%,rgba(238,20,177,0.03) 0%,transparent 50%);background-attachment:fixed}
-        .admin-nav{position:sticky;top:0;z-index:40;background:rgba(10,10,10,0.97);backdrop-filter:blur(20px);border-bottom:1px solid rgba(255,255,255,0.06)}
-        .admin-nav-inner{max-width:1280px;margin:0 auto;padding:0 24px;height:68px;display:flex;align-items:center;justify-content:space-between}
-        @media(min-width:1024px){.admin-nav-inner{padding:0 48px}}
-        .admin-nav-brand{display:flex;align-items:center;gap:12px;text-decoration:none}
-        .admin-nav-icon{width:36px;height:36px;background:var(--pink);border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0}
-        .admin-nav-icon svg{width:18px;height:18px;color:#fff}
-        .admin-nav-name{font-family:'Barlow Condensed',sans-serif;font-size:22px;font-weight:800;letter-spacing:2px;text-transform:uppercase;color:#fff}
-        .admin-nav-name span{color:var(--pink)}
-        .btn-ghost-admin{display:inline-flex;align-items:center;gap:8px;background:transparent;color:rgba(255,255,255,0.6);font-family:'Barlow Condensed',sans-serif;font-size:11px;font-weight:700;font-style:italic;letter-spacing:2px;text-transform:uppercase;padding:10px 18px;border:1px solid rgba(255,255,255,0.12);text-decoration:none;transition:border-color 0.25s,color 0.2s;cursor:pointer}
-        .btn-ghost-admin:hover{border-color:rgba(255,255,255,0.4);color:#fff}
+
         .admin-main{flex:1;max-width:1280px;width:100%;margin:0 auto;padding:40px 24px}
         @media(min-width:1024px){.admin-main{padding:48px}}
         .page-header{display:flex;flex-wrap:wrap;align-items:flex-start;justify-content:space-between;gap:16px;margin-bottom:32px}
@@ -190,6 +181,10 @@
                     </button>
                 </div>
             </div>
+            <a href="{{ route('admin.dashboard') }}" class="btn-outline-sm">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+                Kembali ke Dashboard
+            </a>
         </div>
 
         @if(session('success'))

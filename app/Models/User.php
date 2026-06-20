@@ -30,4 +30,23 @@ class User extends Authenticatable
     {
         $this->notify(new AdminResetPassword($token));
     }
+
+    /**
+     * Check if the user is a super administrator.
+     *
+     * @return bool
+     */
+    public function isSuperAdmin(): bool
+    {
+        if ($this->email === 'admin@suryapainting18indonesia.com') {
+            return true;
+        }
+
+        $firstUser = self::orderBy('id', 'asc')->first();
+        if ($firstUser && $this->id === $firstUser->id) {
+            return true;
+        }
+
+        return false;
+    }
 }

@@ -88,12 +88,19 @@ class AdminController extends Controller
     // Show add admin form (authenticated only)
     public function showAddAdminForm()
     {
+        if (!Auth::user()->isSuperAdmin()) {
+            abort(403, 'Hanya superadmin yang dapat menambah admin baru.');
+        }
         return view('admin.add-admin');
     }
 
     // Store new admin (authenticated only)
     public function storeAdmin(Request $request)
     {
+        if (!Auth::user()->isSuperAdmin()) {
+            abort(403, 'Hanya superadmin yang dapat menambah admin baru.');
+        }
+
         $validated = $request->validate([
             'name' => ['required', 'string', 'max:150'],
             'email' => ['required', 'email', 'unique:users,email'],
@@ -112,6 +119,10 @@ class AdminController extends Controller
     // List all admins
     public function listAdmins()
     {
+        if (!Auth::user()->isSuperAdmin()) {
+            abort(403, 'Hanya superadmin yang dapat melihat daftar admin.');
+        }
+
         $admins = User::orderBy('created_at', 'desc')->get();
         return view('admin.list-admin', compact('admins'));
     }
@@ -119,6 +130,10 @@ class AdminController extends Controller
     // Delete an admin (cannot delete self)
     public function deleteAdmin($id)
     {
+        if (!Auth::user()->isSuperAdmin()) {
+            abort(403, 'Hanya superadmin yang dapat menghapus admin.');
+        }
+
         $admin = User::findOrFail($id);
 
         if ($admin->id === Auth::id()) {
