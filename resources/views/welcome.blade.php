@@ -1784,6 +1784,28 @@
             .mobile-menu { display: flex; }
             .nav-cta-main { display: none !important; } /* hidden on mobile, CTA in drawer instead */
         }
+
+        /* ===== VIDEO PROSES SECTION ===== */
+        .video-container {
+            position: relative;
+            padding-bottom: 56.25%; /* 16:9 */
+            height: 0;
+            overflow: hidden;
+            border-radius: 4px;
+        }
+        .video-container iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: 0;
+        }
+        @media (max-width: 640px) {
+            #video-proses {
+                padding: 60px 0 !important;
+            }
+        }
     </style>
 </head>
 <body x-data="suryaSite()">
@@ -2183,6 +2205,38 @@
                 <button type="button" class="galeri-arrow galeri-arrow-right" x-ref="nextBtn" @click="$refs.track.scrollBy({left: $refs.track.querySelector('.galeri-item').offsetWidth + 4, behavior:'smooth'})" aria-label="Selanjutnya">
                     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="9 18 15 12 9 6"/></svg>
                 </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===== VIDEO PROSES ===== -->
+    <section id="video-proses" style="padding: 100px 0; background-color: var(--dark-2); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border);">
+        <div class="container-xl">
+            <div class="video-header" style="text-align: center; margin-bottom: 50px;">
+                <div class="section-eyebrow" style="justify-content: center;">
+                    <div class="section-eyebrow-line"></div>
+                    <span class="label-tag">Proses Kerja</span>
+                    <div class="section-eyebrow-line"></div>
+                </div>
+                <h2 style="font-family:'Barlow Condensed',sans-serif; font-size:clamp(32px, 5vw, 56px); font-weight:900; font-style:italic; text-transform:uppercase; line-height:1.1; margin-bottom:16px;">
+                    Lihat Proses Kerja <span style="color:var(--red);">Premium Kami</span>
+                </h2>
+                <p style="font-size:15px; color:var(--gray); max-width:600px; margin:0 auto; line-height:1.8;">
+                    Tonton detail proses pengerjaan repaint velg dan body motor di bengkel kami. Setiap tahapan dilakukan secara profesional dengan standar SOP pabrik demi hasil yang maksimal.
+                </p>
+            </div>
+            
+            <div class="video-wrapper" style="max-width: 960px; margin: 0 auto; border: 1px solid var(--border); background: #000; box-shadow: 0 20px 40px rgba(0,0,0,0.5), 0 0 50px rgba(238,20,177,0.05); padding: 6px; border-radius: 8px;">
+                <div class="video-container">
+                    <iframe 
+                        src="https://www.youtube.com/embed/SSRnUflCQAo" 
+                        title="SuryaPainting18 YouTube Video"
+                        frameborder="0" 
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+                        referrerpolicy="strict-origin-when-cross-origin"
+                        allowfullscreen>
+                    </iframe>
+                </div>
             </div>
         </div>
     </section>
