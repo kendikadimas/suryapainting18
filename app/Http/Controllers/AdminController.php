@@ -263,7 +263,7 @@ class AdminController extends Controller
         return view('admin.dashboard', compact('orders', 'search', 'startDate', 'endDate'));
     }
 
-    // Export all (filtered) orders as a modern native Excel (.xlsx) file
+    // Export all (filtered) orders as a modern native Excel (.xlsx) file, with fallback to HTML-based XLS
     public function exportOrders(Request $request)
     {
         $search    = $request->input('search');
@@ -291,146 +291,409 @@ class AdminController extends Controller
 
         $orders = $query->orderBy('created_at', 'desc')->get();
 
-        // Create Spreadsheet
-        $spreadsheet = new Spreadsheet();
-        $sheet = $spreadsheet->getActiveSheet();
-        $sheet->setTitle('Daftar Pesanan');
+        // Check if PhpSpreadsheet and its required ZipArchive extension are available
+        if (class_exists('PhpOffice\PhpSpreadsheet\Spreadsheet') && class_exists('ZipArchive')) {
+            try {
+                // Create Spreadsheet
+                $spreadsheet = new Spreadsheet();
+                $sheet = $spreadsheet->getActiveSheet();
+                $sheet->setTitle('Daftar Pesanan');
 
-        // Page setup options
-        $sheet->setShowGridlines(true);
+                // Page setup options
+                $sheet->setShowGridlines(true);
 
-        // 1. Company Banner Header
-        $sheet->mergeCells('A1:L1');
-        $sheet->setCellValue('A1', '🎨   SuryaPainting18');
-        $sheet->getStyle('A1')->applyFromArray([
-            'font' => [
-                'bold' => true,
-                'color' => ['rgb' => 'FFFFFF'],
-                'size' => 16,
-                'name' => 'Calibri',
-            ],
-            'alignment' => [
-                'horizontal' => Alignment::HORIZONTAL_CENTER,
-                'vertical' => Alignment::VERTICAL_CENTER,
-            ],
-            'fill' => [
-                'fillType' => Fill::FILL_SOLID,
-                'startColor' => ['rgb' => '0F2A4A'],
-            ],
-        ]);
-        $sheet->getRowDimension(1)->setRowHeight(35);
+                // 1. Company Banner Header
+                $sheet->mergeCells('A1:L1');
+                $sheet->setCellValue('A1', '🎨   SuryaPainting18');
+                $sheet->getStyle('A1')->applyFromArray([
+                    'font' => [
+                        'bold' => true,
+                        'color' => ['rgb' => 'FFFFFF'],
+                        'size' => 16,
+                        'name' => 'Calibri',
+                    ],
+                    'alignment' => [
+                        'horizontal' => Alignment::HORIZONTAL_CENTER,
+                        'vertical' => Alignment::VERTICAL_CENTER,
+                    ],
+                    'fill' => [
+                        'fillType' => Fill::FILL_SOLID,
+                        'startColor' => ['rgb' => '0F2A4A'],
+                    ],
+                ]);
+                $sheet->getRowDimension(1)->setRowHeight(35);
 
-        // 2. Sub-banner
-        $sheet->mergeCells('A2:L2');
-        $sheet->setCellValue('A2', 'Jasa Pengecatan Motor Profesional  ·  suryapainting18indonesia.com');
-        $sheet->getStyle('A2')->applyFromArray([
-            'font' => [
-                'color' => ['rgb' => 'A8C8F0'],
-                'size' => 9.5,
-                'name' => 'Calibri',
-            ],
-            'alignment' => [
-                'horizontal' => Alignment::HORIZONTAL_CENTER,
-                'vertical' => Alignment::VERTICAL_CENTER,
-            ],
-            'fill' => [
-                'fillType' => Fill::FILL_SOLID,
-                'startColor' => ['rgb' => '163D6E'],
-            ],
-        ]);
-        $sheet->getRowDimension(2)->setRowHeight(20);
+                // 2. Sub-banner
+                $sheet->mergeCells('A2:L2');
+                $sheet->setCellValue('A2', 'Jasa Pengecatan Motor Profesional  ·  suryapainting18indonesia.com');
+                $sheet->getStyle('A2')->applyFromArray([
+                    'font' => [
+                        'color' => ['rgb' => 'A8C8F0'],
+                        'size' => 9.5,
+                        'name' => 'Calibri',
+                    ],
+                    'alignment' => [
+                        'horizontal' => Alignment::HORIZONTAL_CENTER,
+                        'vertical' => Alignment::VERTICAL_CENTER,
+                    ],
+                    'fill' => [
+                        'fillType' => Fill::FILL_SOLID,
+                        'startColor' => ['rgb' => '163D6E'],
+                    ],
+                ]);
+                $sheet->getRowDimension(2)->setRowHeight(20);
 
-        // 3. Pink Divider
-        $sheet->mergeCells('A3:L3');
-        $sheet->getStyle('A3')->applyFromArray([
-            'fill' => [
-                'fillType' => Fill::FILL_SOLID,
-                'startColor' => ['rgb' => 'EE14B1'],
-            ],
-        ]);
-        $sheet->getRowDimension(3)->setRowHeight(4);
+                // 3. Pink Divider
+                $sheet->mergeCells('A3:L3');
+                $sheet->getStyle('A3')->applyFromArray([
+                    'fill' => [
+                        'fillType' => Fill::FILL_SOLID,
+                        'startColor' => ['rgb' => 'EE14B1'],
+                    ],
+                ]);
+                $sheet->getRowDimension(3)->setRowHeight(4);
 
-        // 4. Spacer row (A4:L4)
-        $sheet->getRowDimension(4)->setRowHeight(12);
+                // 4. Spacer row (A4:L4)
+                $sheet->getRowDimension(4)->setRowHeight(12);
 
-        // 5. Meta Information Row
-        $sheet->mergeCells('A5:L5');
+                // 5. Meta Information Row
+                $sheet->mergeCells('A5:L5');
+                $metaText = 'Laporan: Daftar Pesanan';
+                if ($search) $metaText .= ' | Filter: "' . $search . '"';
+                if ($startDate) $metaText .= ' | Dari: ' . date('d/m/Y', strtotime($startDate));
+                if ($endDate) $metaText .= ' | Sampai: ' . date('d/m/Y', strtotime($endDate));
+                $metaText .= ' | Diekspor: ' . now()->format('d/m/Y H:i') . ' WIB | Total Pesanan: ' . $orders->count();
+                
+                $sheet->setCellValue('A5', $metaText);
+                $sheet->getStyle('A5')->applyFromArray([
+                    'font' => [
+                        'size' => 9,
+                        'color' => ['rgb' => '444444'],
+                        'name' => 'Calibri',
+                    ],
+                    'alignment' => [
+                        'horizontal' => Alignment::HORIZONTAL_CENTER,
+                        'vertical' => Alignment::VERTICAL_CENTER,
+                    ],
+                    'fill' => [
+                        'fillType' => Fill::FILL_SOLID,
+                        'startColor' => ['rgb' => 'F7F9FC'],
+                    ],
+                    'borders' => [
+                        'bottom' => [
+                            'borderStyle' => Border::BORDER_THIN,
+                            'color' => ['rgb' => 'DDE4EF'],
+                        ],
+                    ],
+                ]);
+                $sheet->getRowDimension(5)->setRowHeight(22);
+
+                // Spacer row (A6:L6)
+                $sheet->getRowDimension(6)->setRowHeight(12);
+
+                // 6. Table Headers (Row 7)
+                $headers = [
+                    'No.', 'Nomor Surat', 'Nama Pelanggan', 'No. HP / WhatsApp', 
+                    'Nomor Plat', 'Tipe Motor', 'Detail Motor', 'Produk / Jasa', 
+                    'Status', 'Durasi Pengerjaan', 'Update', 'Tanggal Masuk'
+                ];
+
+                foreach ($headers as $colIndex => $headerText) {
+                    $colLetter = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($colIndex + 1);
+                    $cellRef = $colLetter . '7';
+                    $sheet->setCellValue($cellRef, $headerText);
+                    $sheet->getStyle($cellRef)->applyFromArray([
+                        'font' => [
+                            'bold' => true,
+                            'color' => ['rgb' => 'FFFFFF'],
+                            'size' => 10,
+                            'name' => 'Calibri',
+                        ],
+                        'alignment' => [
+                            'horizontal' => Alignment::HORIZONTAL_CENTER,
+                            'vertical' => Alignment::VERTICAL_CENTER,
+                            'wrapText' => true,
+                        ],
+                        'fill' => [
+                            'fillType' => Fill::FILL_SOLID,
+                            'startColor' => ['rgb' => '0F2A4A'],
+                        ],
+                        'borders' => [
+                            'outline' => [
+                                'borderStyle' => Border::BORDER_THIN,
+                                'color' => ['rgb' => '1A4070'],
+                            ],
+                        ],
+                    ]);
+                }
+                $sheet->getRowDimension(7)->setRowHeight(25);
+
+                // 7. Write Data Rows
+                $rowIndex = 8;
+                foreach ($orders as $index => $order) {
+                    // Determine zebra background row color
+                    $bgColor = ($index % 2 === 0) ? 'FFFFFF' : 'EEF4FB';
+                    
+                    // Calculate duration
+                    $duration = '—';
+                    if ($order->status === 'Completed') {
+                        $latestTimeline = $order->timeline->first();
+                        $completionTime = $latestTimeline ? $latestTimeline->created_at : $order->updated_at;
+                        
+                        $diff = $order->created_at->diff($completionTime);
+                        $parts = [];
+                        if ($diff->d > 0) $parts[] = $diff->d . ' hari';
+                        if ($diff->h > 0) $parts[] = $diff->h . ' jam';
+                        if ($diff->i > 0 && $diff->d == 0) $parts[] = $diff->i . ' menit';
+                        if (empty($parts)) $parts[] = '< 1 menit';
+                        $duration = implode(' ', $parts);
+                    } elseif (in_array($order->status, ['Pending', 'Processing'])) {
+                        $duration = 'Dalam proses';
+                    }
+
+                    // Status label & color
+                    $statusLabel = match($order->status) {
+                        'Pending'    => 'Menunggu',
+                        'Processing' => 'Diproses',
+                        'Completed'  => 'Selesai',
+                        'Cancelled'  => 'Dibatalkan',
+                        default      => $order->status,
+                    };
+                    $statusBg = match($order->status) {
+                        'Pending'    => 'FEFCE8',
+                        'Processing' => 'EFF6FF',
+                        'Completed'  => 'F0FDF4',
+                        'Cancelled'  => 'FFF0F0',
+                        default      => 'FFFFFF',
+                    };
+                    $statusTextColor = match($order->status) {
+                        'Pending'    => '854D0E',
+                        'Processing' => '1E40AF',
+                        'Completed'  => '166534',
+                        'Cancelled'  => '991B1B',
+                        default      => '000000',
+                    };
+
+                    $rowData = [
+                        $index + 1, // No
+                        $order->nomor_surat, // Nomor Surat
+                        $order->customer_name, // Nama Pelanggan
+                        $order->customer_phone ?: '—', // WhatsApp
+                        $order->nomor_plat ?: '—', // Plat
+                        $order->tipe_motor ?: '—', // Tipe
+                        $order->detail_motor ?: '—', // Detail
+                        $order->product_name, // Produk
+                        $statusLabel, // Status
+                        $duration, // Durasi
+                        $order->timeline_count, // Update count
+                        $order->created_at->format('d/m/Y H:i'), // Tanggal Masuk
+                    ];
+
+                    foreach ($rowData as $colIndex => $val) {
+                        $colLetter = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($colIndex + 1);
+                        $cellRef = $colLetter . $rowIndex;
+                        $sheet->setCellValue($cellRef, $val);
+                        
+                        // Base styling for the cell
+                        $cellStyle = [
+                            'font' => [
+                                'size' => 9.5,
+                                'name' => 'Calibri',
+                            ],
+                            'alignment' => [
+                                'vertical' => Alignment::VERTICAL_CENTER,
+                            ],
+                            'fill' => [
+                                'fillType' => Fill::FILL_SOLID,
+                                'startColor' => ['rgb' => $bgColor],
+                            ],
+                            'borders' => [
+                                'outline' => [
+                                    'borderStyle' => Border::BORDER_THIN,
+                                    'color' => ['rgb' => 'C8D8EC'],
+                                ],
+                            ],
+                        ];
+
+                        // Column-specific styles
+                        if (in_array($colIndex, [0, 1, 4, 5, 9, 10, 11])) {
+                            // Center align columns: No, Code, Plat, Tipe, Durasi, Timeline Count, Date
+                            $cellStyle['alignment']['horizontal'] = Alignment::HORIZONTAL_CENTER;
+                        }
+                        if ($colIndex === 1) {
+                            // Code is bold
+                            $cellStyle['font']['bold'] = true;
+                            $cellStyle['font']['color'] = ['rgb' => '0F2A4A'];
+                        }
+                        if ($colIndex === 2) {
+                            // Customer Name is bold
+                            $cellStyle['font']['bold'] = true;
+                        }
+                        if ($colIndex === 3 && $order->customer_phone) {
+                            // Phone color is green
+                            $cellStyle['font']['color'] = ['rgb' => '1A7A3A'];
+                        }
+                        if ($colIndex === 8) {
+                            // Status column styling
+                            $cellStyle['fill']['startColor']['rgb'] = $statusBg;
+                            $cellStyle['font']['color'] = ['rgb' => $statusTextColor];
+                            $cellStyle['font']['bold'] = true;
+                            $cellStyle['alignment']['horizontal'] = Alignment::HORIZONTAL_CENTER;
+                        }
+                        if ($colIndex === 10) {
+                            // Update count styling
+                            $cellStyle['font']['bold'] = true;
+                            $cellStyle['font']['color'] = ['rgb' => '0F2A4A'];
+                        }
+
+                        $sheet->getStyle($cellRef)->applyFromArray($cellStyle);
+                    }
+                    $sheet->getRowDimension($rowIndex)->setRowHeight(20);
+                    $rowIndex++;
+                }
+
+                // 8. Footer / Summary Row
+                $sheet->mergeCells("A{$rowIndex}:J{$rowIndex}");
+                $sheet->setCellValue("A{$rowIndex}", 'Total Pesanan');
+                $sheet->setCellValue("K{$rowIndex}", $orders->count());
+                $sheet->setCellValue("L{$rowIndex}", '');
+
+                $footerStyle = [
+                    'font' => [
+                        'bold' => true,
+                        'color' => ['rgb' => 'FFFFFF'],
+                        'size' => 10,
+                        'name' => 'Calibri',
+                    ],
+                    'fill' => [
+                        'fillType' => Fill::FILL_SOLID,
+                        'startColor' => ['rgb' => '0F2A4A'],
+                    ],
+                    'borders' => [
+                        'outline' => [
+                            'borderStyle' => Border::BORDER_THIN,
+                            'color' => ['rgb' => '1A4070'],
+                        ],
+                    ],
+                ];
+
+                // Apply style to merged label A-J
+                for ($c = 1; $c <= 10; $c++) {
+                    $colLetter = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($c);
+                    $sheet->getStyle($colLetter . $rowIndex)->applyFromArray($footerStyle);
+                }
+                $sheet->getStyle("A{$rowIndex}")->getAlignment()->setHorizontal(Alignment::HORIZONTAL_RIGHT);
+                $sheet->getStyle("A{$rowIndex}")->getAlignment()->setVertical(Alignment::VERTICAL_CENTER);
+
+                // Apply style to total value K
+                $sheet->getStyle("K{$rowIndex}")->applyFromArray($footerStyle);
+                $sheet->getStyle("K{$rowIndex}")->getStyle([
+                    'font' => ['color' => ['rgb' => 'A8D8F0']],
+                    'alignment' => [
+                        'horizontal' => Alignment::HORIZONTAL_CENTER,
+                        'vertical' => Alignment::VERTICAL_CENTER,
+                    ],
+                ]);
+
+                // Apply style to empty cell L
+                $sheet->getStyle("L{$rowIndex}")->applyFromArray($footerStyle);
+                $sheet->getRowDimension($rowIndex)->setRowHeight(22);
+                
+                $rowIndex++;
+
+                // 9. Watermark Footer row
+                $sheet->mergeCells("A{$rowIndex}:L{$rowIndex}");
+                $sheet->setCellValue("A{$rowIndex}", '© ' . date('Y') . ' SuryaPainting18  ·  Dokumen ini digenerate otomatis oleh sistem pada ' . now()->format('d/m/Y H:i') . ' WIB');
+                $sheet->getStyle("A{$rowIndex}")->applyFromArray([
+                    'font' => [
+                        'size' => 8,
+                        'color' => ['rgb' => 'BBBBBB'],
+                        'name' => 'Calibri',
+                    ],
+                    'alignment' => [
+                        'horizontal' => Alignment::HORIZONTAL_CENTER,
+                        'vertical' => Alignment::VERTICAL_CENTER,
+                    ],
+                    'borders' => [
+                        'top' => [
+                            'borderStyle' => Border::BORDER_THIN,
+                            'color' => ['rgb' => 'E0E8F4'],
+                        ],
+                    ],
+                ]);
+                $sheet->getRowDimension($rowIndex)->setRowHeight(25);
+
+                // 10. Auto-fit column widths
+                for ($col = 1; $col <= 12; $col++) {
+                    $colLetter = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($col);
+                    $sheet->getColumnDimension($colLetter)->setAutoSize(true);
+                }
+
+                // Write to stream
+                $writer   = new Xlsx($spreadsheet);
+                $filename = 'pesanan-suryapainting18-' . now()->format('Y-m-d') . '.xlsx';
+
+                // Clean output buffers to prevent corrupt files
+                if (ob_get_length()) ob_end_clean();
+
+                return response()->stream(
+                    function () use ($writer) {
+                        $writer->save('php://output');
+                    },
+                    200,
+                    [
+                        'Content-Type' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+                        'Content-Disposition' => 'attachment; filename="' . $filename . '"',
+                        'Cache-Control' => 'max-age=0',
+                        'Pragma' => 'no-cache',
+                        'Expires' => '0',
+                    ]
+                );
+            } catch (\Throwable $e) {
+                report($e);
+                // Fallback to HTML-based XLS
+            }
+        }
+
+        // Fallback: Generate HTML-based XLS (does not require ZipArchive or other special PHP extensions)
+        $filename = 'pesanan-suryapainting18-' . now()->format('Y-m-d') . '.xls';
+        $html     = $this->generateHtmlExcel($orders, $search, $startDate, $endDate);
+
+        return response($html, 200)
+            ->header('Content-Type',        'application/vnd.ms-excel; charset=utf-8')
+            ->header('Content-Disposition', 'attachment; filename="' . $filename . '"')
+            ->header('Pragma',  'no-cache')
+            ->header('Expires', '0');
+    }
+
+    // Helper to generate the structured HTML Excel when PhpSpreadsheet or ext-zip is missing
+    private function generateHtmlExcel($orders, $search, $startDate, $endDate)
+    {
         $metaText = 'Laporan: Daftar Pesanan';
-        if ($search) $metaText .= ' | Filter: "' . $search . '"';
+        if ($search) $metaText .= ' | Filter: "' . e($search) . '"';
         if ($startDate) $metaText .= ' | Dari: ' . date('d/m/Y', strtotime($startDate));
         if ($endDate) $metaText .= ' | Sampai: ' . date('d/m/Y', strtotime($endDate));
         $metaText .= ' | Diekspor: ' . now()->format('d/m/Y H:i') . ' WIB | Total Pesanan: ' . $orders->count();
-        
-        $sheet->setCellValue('A5', $metaText);
-        $sheet->getStyle('A5')->applyFromArray([
-            'font' => [
-                'size' => 9,
-                'color' => ['rgb' => '444444'],
-                'name' => 'Calibri',
-            ],
-            'alignment' => [
-                'horizontal' => Alignment::HORIZONTAL_CENTER,
-                'vertical' => Alignment::VERTICAL_CENTER,
-            ],
-            'fill' => [
-                'fillType' => Fill::FILL_SOLID,
-                'startColor' => ['rgb' => 'F7F9FC'],
-            ],
-            'borders' => [
-                'bottom' => [
-                    'borderStyle' => Border::BORDER_THIN,
-                    'color' => ['rgb' => 'DDE4EF'],
-                ],
-            ],
-        ]);
-        $sheet->getRowDimension(5)->setRowHeight(22);
 
-        // Spacer row (A6:L6)
-        $sheet->getRowDimension(6)->setRowHeight(12);
-
-        // 6. Table Headers (Row 7)
-        $headers = [
-            'No.', 'Nomor Surat', 'Nama Pelanggan', 'No. HP / WhatsApp', 
-            'Nomor Plat', 'Tipe Motor', 'Detail Motor', 'Produk / Jasa', 
-            'Status', 'Durasi Pengerjaan', 'Update', 'Tanggal Masuk'
-        ];
-
-        foreach ($headers as $colIndex => $headerText) {
-            $colLetter = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($colIndex + 1);
-            $cellRef = $colLetter . '7';
-            $sheet->setCellValue($cellRef, $headerText);
-            $sheet->getStyle($cellRef)->applyFromArray([
-                'font' => [
-                    'bold' => true,
-                    'color' => ['rgb' => 'FFFFFF'],
-                    'size' => 10,
-                    'name' => 'Calibri',
-                ],
-                'alignment' => [
-                    'horizontal' => Alignment::HORIZONTAL_CENTER,
-                    'vertical' => Alignment::VERTICAL_CENTER,
-                    'wrapText' => true,
-                ],
-                'fill' => [
-                    'fillType' => Fill::FILL_SOLID,
-                    'startColor' => ['rgb' => '0F2A4A'],
-                ],
-                'borders' => [
-                    'outline' => [
-                        'borderStyle' => Border::BORDER_THIN,
-                        'color' => ['rgb' => '1A4070'],
-                    ],
-                ],
-            ]);
-        }
-        $sheet->getRowDimension(7)->setRowHeight(25);
-
-        // 7. Write Data Rows
-        $rowIndex = 8;
+        $rowsHtml = '';
         foreach ($orders as $index => $order) {
-            // Determine zebra background row color
-            $bgColor = ($index % 2 === 0) ? 'FFFFFF' : 'EEF4FB';
+            $bgColor = ($index % 2 === 0) ? '#ffffff' : '#eef4fb';
             
+            $statusLabel = match($order->status) {
+                'Pending'    => 'Menunggu',
+                'Processing' => 'Diproses',
+                'Completed'  => 'Selesai',
+                'Cancelled'  => 'Dibatalkan',
+                default      => $order->status,
+            };
+            $statusStyle = match($order->status) {
+                'Pending'    => 'background:#fefce8;color:#854d0e;font-weight:bold;text-align:center;border-left:3px solid #eab308;',
+                'Processing' => 'background:#eff6ff;color:#1e40af;font-weight:bold;text-align:center;border-left:3px solid #3b82f6;',
+                'Completed'  => 'background:#f0fdf4;color:#166534;font-weight:bold;text-align:center;border-left:3px solid #22c55e;',
+                'Cancelled'  => 'background:#fff0f0;color:#991b1b;font-weight:bold;text-align:center;border-left:3px solid #ef4444;',
+                default      => 'text-align:center;',
+            };
+
             // Calculate duration
             $duration = '—';
             if ($order->status === 'Completed') {
@@ -448,204 +711,99 @@ class AdminController extends Controller
                 $duration = 'Dalam proses';
             }
 
-            // Status label & color
-            $statusLabel = match($order->status) {
-                'Pending'    => 'Menunggu',
-                'Processing' => 'Diproses',
-                'Completed'  => 'Selesai',
-                'Cancelled'  => 'Dibatalkan',
-                default      => $order->status,
-            };
-            $statusBg = match($order->status) {
-                'Pending'    => 'FEFCE8',
-                'Processing' => 'EFF6FF',
-                'Completed'  => 'F0FDF4',
-                'Cancelled'  => 'FFF0F0',
-                default      => 'FFFFFF',
-            };
-            $statusTextColor = match($order->status) {
-                'Pending'    => '854D0E',
-                'Processing' => '1E40AF',
-                'Completed'  => '166534',
-                'Cancelled'  => '991B1B',
-                default      => '000000',
-            };
-
-            $rowData = [
-                $index + 1, // No
-                $order->nomor_surat, // Nomor Surat
-                $order->customer_name, // Nama Pelanggan
-                $order->customer_phone ?: '—', // WhatsApp
-                $order->nomor_plat ?: '—', // Plat
-                $order->tipe_motor ?: '—', // Tipe
-                $order->detail_motor ?: '—', // Detail
-                $order->product_name, // Produk
-                $statusLabel, // Status
-                $duration, // Durasi
-                $order->timeline_count, // Update count
-                $order->created_at->format('d/m/Y H:i'), // Tanggal Masuk
-            ];
-
-            foreach ($rowData as $colIndex => $val) {
-                $colLetter = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($colIndex + 1);
-                $cellRef = $colLetter . $rowIndex;
-                $sheet->setCellValue($cellRef, $val);
-                
-                // Base styling for the cell
-                $cellStyle = [
-                    'font' => [
-                        'size' => 9.5,
-                        'name' => 'Calibri',
-                    ],
-                    'alignment' => [
-                        'vertical' => Alignment::VERTICAL_CENTER,
-                    ],
-                    'fill' => [
-                        'fillType' => Fill::FILL_SOLID,
-                        'startColor' => ['rgb' => $bgColor],
-                    ],
-                    'borders' => [
-                        'outline' => [
-                            'borderStyle' => Border::BORDER_THIN,
-                            'color' => ['rgb' => 'C8D8EC'],
-                        ],
-                    ],
-                ];
-
-                // Column-specific styles
-                if (in_array($colIndex, [0, 1, 4, 5, 9, 10, 11])) {
-                    // Center align columns: No, Code, Plat, Tipe, Durasi, Timeline Count, Date
-                    $cellStyle['alignment']['horizontal'] = Alignment::HORIZONTAL_CENTER;
-                }
-                if ($colIndex === 1) {
-                    // Code is bold
-                    $cellStyle['font']['bold'] = true;
-                    $cellStyle['font']['color'] = ['rgb' => '0F2A4A'];
-                }
-                if ($colIndex === 2) {
-                    // Customer Name is bold
-                    $cellStyle['font']['bold'] = true;
-                }
-                if ($colIndex === 3 && $order->customer_phone) {
-                    // Phone color is green
-                    $cellStyle['font']['color'] = ['rgb' => '1A7A3A'];
-                }
-                if ($colIndex === 8) {
-                    // Status column styling
-                    $cellStyle['fill']['startColor']['rgb'] = $statusBg;
-                    $cellStyle['font']['color'] = ['rgb' => $statusTextColor];
-                    $cellStyle['font']['bold'] = true;
-                    $cellStyle['alignment']['horizontal'] = Alignment::HORIZONTAL_CENTER;
-                }
-                if ($colIndex === 10) {
-                    // Update count styling
-                    $cellStyle['font']['bold'] = true;
-                    $cellStyle['font']['color'] = ['rgb' => '0F2A4A'];
-                }
-
-                $sheet->getStyle($cellRef)->applyFromArray($cellStyle);
-            }
-            $sheet->getRowDimension($rowIndex)->setRowHeight(20);
-            $rowIndex++;
+            $rowsHtml .= "
+            <tr style=\"background:{$bgColor};\">
+                <td style=\"text-align:center;color:#666;font-size:9pt;\">" . ($index + 1) . "</td>
+                <td style=\"font-weight:bold;color:#0f2a4a;text-align:center;\">" . e($order->nomor_surat) . "</td>
+                <td style=\"font-weight:bold;\">" . e($order->customer_name) . "</td>
+                <td style=\"color:#1a7a3a;font-size:9.5pt;\">" . e($order->customer_phone ?: '—') . "</td>
+                <td style=\"text-align:center;\">" . e($order->nomor_plat ?: '—') . "</td>
+                <td style=\"text-align:center;\">" . e($order->tipe_motor ?: '—') . "</td>
+                <td style=\"font-size:9.5pt;color:#444;\">" . e($order->detail_motor ?: '—') . "</td>
+                <td>" . e($order->product_name) . "</td>
+                <td style=\"{$statusStyle}\">{$statusLabel}</td>
+                <td style=\"text-align:center;font-size:9.5pt;\">{$duration}</td>
+                <td style=\"text-align:center;font-weight:bold;color:#0f2a4a;\">{$order->timeline_count}</td>
+                <td style=\"text-align:center;font-size:9pt;color:#555;\">" . $order->created_at->format('d/m/Y H:i') . "</td>
+            </tr>";
         }
 
-        // 8. Footer / Summary Row
-        $sheet->mergeCells("A{$rowIndex}:J{$rowIndex}");
-        $sheet->setCellValue("A{$rowIndex}", 'Total Pesanan');
-        $sheet->setCellValue("K{$rowIndex}", $orders->count());
-        $sheet->setCellValue("L{$rowIndex}", '');
+        $totalCount = $orders->count();
+        $copyrightYear = date('Y');
 
-        $footerStyle = [
-            'font' => [
-                'bold' => true,
-                'color' => ['rgb' => 'FFFFFF'],
-                'size' => 10,
-                'name' => 'Calibri',
-            ],
-            'fill' => [
-                'fillType' => Fill::FILL_SOLID,
-                'startColor' => ['rgb' => '0F2A4A'],
-            ],
-            'borders' => [
-                'outline' => [
-                    'borderStyle' => Border::BORDER_THIN,
-                    'color' => ['rgb' => '1A4070'],
-                ],
-            ],
-        ];
-
-        // Apply style to merged label A-J
-        for ($c = 1; $c <= 10; $c++) {
-            $colLetter = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($c);
-            $sheet->getStyle($colLetter . $rowIndex)->applyFromArray($footerStyle);
-        }
-        $sheet->getStyle("A{$rowIndex}")->getAlignment()->setHorizontal(Alignment::HORIZONTAL_RIGHT);
-        $sheet->getStyle("A{$rowIndex}")->getAlignment()->setVertical(Alignment::VERTICAL_CENTER);
-
-        // Apply style to total value K
-        $sheet->getStyle("K{$rowIndex}")->applyFromArray($footerStyle);
-        $sheet->getStyle("K{$rowIndex}")->getStyle([
-            'font' => ['color' => ['rgb' => 'A8D8F0']],
-            'alignment' => [
-                'horizontal' => Alignment::HORIZONTAL_CENTER,
-                'vertical' => Alignment::VERTICAL_CENTER,
-            ],
-        ]);
-
-        // Apply style to empty cell L
-        $sheet->getStyle("L{$rowIndex}")->applyFromArray($footerStyle);
-        $sheet->getRowDimension($rowIndex)->setRowHeight(22);
-        
-        $rowIndex++;
-
-        // 9. Watermark Footer row
-        $sheet->mergeCells("A{$rowIndex}:L{$rowIndex}");
-        $sheet->setCellValue("A{$rowIndex}", '© ' . date('Y') . ' SuryaPainting18  ·  Dokumen ini digenerate otomatis oleh sistem pada ' . now()->format('d/m/Y H:i') . ' WIB');
-        $sheet->getStyle("A{$rowIndex}")->applyFromArray([
-            'font' => [
-                'size' => 8,
-                'color' => ['rgb' => 'BBBBBB'],
-                'name' => 'Calibri',
-            ],
-            'alignment' => [
-                'horizontal' => Alignment::HORIZONTAL_CENTER,
-                'vertical' => Alignment::VERTICAL_CENTER,
-            ],
-            'borders' => [
-                'top' => [
-                    'borderStyle' => Border::BORDER_THIN,
-                    'color' => ['rgb' => 'E0E8F4'],
-                ],
-            ],
-        ]);
-        $sheet->getRowDimension($rowIndex)->setRowHeight(25);
-
-        // 10. Auto-fit column widths
-        for ($col = 1; $col <= 12; $col++) {
-            $colLetter = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($col);
-            $sheet->getColumnDimension($colLetter)->setAutoSize(true);
-        }
-
-        // Write to stream
-        $writer   = new Xlsx($spreadsheet);
-        $filename = 'pesanan-suryapainting18-' . now()->format('Y-m-d') . '.xlsx';
-
-        // Clean output buffers to prevent corrupt files
-        if (ob_get_length()) ob_end_clean();
-
-        return response()->stream(
-            function () use ($writer) {
-                $writer->save('php://output');
-            },
-            200,
-            [
-                'Content-Type' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-                'Content-Disposition' => 'attachment; filename="' . $filename . '"',
-                'Cache-Control' => 'max-age=0',
-                'Pragma' => 'no-cache',
-                'Expires' => '0',
-            ]
-        );
+        return "
+        <html>
+        <head>
+            <meta http-equiv=\"content-type\" content=\"application/vnd.ms-excel; charset=UTF-8\">
+            <meta charset=\"UTF-8\">
+            <style>
+                * { font-family: Calibri, Arial, sans-serif; }
+                .co-banner { background: #0f2a4a; color: #ffffff; font-size: 18pt; font-weight: bold; text-align: center; padding: 14px 10px 6px; }
+                .co-sub { background: #163d6e; color: #a8c8f0; font-size: 9pt; text-align: center; padding: 4px 10px 12px; }
+                .co-divider { background: #ee14b1; height: 4px; font-size: 1pt; }
+                .meta-row { background: #f7f9fc; font-size: 9pt; color: #555; padding: 5px 10px; border-bottom: 1px solid #dde4ef; }
+                .meta-label { color: #999; font-weight: bold; }
+                table.data-table { border-collapse: collapse; width: 100%; margin-top: 12px; }
+                table.data-table thead th { background: #0f2a4a; color: #ffffff; font-size: 10pt; font-weight: bold; text-align: center; padding: 9px 12px; border: 1px solid #1a4070; white-space: nowrap; }
+                table.data-table tbody td { border: 1px solid #c8d8ec; padding: 7px 11px; font-size: 10pt; vertical-align: middle; }
+            </style>
+        </head>
+        <body>
+        <table class=\"data-table\">
+            <tr>
+                <td colspan=\"12\" class=\"co-banner\" align=\"center\" style=\"text-align:center;border:none;\">🎨 &nbsp; SuryaPainting18</td>
+            </tr>
+            <tr>
+                <td colspan=\"12\" class=\"co-sub\" align=\"center\" style=\"text-align:center;border:none;\">Jasa Pengecatan Motor Profesional &nbsp;·&nbsp; suryapainting18indonesia.com</td>
+            </tr>
+            <tr>
+                <td colspan=\"12\" class=\"co-divider\" style=\"background:#ee14b1;height:4px;font-size:1pt;border:none;padding:0;\">&nbsp;</td>
+            </tr>
+            <tr style=\"height:6px;font-size:1pt;\">
+                <td colspan=\"12\" style=\"border:none;\">&nbsp;</td>
+            </tr>
+            <tr>
+                <td colspan=\"12\" class=\"meta-row\" align=\"center\" style=\"text-align:center;background:#f7f9fc;font-size:9pt;color:#555;padding:8px 10px;border-bottom:1px solid #dde4ef;\">
+                    {$metaText}
+                </td>
+            </tr>
+            <tr style=\"height:12px;font-size:1pt;\">
+                <td colspan=\"12\" style=\"border:none;\">&nbsp;</td>
+            </tr>
+            <thead>
+                <tr>
+                    <th rowspan=\"1\" style=\"width:38px;\" align=\"center\">No.</th>
+                    <th align=\"center\">Nomor Surat</th>
+                    <th align=\"center\">Nama Pelanggan</th>
+                    <th align=\"center\">No. HP / WhatsApp</th>
+                    <th align=\"center\">Nomor Plat</th>
+                    <th align=\"center\">Tipe Motor</th>
+                    <th align=\"center\">Detail Motor</th>
+                    <th align=\"center\">Produk / Jasa</th>
+                    <th style=\"width:90px;\" align=\"center\">Status</th>
+                    <th style=\"width:120px;\" align=\"center\">Durasi Pengerjaan</th>
+                    <th style=\"width:70px;\" align=\"center\">Update</th>
+                    <th style=\"width:110px;\" align=\"center\">Tanggal Masuk</th>
+                </tr>
+            </thead>
+            <tbody>
+                {$rowsHtml}
+            </tbody>
+            <tfoot>
+                <tr>
+                    <td colspan=\"10\" style=\"background:#0f2a4a;color:#ffffff;font-weight:bold;font-size:10pt;padding:9px 12px;border:1px solid #1a4070;text-align:right;\">Total Pesanan</td>
+                    <td style=\"background:#0f2a4a;color:#a8d8f0;font-weight:bold;font-size:10pt;padding:9px 12px;border:1px solid #1a4070;text-align:center;\">{$totalCount}</td>
+                    <td style=\"background:#0f2a4a;color:#ffffff;font-weight:bold;font-size:10pt;padding:9px 12px;border:1px solid #1a4070;\">&nbsp;</td>
+                </tr>
+                <tr>
+                    <td colspan=\"12\" align=\"center\" style=\"text-align:center;font-size:8pt;color:#bbb;padding:16px 6px 6px;border:none;border-top:1px solid #e0e8f4;\">
+                        &copy; {$copyrightYear} SuryaPainting18 &nbsp;&mdash;&nbsp; Dokumen ini digenerate otomatis oleh sistem pada " . now()->format('d/m/Y H:i') . " WIB
+                    </td>
+                </tr>
+            </tfoot>
+        </table>
+        </body>
+        </html>";
     }
 
     // Return a printable order letter view for a single order
