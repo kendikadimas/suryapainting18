@@ -325,15 +325,19 @@
                         <div class="admin-field">
                             <label class="form-label">Upload Foto Bukti</label>
                             <div class="upload-zone">
-                                <input type="file" name="image" accept="image/*" @change="previewImage($event)">
-                                <div class="upload-placeholder" x-show="!imagePreview">
+                                <input type="file" name="image" accept="image/*,.heic,.heif,.HEIC,.HEIF" @change="previewImage($event)">
+                                <div class="upload-placeholder" x-show="!imagePreview && !isConverting">
                                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="m21 15-5-5L5 21"/></svg>
                                     <p>Pilih foto dari HP/Kamera atau seret file ke sini</p>
-                                    <small>Maks. Ukuran File: 5MB (Format: JPG, PNG, WEBP)</small>
+                                    <small>Maks. Ukuran File: 20MB (Format: JPG, PNG, WEBP, HEIC)</small>
                                 </div>
-                                <div class="upload-preview" x-show="imagePreview" x-cloak>
+                                <div class="upload-preview" x-show="imagePreview && !isConverting" x-cloak>
                                     <img :src="imagePreview">
                                     <button type="button" class="upload-preview-remove" @click.stop="clearPreview()">x</button>
+                                </div>
+                                <div class="heic-loading" x-show="isConverting" x-cloak style="padding: 10px;">
+                                    <div class="heic-spinner"></div>
+                                    <span class="heic-loading-text">Mengonversi HEIC...</span>
                                 </div>
                             </div>
                         </div>
@@ -487,6 +491,7 @@
         function orderManager(){
             return{
                 imagePreview:null,
+                isConverting:false,
                 submitting:false,
                 lightboxOpen:false,
                 lightboxImg:'',
@@ -495,10 +500,56 @@
                 sidebarOpen:false,
                 previewImage(e){
                     const f=e.target.files[0];
-                    if(f){const r=new FileReader();r.onload=(ev)=>{this.imagePreview=ev.target.result};r.readAsDataURL(f)}
+                    if(!f) return;
+
+                    const ext = f.name.split('.').pop().toLowerCase();
+                    if(ext === 'heic' || ext === 'heif') {
+                        this.isConverting = true;
+                        this.imagePreview = null;
+
+                        // Dynamically load heic2any if not present
+                        const loadLib = window.heic2any ? Promise.resolve() : new Promise((res, rej) => {
+                            const s = document.createElement('script');
+                            s.src = "https://cdn.jsdelivr.net/npm/heic2any@0.0.4/dist/heic2any.min.js";
+                            s.onload = res;
+                            s.onerror = rej;
+                            document.head.appendChild(s);
+                        });
+
+                        loadLib.then(() => {
+                            return heic2any({
+                                blob: f,
+                                toType: 'image/jpeg',
+                                quality: 0.8
+                            });
+                        }).then((jpegBlob) => {
+                            // Create object URL for preview
+                            this.imagePreview = URL.createObjectURL(jpegBlob);
+
+                            // Re-inject the converted jpeg file into the input so it gets uploaded as a jpeg
+                            const convertedFile = new File([jpegBlob], f.name.replace(/\.heic$/i, '.jpg').replace(/\.heif$/i, '.jpg'), {
+                                type: 'image/jpeg'
+                            });
+
+                            const dt = new DataTransfer();
+                            dt.items.add(convertedFile);
+                            e.target.files = dt.files;
+
+                            this.isConverting = false;
+                        }).catch((err) => {
+                            console.error('HEIC conversion failed:', err);
+                            alert('Gagal memproses file HEIC. Harap gunakan format JPG/PNG/WEBP.');
+                            this.clearPreview();
+                        });
+                    } else {
+                        const r=new FileReader();
+                        r.onload=(ev)=>{this.imagePreview=ev.target.result};
+                        r.readAsDataURL(f);
+                    }
                 },
                 clearPreview(){
                     this.imagePreview=null;
+                    this.isConverting=false;
                     document.querySelector('input[type="file"]').value='';
                 },
                 openLightbox(url,title){
