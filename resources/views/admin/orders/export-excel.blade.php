@@ -168,17 +168,27 @@
 </head>
 <body>
 
-{{-- ── Company banner ── --}}
-<table width="100%" cellpadding="0" cellspacing="0">
-    <tr><td class="co-banner">🎨 &nbsp; SuryaPainting18</td></tr>
-    <tr><td class="co-sub">Jasa Pengecatan Motor Profesional &nbsp;·&nbsp; suryapainting18indonesia.com</td></tr>
-    <tr><td class="co-divider">&nbsp;</td></tr>
-</table>
-
-{{-- ── Report meta ── --}}
-<table width="100%" cellpadding="0" cellspacing="0" style="margin-top:8px;">
+{{-- ── Data table ── --}}
+<table class="data-table">
+    <!-- Company banner (centered across all 12 columns) -->
     <tr>
-        <td class="meta-row">
+        <td colspan="12" class="co-banner" align="center" style="text-align:center; border:none;">🎨 &nbsp; SuryaPainting18</td>
+    </tr>
+    <tr>
+        <td colspan="12" class="co-sub" align="center" style="text-align:center; border:none;">Jasa Pengecatan Motor Profesional &nbsp;·&nbsp; suryapainting18indonesia.com</td>
+    </tr>
+    <tr>
+        <td colspan="12" class="co-divider" style="background:#ee14b1; height:4px; font-size:1pt; border:none; padding:0;">&nbsp;</td>
+    </tr>
+    
+    <!-- Spacer row -->
+    <tr style="height:6px; font-size:1pt;">
+        <td colspan="12" style="border:none;">&nbsp;</td>
+    </tr>
+
+    <!-- Report meta (centered across all 12 columns) -->
+    <tr>
+        <td colspan="12" class="meta-row" align="center" style="text-align:center; background:#f7f9fc; font-size:9pt; color:#555; padding:8px 10px; border-bottom:1px solid #dde4ef; border-top:none; border-left:none; border-right:none;">
             <span class="meta-label">Laporan&nbsp;:</span>&nbsp; Daftar Pesanan{{ $search ? ' &nbsp;·&nbsp; Filter: "' . e($search) . '"' : '' }}
             &nbsp;&nbsp;&nbsp;
             <span class="meta-label">Diekspor&nbsp;:</span>&nbsp; {{ now()->format('d/m/Y') }} pukul {{ now()->format('H:i') }} WIB
@@ -186,23 +196,26 @@
             <span class="meta-label">Total Pesanan&nbsp;:</span>&nbsp; <strong>{{ $orders->count() }}</strong>
         </td>
     </tr>
-</table>
 
-{{-- ── Data table ── --}}
-<table class="data-table">
+    <!-- Spacer row -->
+    <tr style="height:12px; font-size:1pt;">
+        <td colspan="12" style="border:none;">&nbsp;</td>
+    </tr>
+
     <thead>
         <tr>
-            <th rowspan="1" style="width:38px;">No.</th>
-            <th>Nomor Surat</th>
-            <th>Nama Pelanggan</th>
-            <th>No. HP / WhatsApp</th>
-            <th>Nomor Plat</th>
-            <th>Tipe Motor</th>
-            <th>Detail Motor</th>
-            <th>Produk / Jasa</th>
-            <th style="width:90px;">Status</th>
-            <th style="width:70px;">Update</th>
-            <th style="width:110px;">Tanggal Masuk</th>
+            <th rowspan="1" style="width:38px;" align="center">No.</th>
+            <th align="center">Nomor Surat</th>
+            <th align="center">Nama Pelanggan</th>
+            <th align="center">No. HP / WhatsApp</th>
+            <th align="center">Nomor Plat</th>
+            <th align="center">Tipe Motor</th>
+            <th align="center">Detail Motor</th>
+            <th align="center">Produk / Jasa</th>
+            <th style="width:90px;" align="center">Status</th>
+            <th style="width:120px;" align="center">Durasi Pengerjaan</th>
+            <th style="width:70px;" align="center">Update</th>
+            <th style="width:110px;" align="center">Tanggal Masuk</th>
         </tr>
     </thead>
     <tbody>
@@ -223,6 +236,31 @@
                 'Cancelled'  => 'Dibatalkan',
                 default      => $order->status,
             };
+
+            // Calculate duration
+            $duration = '—';
+            if ($order->status === 'Completed') {
+                $latestTimeline = $order->timeline->first(); // ordered by created_at desc
+                $completionTime = $latestTimeline ? $latestTimeline->created_at : $order->updated_at;
+                
+                $diff = $order->created_at->diff($completionTime);
+                $parts = [];
+                if ($diff->d > 0) {
+                    $parts[] = $diff->d . ' hari';
+                }
+                if ($diff->h > 0) {
+                    $parts[] = $diff->h . ' jam';
+                }
+                if ($diff->i > 0 && $diff->d == 0) {
+                    $parts[] = $diff->i . ' menit';
+                }
+                if (empty($parts)) {
+                    $parts[] = '< 1 menit';
+                }
+                $duration = implode(' ', $parts);
+            } elseif (in_array($order->status, ['Pending', 'Processing'])) {
+                $duration = 'Dalam proses';
+            }
         @endphp
         <tr class="{{ $rowClass }}">
             <td class="col-no">{{ $i + 1 }}</td>
@@ -234,12 +272,13 @@
             <td style="font-size:9.5pt;color:#444;">{{ $order->detail_motor ?: '—' }}</td>
             <td>{{ $order->product_name }}</td>
             <td class="{{ $statusClass }}">{{ $statusLabel }}</td>
+            <td style="text-align:center;font-size:9.5pt;color:#333;">{{ $duration }}</td>
             <td class="col-count">{{ $order->timeline_count }}</td>
             <td class="col-date">{{ $order->created_at->format('d/m/Y') }}<br><span style="color:#aaa;font-size:8pt;">{{ $order->created_at->format('H:i') }}</span></td>
         </tr>
         @empty
         <tr>
-            <td colspan="11" style="text-align:center;color:#aaa;padding:24px;font-style:italic;">
+            <td colspan="12" style="text-align:center;color:#aaa;padding:24px;font-style:italic;">
                 Tidak ada data pesanan ditemukan.
             </td>
         </tr>
@@ -247,16 +286,18 @@
     </tbody>
     <tfoot>
         <tr>
-            <td colspan="9" class="foot-label">Total Pesanan</td>
+            <td colspan="10" class="foot-label">Total Pesanan</td>
             <td class="foot-value">{{ $orders->count() }}</td>
             <td class="foot-value">&nbsp;</td>
         </tr>
+        <!-- Document watermark/footer -->
+        <tr>
+            <td colspan="12" align="center" style="text-align:center; font-size:8pt; color:#bbb; padding:16px 6px 6px; border:none; border-top:1px solid #e0e8f4;">
+                &copy; {{ date('Y') }} SuryaPainting18 &nbsp;&mdash;&nbsp; Dokumen ini digenerate otomatis oleh sistem pada {{ now()->format('d/m/Y H:i') }} WIB
+            </td>
+        </tr>
     </tfoot>
 </table>
-
-<div class="doc-footer">
-    &copy; {{ date('Y') }} SuryaPainting18 &nbsp;&mdash;&nbsp; Dokumen ini digenerate otomatis oleh sistem pada {{ now()->format('d/m/Y H:i') }} WIB
-</div>
 
 </body>
 </html>

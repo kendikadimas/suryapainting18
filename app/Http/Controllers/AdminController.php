@@ -252,7 +252,7 @@ class AdminController extends Controller
     public function exportOrders(Request $request)
     {
         $search = $request->input('search');
-        $query  = Order::withCount('timeline');
+        $query  = Order::with(['timeline'])->withCount('timeline');
 
         if ($search) {
             $query->where(function ($q) use ($search) {

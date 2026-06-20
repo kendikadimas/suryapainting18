@@ -31,7 +31,7 @@ fi
 
 # Jalankan migration
 echo "🗄️  Running migrations..."
-php artisan migrate --force
+php artisan migrate
 
 # Clear cache
 echo "🧹 Clearing cache..."
