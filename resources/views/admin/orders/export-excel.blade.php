@@ -1,28 +1,7 @@
-<?php echo '<?xml version="1.0" encoding="UTF-8"?>'; ?>
-<html xmlns:o="urn:schemas-microsoft-com:office:office"
-      xmlns:x="urn:schemas-microsoft-com:office:excel"
-      xmlns="http://www.w3.org/TR/REC-html40">
+<html>
 <head>
     <meta http-equiv="content-type" content="application/vnd.ms-excel; charset=UTF-8">
     <meta charset="UTF-8">
-    <xml>
-        <x:ExcelWorkbook>
-            <x:ExcelWorksheets>
-                <x:ExcelWorksheet>
-                    <x:Name>Daftar Pesanan</x:Name>
-                    <x:WorksheetOptions>
-                        <x:DisplayGridlines/>
-                        <x:Print>
-                            <x:FitHeight>1</x:FitHeight>
-                            <x:ValidPrinterInfo/>
-                            <x:HorizontalResolution>600</x:HorizontalResolution>
-                            <x:VerticalResolution>600</x:VerticalResolution>
-                        </x:Print>
-                    </x:WorksheetOptions>
-                </x:ExcelWorksheet>
-            </x:ExcelWorksheets>
-        </x:ExcelWorkbook>
-    </xml>
     <style>
         body { font-family: Arial, sans-serif; font-size: 11pt; }
         table { border-collapse: collapse; width: 100%; }
@@ -42,37 +21,22 @@
         }
         tr:nth-child(even) td { background-color: #f7f7f7; }
         tr:nth-child(odd) td { background-color: #ffffff; }
-        .header-section {
-            margin-bottom: 16px;
-        }
-        .company-name {
-            font-size: 16pt;
-            font-weight: bold;
-            color: #1a1a2e;
-        }
-        .export-title {
-            font-size: 13pt;
-            color: #444;
-            margin-top: 4px;
-        }
-        .export-meta {
-            font-size: 9pt;
-            color: #888;
-            margin-top: 2px;
-        }
+        .header-section { margin-bottom: 16px; }
+        .company-name { font-size: 16pt; font-weight: bold; color: #1a1a2e; }
+        .export-title { font-size: 13pt; color: #444; margin-top: 4px; }
+        .export-meta { font-size: 9pt; color: #888; margin-top: 2px; }
         .status-pending    { color: #b58700; font-weight: bold; }
         .status-processing { color: #1565c0; font-weight: bold; }
         .status-completed  { color: #1b5e20; font-weight: bold; }
         .status-cancelled  { color: #b71c1c; font-weight: bold; }
-        .badge-no  { text-align: center; font-weight: bold; color: #555; }
-        .num-cell  { text-align: center; }
+        .num-cell { text-align: center; }
     </style>
 </head>
 <body>
     <div class="header-section">
         <div class="company-name">SuryaPainting18</div>
         <div class="export-title">Laporan Daftar Pesanan{{ $search ? ' — Pencarian: "' . $search . '"' : '' }}</div>
-        <div class="export-meta">Diekspor pada: {{ now()->translatedFormat('d F Y, H:i') }} WIB &nbsp;|&nbsp; Total: {{ $orders->count() }} pesanan</div>
+        <div class="export-meta">Diekspor pada: {{ now()->format('d/m/Y, H:i') }} WIB &nbsp;|&nbsp; Total: {{ $orders->count() }} pesanan</div>
     </div>
 
     <table>
@@ -103,13 +67,13 @@
                 <td>{{ $order->detail_motor ?? '-' }}</td>
                 <td>{{ $order->product_name }}</td>
                 <td class="
-                    @if($order->status === 'Pending')     status-pending
+                    @if($order->status === 'Pending')       status-pending
                     @elseif($order->status === 'Processing') status-processing
                     @elseif($order->status === 'Completed')  status-completed
                     @elseif($order->status === 'Cancelled')  status-cancelled
                     @endif
                 ">
-                    @if($order->status === 'Pending')      Menunggu
+                    @if($order->status === 'Pending')       Menunggu
                     @elseif($order->status === 'Processing') Diproses
                     @elseif($order->status === 'Completed')  Selesai
                     @elseif($order->status === 'Cancelled')  Dibatalkan

@@ -422,8 +422,14 @@
                     @endif
                     @if($item->image_path)
                     <div class="timeline-img">
-                        <img src="{{ asset('storage/' . $item->image_path) }}"
-                             alt="Foto {{ $item->title }}">
+                        @if($item->is_heic)
+                            <p style="font-size:9pt;color:#999;font-style:italic;margin-top:4px;">
+                                📎 Foto tersimpan dalam format HEIC (iPhone) — tidak dapat ditampilkan di dokumen cetak.
+                            </p>
+                        @else
+                            <img src="{{ asset('storage/' . $item->image_path) }}"
+                                 alt="Foto {{ $item->title }}">
+                        @endif
                     </div>
                     @endif
                 </div>

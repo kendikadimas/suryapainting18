@@ -388,9 +388,21 @@
                                 </div>
                                 <div class="timeline-card-desc">{{ $step->description ?? 'Tidak ada keterangan.' }}</div>
                                 @if($step->image_url)
-                                    <div class="timeline-card-img" @click="openLightbox('{{ $step->image_url }}', '{{ $step->title }}')">
-                                        <img src="{{ $step->image_url }}" alt="{{ $step->title }}">
-                                    </div>
+                                    @if($step->is_heic)
+                                        {{-- HEIC: converted client-side via heic2any WebAssembly --}}
+                                        <div class="heic-container"
+                                             data-heic-src="{{ $step->image_url }}"
+                                             data-title="{{ addslashes($step->title) }}">
+                                            <div class="heic-loading">
+                                                <div class="heic-spinner"></div>
+                                                <span class="heic-loading-text">Memproses foto...</span>
+                                            </div>
+                                        </div>
+                                    @else
+                                        <div class="timeline-card-img" @click="openLightbox('{{ $step->image_url }}', '{{ $step->title }}')">
+                                            <img src="{{ $step->image_url }}" alt="{{ $step->title }}">
+                                        </div>
+                                    @endif
                                 @endif
                             </div>
                         </div>
@@ -467,7 +479,18 @@
 
     <footer class="admin-footer"><p>&copy; {{ date('Y') }} SuryaPainting18. Hak Cipta Dilindungi.</p></footer>
 
-    <style>@keyframes spin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}</style>
+    <style>
+        @keyframes spin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
+        .heic-container{position:relative;margin-top:12px;max-width:320px;overflow:hidden;cursor:pointer;min-height:80px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);display:flex;align-items:center;justify-content:center;}
+        .heic-container img{width:100%;height:140px;object-fit:cover;display:block;transition:transform 0.5s;}
+        .heic-container:hover img{transform:scale(1.03);}
+        .heic-loading{display:flex;flex-direction:column;align-items:center;gap:10px;padding:20px;}
+        .heic-spinner{width:28px;height:28px;border:2px solid rgba(255,255,255,0.1);border-top-color:var(--pink);border-radius:50%;animation:spin 0.8s linear infinite;}
+        .heic-loading-text{font-size:11px;color:#666;letter-spacing:1px;text-transform:uppercase;}
+        .heic-error{display:flex;flex-direction:column;align-items:center;gap:8px;padding:16px;text-align:center;}
+        .heic-error-text{font-size:11px;color:#555;line-height:1.5;}
+        .heic-error a{font-size:11px;color:var(--pink);text-decoration:none;border-bottom:1px dashed rgba(238,20,177,0.4);padding-bottom:1px;}
+    </style>
     <script>
         function orderManager(){
             return{
@@ -490,9 +513,58 @@
                     this.lightboxImg=url;
                     this.lightboxTitle=title;
                     this.lightboxOpen=true;
+                },
+                init(){
+                    // Listen for HEIC converted images requesting lightbox
+                    window.addEventListener('heic-lightbox', (e) => {
+                        this.openLightbox(e.detail.url, e.detail.title);
+                    });
                 }
             }
         }
     </script>
+
+    {{-- heic2any: client-side HEIC → JPEG conversion via WebAssembly --}}
+    @php $heicImages = $order->timeline->filter(fn($t) => $t->is_heic); @endphp
+    @if($heicImages->isNotEmpty())
+    <script src="https://cdn.jsdelivr.net/npm/heic2any@0.0.4/dist/heic2any.min.js"></script>
+    <script>
+    document.addEventListener('DOMContentLoaded', function () {
+        var containers = document.querySelectorAll('.heic-container[data-heic-src]');
+        containers.forEach(function (container) {
+            var src   = container.dataset.heicSrc;
+            var title = container.dataset.title || '';
+
+            fetch(src)
+                .then(function (r) { return r.blob(); })
+                .then(function (blob) {
+                    return heic2any({ blob: blob, toType: 'image/jpeg', quality: 0.82 });
+                })
+                .then(function (jpegBlob) {
+                    var blobUrl = URL.createObjectURL(jpegBlob);
+                    var img = document.createElement('img');
+                    img.src = blobUrl;
+                    img.alt = title;
+                    container.innerHTML = '';
+                    container.appendChild(img);
+                    // Wire up lightbox click
+                    container.addEventListener('click', function () {
+                        window.dispatchEvent(new CustomEvent('heic-lightbox', {
+                            detail: { url: blobUrl, title: title }
+                        }));
+                    });
+                })
+                .catch(function (err) {
+                    console.warn('heic2any failed:', err);
+                    container.innerHTML =
+                        '<div class="heic-error">'
+                        + '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="rgba(238,20,177,0.5)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>'
+                        + '<span class="heic-error-text">Gagal memproses foto HEIC.<br><a href="' + src + '" download>Klik untuk unduh</a></span>'
+                        + '</div>';
+                });
+        });
+    });
+    </script>
+    @endif
 </body>
 </html>

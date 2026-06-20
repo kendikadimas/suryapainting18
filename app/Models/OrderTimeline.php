@@ -26,4 +26,16 @@ class OrderTimeline extends Model
     {
         return $this->image_path ? asset('storage/' . $this->image_path) : null;
     }
+
+    /**
+     * Returns true when the stored file is HEIC/HEIF (not renderable by browsers).
+     */
+    public function getIsHeicAttribute(): bool
+    {
+        if (!$this->image_path) {
+            return false;
+        }
+        $ext = strtolower(pathinfo($this->image_path, PATHINFO_EXTENSION));
+        return in_array($ext, ['heic', 'heif']);
+    }
 }
