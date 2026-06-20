@@ -13,6 +13,10 @@ echo "📥 Pulling from GitHub..."
 git checkout -- . 2>/dev/null || true
 git pull origin main
 
+# Install composer dependencies
+echo "📦 Installing composer dependencies..."
+composer install --no-dev --optimize-autoloader --no-interaction
+
 # Restore .env dari backup kalau hilang
 if [ ! -f /home/suryapai/suryapainting18/.env ] || [ ! -s /home/suryapai/suryapainting18/.env ]; then
     if [ -f /home/suryapai/.env.backup ]; then
