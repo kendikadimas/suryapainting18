@@ -309,8 +309,18 @@ class AdminController extends Controller
             'title' => 'required|string|max:255',
             'description' => 'nullable|string',
             'status' => 'required|string|in:Pending,Processing,Completed,Cancelled',
-            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp,heic,heif|max:10240',
+            'image' => 'nullable|file|max:20480',
         ]);
+
+        if ($request->hasFile('image')) {
+            $file = $request->file('image');
+            $ext = strtolower($file->getClientOriginalExtension() ?: '');
+            $allowedExtensions = ['jpeg', 'png', 'jpg', 'gif', 'webp', 'heic', 'heif'];
+
+            if (!in_array($ext, $allowedExtensions)) {
+                return back()->withErrors(['image' => 'Format file gambar tidak didukung (harus jpeg, png, jpg, gif, webp, heic, heif).'])->withInput();
+            }
+        }
 
         // Update order status
         $order->update(['status' => $validated['status']]);
@@ -336,27 +346,36 @@ class AdminController extends Controller
 
     // Convert uploaded image to WebP and store it.
     // Returns the relative storage path (e.g. "orders/abc123.webp") or null on failure.
+    // Compatible with Intervention Image v4 (which ships on the production server).
     private function storeImageAsWebp($file): ?string
     {
         try {
+            $hash    = uniqid('', true);
+            $name    = 'orders/' . $hash . '.webp';
+            $quality = 80;
+            $path    = $file->getRealPath();
+
+            // Build the ImageManager with the best available driver (Imagick preferred over GD).
             $driver = extension_loaded('imagick')
                 ? new \Intervention\Image\Drivers\Imagick\Driver()
                 : new \Intervention\Image\Drivers\Gd\Driver();
 
             $manager = new \Intervention\Image\ImageManager($driver);
-            $image   = $manager->read($file->getRealPath());
 
-            $hash    = uniqid('', true);
-            $name    = 'orders/' . $hash . '.webp';
-            $quality = 80;
+            // decode() is the v4 primary entry-point; it accepts file paths, binary, SplFileInfo …
+            $image  = $manager->decode($path);
 
-            Storage::disk('public')->put($name, $image->toWebp($quality)->toString());
+            // encodeUsingFileExtension() is the v4 API and returns EncodedImageInterface.
+            $binary = $image->encodeUsingFileExtension('webp', $quality)->toString();
+
+            Storage::disk('public')->put($name, $binary);
 
             return $name;
         } catch (\Throwable $e) {
             report($e);
 
-            // Fallback: store original file when WebP conversion fails (e.g. HEIC on GD)
+            // Fallback: store the original file when WebP conversion is not possible
+            // (e.g. HEIC/HEIF captured directly from an iPhone camera on a GD-only server).
             try {
                 $ext  = strtolower($file->getClientOriginalExtension() ?: 'jpg');
                 $hash = uniqid('', true);
