@@ -181,19 +181,11 @@
                     </button>
                 </div>
             </div>
-            <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
-                <a href="{{ route('admin.orders.print', $order->id) }}" target="_blank"
-                   style="display:inline-flex;align-items:center;gap:8px;background:transparent;border:1px solid rgba(255,255,255,0.15);color:rgba(255,255,255,0.7);font-family:'Barlow Condensed',sans-serif;font-size:12px;font-weight:700;font-style:italic;letter-spacing:2px;text-transform:uppercase;padding:11px 20px;text-decoration:none;transition:border-color 0.2s,color 0.2s;"
-                   onmouseover="this.style.color='#fff';this.style.borderColor='rgba(255,255,255,0.4)'"
-                   onmouseout="this.style.color='rgba(255,255,255,0.7)';this.style.borderColor='rgba(255,255,255,0.15)'">
-                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
-                    Cetak Surat
-                </a>
-                <a href="{{ route('admin.dashboard') }}" class="btn-outline-sm">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
-                    Kembali ke Dashboard
-                </a>
-            </div>
+            <a href="{{ route('admin.dashboard') }}" class="btn-outline-sm">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+                Kembali ke Dashboard
+            </a>
+        </div>
 
         @if(session('success'))
         <div class="alert-success" x-data="{ show: true }" x-show="show">
