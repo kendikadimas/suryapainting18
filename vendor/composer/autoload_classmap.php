@@ -6,6 +6,7 @@ $vendorDir = dirname(__DIR__);
 $baseDir = dirname($vendorDir);
 
 return array(
+    'App\\Exports\\OrdersExport' => $baseDir . '/app/Exports/OrdersExport.php',
     'App\\Http\\Controllers\\AdminController' => $baseDir . '/app/Http/Controllers/AdminController.php',
     'App\\Http\\Controllers\\Controller' => $baseDir . '/app/Http/Controllers/Controller.php',
     'App\\Http\\Controllers\\TrackController' => $baseDir . '/app/Http/Controllers/TrackController.php',
@@ -8072,6 +8073,7 @@ return array(
     'Termwind\\ValueObjects\\Styles' => $vendorDir . '/nunomaduro/termwind/src/ValueObjects/Styles.php',
     'Tests\\Feature\\AdminAccessTest' => $baseDir . '/tests/Feature/AdminAccessTest.php',
     'Tests\\Feature\\ExampleTest' => $baseDir . '/tests/Feature/ExampleTest.php',
+    'Tests\\Feature\\OrderExportTest' => $baseDir . '/tests/Feature/OrderExportTest.php',
     'Tests\\Feature\\TimelineImageUploadTest' => $baseDir . '/tests/Feature/TimelineImageUploadTest.php',
     'Tests\\TestCase' => $baseDir . '/tests/TestCase.php',
     'Tests\\Unit\\ExampleTest' => $baseDir . '/tests/Unit/ExampleTest.php',

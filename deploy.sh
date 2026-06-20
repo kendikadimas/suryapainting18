@@ -15,7 +15,7 @@ git pull origin main
 
 # Install composer dependencies
 echo "📦 Installing composer dependencies..."
-composer install --no-dev --optimize-autoloader --no-interaction
+composer install --no-dev --optimize-autoloader --no-interaction --ignore-platform-req=php
 
 # Restore .env dari backup kalau hilang
 if [ ! -f /home/suryapai/suryapainting18/.env ] || [ ! -s /home/suryapai/suryapainting18/.env ]; then

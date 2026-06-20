@@ -592,6 +592,7 @@ class ComposerStaticInit36793882908b6cbdd344b5a4840231db
     );
 
     public static $classMap = array (
+        'App\\Exports\\OrdersExport' => __DIR__ . '/../..' . '/app/Exports/OrdersExport.php',
         'App\\Http\\Controllers\\AdminController' => __DIR__ . '/../..' . '/app/Http/Controllers/AdminController.php',
         'App\\Http\\Controllers\\Controller' => __DIR__ . '/../..' . '/app/Http/Controllers/Controller.php',
         'App\\Http\\Controllers\\TrackController' => __DIR__ . '/../..' . '/app/Http/Controllers/TrackController.php',
@@ -8658,6 +8659,7 @@ class ComposerStaticInit36793882908b6cbdd344b5a4840231db
         'Termwind\\ValueObjects\\Styles' => __DIR__ . '/..' . '/nunomaduro/termwind/src/ValueObjects/Styles.php',
         'Tests\\Feature\\AdminAccessTest' => __DIR__ . '/../..' . '/tests/Feature/AdminAccessTest.php',
         'Tests\\Feature\\ExampleTest' => __DIR__ . '/../..' . '/tests/Feature/ExampleTest.php',
+        'Tests\\Feature\\OrderExportTest' => __DIR__ . '/../..' . '/tests/Feature/OrderExportTest.php',
         'Tests\\Feature\\TimelineImageUploadTest' => __DIR__ . '/../..' . '/tests/Feature/TimelineImageUploadTest.php',
         'Tests\\TestCase' => __DIR__ . '/../..' . '/tests/TestCase.php',
         'Tests\\Unit\\ExampleTest' => __DIR__ . '/../..' . '/tests/Unit/ExampleTest.php',
