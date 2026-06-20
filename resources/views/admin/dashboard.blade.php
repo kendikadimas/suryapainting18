@@ -341,6 +341,60 @@
             @endif
         </div>
         <div class="admin-pagination">{{ $orders->links() }}</div>
+
+        @if(Auth::user()->isSuperAdmin())
+        <!-- ===== DIAGNOSTIK SYSTEM & DATABASE (Hanya Superadmin) ===== -->
+        <div class="admin-card" style="margin-top: 40px; border-color: rgba(238,20,177,0.3); background: rgba(238,20,177,0.02); margin-bottom: 20px;">
+            <div class="admin-card-title" style="color: var(--pink); margin-bottom: 20px;">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="width: 16px; height: 16px; margin-right: 8px;"><rect x="2" y="2" width="20" height="8" rx="2" ry="2"/><rect x="2" y="14" width="20" height="8" rx="2" ry="2"/><line x1="6" y1="6" x2="6.01" y2="6"/><line x1="6" y1="18" x2="6.01" y2="18"/></svg>
+                Sistem &amp; Database Diagnostik (Superadmin Only)
+            </div>
+            <div style="display: grid; grid-template-columns: 1fr; gap: 20px;" class="md:grid-cols-2">
+                <div>
+                    <h4 style="font-weight: 700; margin-bottom: 12px; color: #fff; font-size: 14px;">Koneksi Database Aktif</h4>
+                    <div class="mobile-order-field" style="margin-bottom: 6px;">
+                        <span class="mobile-order-label">Driver Default</span>
+                        <span class="mobile-order-value" style="color: #fff;">{{ config('database.default') }}</span>
+                    </div>
+                    <div class="mobile-order-field" style="margin-bottom: 6px;">
+                        <span class="mobile-order-label">Host Database</span>
+                        <span class="mobile-order-value" style="color: #fff;">{{ config('database.connections.' . config('database.default') . '.host', 'N/A') }}</span>
+                    </div>
+                    <div class="mobile-order-field" style="margin-bottom: 6px;">
+                        <span class="mobile-order-label">Nama Database</span>
+                        <span class="mobile-order-value" style="color: #fff;">{{ config('database.connections.' . config('database.default') . '.database', 'N/A') }}</span>
+                    </div>
+                </div>
+                <div>
+                    <h4 style="font-weight: 700; margin-bottom: 12px; color: #fff; font-size: 14px;">Statistik Data</h4>
+                    <div class="mobile-order-field" style="margin-bottom: 6px;">
+                        <span class="mobile-order-label">Total Pesanan (Orders)</span>
+                        <span class="mobile-order-value" style="color: #fff;">{{ \App\Models\Order::count() }}</span>
+                    </div>
+                    <div class="mobile-order-field" style="margin-bottom: 6px;">
+                        <span class="mobile-order-label">Total Progres (Timeline)</span>
+                        <span class="mobile-order-value" style="color: #fff;">{{ \App\Models\OrderTimeline::count() }}</span>
+                    </div>
+                    <div class="mobile-order-field" style="margin-bottom: 6px;">
+                        <span class="mobile-order-label">Total Akun Admin</span>
+                        <span class="mobile-order-value" style="color: #fff;">{{ \App\Models\User::count() }}</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div style="margin-top: 24px; border-top: 1px solid rgba(255,255,255,0.06); padding-top: 20px;">
+                <h4 style="font-weight: 700; margin-bottom: 12px; color: #fff; font-size: 14px;">Daftar Akun Admin Terdaftar</h4>
+                <div style="display: flex; flex-direction: column; gap: 6px;">
+                    @foreach(\App\Models\User::all() as $adminUser)
+                        <div style="display: flex; justify-content: space-between; background: rgba(255,255,255,0.01); padding: 10px 14px; border: 1px solid rgba(255,255,255,0.05); font-size: 13px;">
+                            <span style="font-weight: 600; color: #fff;">{{ $adminUser->name }} (ID: {{ $adminUser->id }})</span>
+                            <span style="color: var(--gray);">{{ $adminUser->email }}</span>
+                        </div>
+                    @endforeach
+                </div>
+            </div>
+        </div>
+        @endif
     </main>
     <div x-show="orderModalOpen" x-transition:opacity.duration.300ms class="fixed inset-0 z-50 flex items-center justify-center" style="display:none;background:rgba(0,0,0,0.88);padding:24px" @click="orderModalOpen = false" @keydown.escape.window="orderModalOpen = false" x-cloak>
         <div class="modal-card" @click.stop>
