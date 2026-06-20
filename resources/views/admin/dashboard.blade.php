@@ -33,8 +33,8 @@
         .alert-close{position:absolute;top:12px;right:14px;background:none;border:none;color:rgba(255,255,255,0.3);cursor:pointer;padding:4px;transition:color 0.2s}
         .alert-close:hover{color:#fff}
         .filter-bar{background:#111;border:1px solid rgba(255,255,255,0.08);padding:14px 18px;margin-bottom:4px;display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between}
-        .filter-form{display:flex;gap:6px;width:100%}
-        @media(min-width:768px){.filter-form{width:auto;flex-grow:1;max-width:400px}}
+        .filter-form{display:flex;flex-wrap:wrap;gap:8px;width:100%}
+        @media(min-width:768px){.filter-form{width:auto;flex-grow:1;max-width:100%}}
         .filter-input-wrap{flex:1;position:relative}
         .filter-input-icon{position:absolute;left:10px;top:50%;transform:translateY(-50%);color:#555;display:flex}
         .filter-input-icon svg{width:13px;height:13px}
@@ -129,6 +129,11 @@
         .admin-pagination a,.admin-pagination span{display:inline-flex;align-items:center;justify-content:center;min-width:36px;height:36px;padding:0 12px;font-family:'Inter',sans-serif;font-size:12px;font-weight:600;color:rgba(255,255,255,0.5);background:transparent;border:1px solid rgba(255,255,255,0.08);text-decoration:none;transition:border-color 0.2s,color 0.2s,background 0.2s}
         .admin-pagination a:hover{border-color:rgba(255,255,255,0.2);color:#fff}
         .admin-pagination .active{background:var(--pink);border-color:var(--pink);color:#fff;font-weight:700}
+        .admin-pagination .disabled{color:rgba(255,255,255,0.15);border-color:rgba(255,255,255,0.03);cursor:not-allowed}
+        input[type="date"]::-webkit-calendar-picker-indicator {
+            filter: invert(1) brightness(0.8);
+            cursor: pointer;
+        }
         @media(max-width:768px){.orders-table{display:none}.mobile-cards{display:block!important}}
         @media(min-width:769px){.mobile-cards{display:none!important}}
         @media(max-width:640px){
@@ -219,20 +224,29 @@
         @endif
         <div class="filter-bar">
             <form action="{{ route('admin.dashboard') }}" method="GET" class="filter-form">
-                <div class="filter-input-wrap">
+                <div class="filter-input-wrap" style="flex: 2; min-width: 200px;">
                     <div class="filter-input-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg></div>
                     <input type="text" name="search" value="{{ $search }}" placeholder="Cari kode, nama, atau produk..." class="filter-input">
                 </div>
-                <button type="submit" class="filter-submit">Filter</button>
-                @if($search)<a href="{{ route('admin.dashboard') }}" class="filter-reset"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg></a>@endif
+                <div style="display:flex;gap:6px;flex:1;min-width:280px;align-items:center;">
+                    <input type="date" name="start_date" value="{{ $startDate }}" class="filter-input" style="padding-left:12px;" placeholder="Tgl Mulai">
+                    <span style="color:#555;font-size:12px;">s/d</span>
+                    <input type="date" name="end_date" value="{{ $endDate }}" class="filter-input" style="padding-left:12px;" placeholder="Tgl Akhir">
+                </div>
+                <div style="display:flex;gap:6px;align-items:center;margin-left:auto;">
+                    <button type="submit" class="filter-submit">Filter</button>
+                    @if($search || $startDate || $endDate)
+                        <a href="{{ route('admin.dashboard') }}" class="filter-reset"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg></a>
+                    @endif
+                </div>
             </form>
-            <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
+            <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;width:100%;margin-top:10px;padding-top:10px;border-top:1px solid rgba(255,255,255,0.04);justify-content:space-between;">
                 <div class="filter-count"><strong>{{ $orders->firstItem() ?? 0 }}</strong>&#8211;<strong>{{ $orders->lastItem() ?? 0 }}</strong> dari <strong>{{ $orders->total() }}</strong> pesanan</div>
-                <a href="{{ route('admin.orders.export', $search ? ['search' => $search] : []) }}"
-                   title="Download semua pesanan{{ $search ? ' (hasil filter)' : '' }} sebagai Excel"
+                <a href="{{ route('admin.orders.export', request()->only(['search', 'start_date', 'end_date'])) }}"
+                   title="Download semua pesanan (hasil filter) sebagai Excel .xlsx"
                    style="display:inline-flex;align-items:center;gap:7px;background:transparent;border:1px solid rgba(3,144,74,0.4);color:#03904a;font-family:'Barlow Condensed',sans-serif;font-size:11px;font-weight:700;font-style:italic;letter-spacing:2px;text-transform:uppercase;padding:8px 14px;text-decoration:none;transition:background 0.2s,color 0.2s;white-space:nowrap;">
                     <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-                    Export Excel{{ $search ? ' (filter)' : '' }}
+                    Export XLSX{{ ($search || $startDate || $endDate) ? ' (filter)' : '' }}
                 </a>
             </div>
         </div>
@@ -348,7 +362,32 @@
             </div>
             @endif
         </div>
-        <div class="admin-pagination">{{ $orders->links() }}</div>
+        @if ($orders->hasPages())
+        <div class="admin-pagination">
+            {{-- Previous Page Link --}}
+            @if ($orders->onFirstPage())
+                <span class="disabled">&laquo;</span>
+            @else
+                <a href="{{ $orders->previousPageUrl() }}" rel="prev">&laquo;</a>
+            @endif
+
+            {{-- Pagination Elements --}}
+            @foreach ($orders->getUrlRange(1, $orders->lastPage()) as $page => $url)
+                @if ($page == $orders->currentPage())
+                    <span class="active">{{ $page }}</span>
+                @else
+                    <a href="{{ $url }}">{{ $page }}</a>
+                @endif
+            @endforeach
+
+            {{-- Next Page Link --}}
+            @if ($orders->hasMorePages())
+                <a href="{{ $orders->nextPageUrl() }}" rel="next">&raquo;</a>
+            @else
+                <span class="disabled">&raquo;</span>
+            @endif
+        </div>
+        @endif
 
 
     </main>
