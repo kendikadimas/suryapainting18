@@ -328,8 +328,8 @@
                                 <input type="file" name="image" accept="image/*,.heic,.heif,.HEIC,.HEIF" @change="previewImage($event)">
                                 <div class="upload-placeholder" x-show="!imagePreview && !isConverting">
                                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="m21 15-5-5L5 21"/></svg>
-                                    <p>Pilih foto dari HP/Kamera atau seret file ke sini</p>
-                                    <small>Maks. Ukuran File: 20MB (Format: JPG, PNG, WEBP, HEIC)</small>
+                                    <p>Pilih foto dari galeri, kamera, atau seret file ke sini</p>
+                                    <small>Maks. 20MB &bull; JPG, PNG, WEBP, GIF, HEIC, BMP, TIFF</small>
                                 </div>
                                 <div class="upload-preview" x-show="imagePreview && !isConverting" x-cloak>
                                     <img :src="imagePreview">
@@ -502,8 +502,15 @@
                     const f=e.target.files[0];
                     if(!f) return;
 
-                    const ext = f.name.split('.').pop().toLowerCase();
-                    if(ext === 'heic' || ext === 'heif') {
+                    const ext  = f.name.includes('.') ? f.name.split('.').pop().toLowerCase() : '';
+                    const mime = f.type ? f.type.toLowerCase() : '';
+                    const isHeic = ext === 'heic' || ext === 'heif'
+                                || mime === 'image/heic' || mime === 'image/heif'
+                                || mime === 'image/x-heic' || mime === 'image/x-heif';
+
+                    console.log('[previewImage] file:', f.name, 'ext:', ext, 'mime:', mime, 'size:', f.size);
+
+                    if(isHeic) {
                         this.isConverting = true;
                         this.imagePreview = null;
 
@@ -523,18 +530,14 @@
                                 quality: 0.8
                             });
                         }).then((jpegBlob) => {
-                            // Create object URL for preview
                             this.imagePreview = URL.createObjectURL(jpegBlob);
-
-                            // Re-inject the converted jpeg file into the input so it gets uploaded as a jpeg
-                            const convertedFile = new File([jpegBlob], f.name.replace(/\.heic$/i, '.jpg').replace(/\.heif$/i, '.jpg'), {
-                                type: 'image/jpeg'
-                            });
-
+                            const newName = f.name
+                                ? f.name.replace(/\.heic$/i, '.jpg').replace(/\.heif$/i, '.jpg')
+                                : 'photo.jpg';
+                            const convertedFile = new File([jpegBlob], newName, { type: 'image/jpeg' });
                             const dt = new DataTransfer();
                             dt.items.add(convertedFile);
                             e.target.files = dt.files;
-
                             this.isConverting = false;
                         }).catch((err) => {
                             console.error('HEIC conversion failed:', err);
@@ -542,8 +545,14 @@
                             this.clearPreview();
                         });
                     } else {
-                        const r=new FileReader();
-                        r.onload=(ev)=>{this.imagePreview=ev.target.result};
+                        // Standard image — use FileReader for preview
+                        const r = new FileReader();
+                        r.onload = (ev) => { this.imagePreview = ev.target.result; };
+                        r.onerror = (err) => {
+                            console.error('FileReader error:', err);
+                            // Still allow upload even if preview fails
+                            this.imagePreview = null;
+                        };
                         r.readAsDataURL(f);
                     }
                 },

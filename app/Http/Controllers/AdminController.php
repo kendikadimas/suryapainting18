@@ -537,32 +537,79 @@ class AdminController extends Controller
 
         if ($request->hasFile('image')) {
             $file = $request->file('image');
-            $ext = strtolower($file->getClientOriginalExtension() ?: '');
-            $allowedExtensions = ['jpeg', 'png', 'jpg', 'gif', 'webp', 'heic', 'heif'];
+            $ext  = strtolower($file->getClientOriginalExtension() ?: '');
+            $mime = strtolower($file->getMimeType() ?: '');
 
-            if (!in_array($ext, $allowedExtensions)) {
-                return back()->withErrors(['image' => 'Format file gambar tidak didukung (harus jpeg, png, jpg, gif, webp, heic, heif).'])->withInput();
+            // Debug info — logged to laravel.log, visible at storage/logs/laravel.log
+            \Log::info('[addTimeline] File upload received', [
+                'original_name' => $file->getClientOriginalName(),
+                'extension'     => $ext,
+                'mime_type'     => $mime,
+                'size_bytes'    => $file->getSize(),
+                'is_valid'      => $file->isValid(),
+                'error_code'    => $file->getError(),
+            ]);
+
+            // Accept by extension OR by MIME type (covers camera photos with missing/empty extension)
+            $allowedExtensions = ['jpeg', 'jpg', 'png', 'gif', 'webp', 'heic', 'heif', 'bmp', 'tiff', 'tif'];
+            $allowedMimes      = [
+                'image/jpeg', 'image/jpg', 'image/png', 'image/gif',
+                'image/webp', 'image/heic', 'image/heif',
+                'image/bmp', 'image/tiff', 'image/tif',
+                'image/x-heic', 'image/x-heif',
+                'application/octet-stream', // some phones send this for camera photos
+            ];
+
+            $extOk  = $ext === '' || in_array($ext, $allowedExtensions);
+            $mimeOk = in_array($mime, $allowedMimes);
+
+            if (!$extOk && !$mimeOk) {
+                \Log::warning('[addTimeline] Rejected file', ['ext' => $ext, 'mime' => $mime]);
+                return back()->withErrors([
+                    'image' => "Format file tidak didukung (ext: {$ext}, mime: {$mime}). Gunakan JPG, PNG, WEBP, atau HEIC."
+                ])->withInput();
             }
+        } elseif ($request->hasFile('image') === false && $request->file('image') !== null) {
+            // File was sent but PHP dropped it — likely exceeded upload_max_filesize / post_max_size
+            \Log::warning('[addTimeline] File present in request but hasFile() is false — likely PHP upload size limit exceeded', [
+                'upload_max_filesize' => ini_get('upload_max_filesize'),
+                'post_max_size'       => ini_get('post_max_size'),
+                'content_length'      => $request->header('Content-Length'),
+            ]);
         }
 
         // Update order status
         $order->update(['status' => $validated['status']]);
 
-        $imagePath = null;
+        $imagePath  = null;
+        $imageError = null;
         if ($request->hasFile('image')) {
             try {
                 $imagePath = $this->storeImageAsWebp($request->file('image'));
+                if ($imagePath) {
+                    \Log::info('[addTimeline] Image stored successfully', ['path' => $imagePath]);
+                } else {
+                    \Log::warning('[addTimeline] storeImageAsWebp returned null');
+                    $imageError = 'Foto gagal disimpan. Coba lagi atau gunakan format JPG/PNG.';
+                }
             } catch (\Throwable $e) {
                 report($e);
+                \Log::error('[addTimeline] Exception saat menyimpan foto', ['message' => $e->getMessage()]);
+                $imageError = 'Foto gagal diproses: ' . $e->getMessage();
             }
         }
 
         OrderTimeline::create([
-            'order_id' => $order->id,
-            'title' => $validated['title'],
-            'description' => $validated['description'],
+            'order_id'   => $order->id,
+            'title'      => $validated['title'],
+            'description'=> $validated['description'],
             'image_path' => $imagePath,
         ]);
+
+        if ($imageError) {
+            return back()->with('success', 'Progres berhasil ditambahkan, tetapi foto gagal diupload.')
+                         ->withErrors(['image' => $imageError]);
+        }
 
         return back()->with('success', 'Progres baru berhasil ditambahkan ke timeline.');
     }
