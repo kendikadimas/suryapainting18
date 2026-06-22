@@ -303,7 +303,7 @@
                 <!-- Add Timeline -->
                 <div class="admin-card">
                     <div class="admin-card-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="6" y1="3" x2="6" y2="15"/><circle cx="18" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><path d="M18 9a9 9 0 0 1-9 9"/></svg>Tambah Update Progres</div>
-                    <form action="{{ route('admin.orders.addTimeline', $order->id) }}" method="POST" enctype="multipart/form-data" @submit="submitting = true">
+                    <form action="{{ route('admin.orders.addTimeline', $order->id) }}" method="POST" enctype="multipart/form-data" @submit="onFormSubmit($event)">
                         @csrf
                         <div class="admin-field">
                             <label for="title" class="form-label">Judul Status Progres *</label>
@@ -324,6 +324,9 @@
                         </div>
                         <div class="admin-field">
                             <label class="form-label">Upload Foto Bukti</label>
+
+                            {{-- Debug panel: visible on mobile to trace upload issues --}}
+                            <div id="upload-debug" style="background:#1a0a00;border:1px solid #ff6600;padding:10px 12px;margin-bottom:8px;font-size:11px;font-family:monospace;color:#ffaa44;line-height:1.7;word-break:break-all;max-height:200px;overflow-y:auto;"></div>
 
                             {{-- Two separate hidden inputs for gallery vs camera. --}}
                             {{-- Only the active one has name="image" at submit time to avoid conflict. --}}
@@ -522,28 +525,62 @@
                 lightboxTitle:'',
                 editModalOpen:false,
                 sidebarOpen:false,
+                dbg(msg){
+                    const el = document.getElementById('upload-debug');
+                    if(!el) return;
+                    el.style.display = 'block';
+                    const ts = new Date().toLocaleTimeString();
+                    el.innerHTML += '[' + ts + '] ' + msg + '<br>';
+                },
                 previewImage(e, source){
                     const f = e.target.files[0];
-                    if(!f) return;
+                    if(!f){
+                        this.dbg('WARN: no file selected (source=' + source + ')');
+                        return;
+                    }
 
                     const ext  = f.name && f.name.includes('.') ? f.name.split('.').pop().toLowerCase() : '';
                     const mime = f.type ? f.type.toLowerCase() : '';
+                    const size = f.size;
                     const isHeic = ext === 'heic' || ext === 'heif'
                                 || mime === 'image/heic' || mime === 'image/heif'
                                 || mime === 'image/x-heic' || mime === 'image/x-heif';
 
-                    console.log('[previewImage] source:', source, 'file:', f.name, 'ext:', ext, 'mime:', mime, 'size:', f.size);
+                    this.dbg('--- previewImage called ---');
+                    this.dbg('SOURCE: ' + source);
+                    this.dbg('NAME: ' + (f.name || '(kosong)'));
+                    this.dbg('EXT: ' + (ext || '(kosong)'));
+                    this.dbg('MIME: ' + (mime || '(kosong)'));
+                    this.dbg('SIZE: ' + (size ? Math.round(size/1024) + ' KB' : '0'));
+                    this.dbg('IS_HEIC: ' + isHeic);
+                    this.dbg('DataTransfer supported: ' + (typeof DataTransfer !== 'undefined'));
 
-                    // If the file came from the camera input, copy it into the gallery input
-                    // (which has name="image") so it gets submitted with the form.
-                    const transferToGallery = (file) => {
-                        const galleryInput = document.getElementById('upload-gallery');
-                        const dt = new DataTransfer();
-                        dt.items.add(file);
-                        galleryInput.files = dt.files;
+                    const galleryInput = document.getElementById('upload-gallery');
+                    const cameraInput  = document.getElementById('upload-camera');
+
+                    const ensureInGalleryInput = (file) => {
+                        if (typeof DataTransfer !== 'undefined') {
+                            try {
+                                const dt = new DataTransfer();
+                                dt.items.add(file);
+                                galleryInput.files = dt.files;
+                                this.dbg('TRANSFER_OK: file copied to gallery input, files=' + galleryInput.files.length);
+                                return true;
+                            } catch(err) {
+                                this.dbg('TRANSFER_FAIL: ' + err.message + ' — using fallback');
+                            }
+                        } else {
+                            this.dbg('TRANSFER_SKIP: DataTransfer not supported — using fallback');
+                        }
+
+                        galleryInput.removeAttribute('name');
+                        cameraInput.setAttribute('name', 'image');
+                        this.dbg('FALLBACK: name="image" moved to camera input');
+                        return true;
                     };
 
                     if(isHeic) {
+                        this.dbg('HEIC detected, converting...');
                         this.isConverting = true;
                         this.imagePreview = null;
 
@@ -555,45 +592,69 @@
                             document.head.appendChild(s);
                         });
 
-                        loadLib.then(() => heic2any({ blob: f, toType: 'image/jpeg', quality: 0.8 }))
+                        loadLib
+                        .then(() => {
+                            this.dbg('heic2any loaded, converting...');
+                            return heic2any({ blob: f, toType: 'image/jpeg', quality: 0.8 });
+                        })
                         .then((jpegBlob) => {
+                            this.dbg('HEIC converted ok, size=' + Math.round(jpegBlob.size/1024) + 'KB');
                             this.imagePreview = URL.createObjectURL(jpegBlob);
-                            const newName = (f.name || 'photo')
-                                .replace(/\.heic$/i, '.jpg')
-                                .replace(/\.heif$/i, '.jpg');
+                            const newName = (f.name || 'photo').replace(/\.heic$/i, '.jpg').replace(/\.heif$/i, '.jpg');
                             const converted = new File([jpegBlob], newName, { type: 'image/jpeg' });
-                            // Always put into gallery input
-                            const dt = new DataTransfer();
-                            dt.items.add(converted);
-                            document.getElementById('upload-gallery').files = dt.files;
+                            ensureInGalleryInput(converted);
+                            this.dbg('HEIC -> gallery input ok');
                             this.isConverting = false;
                         }).catch((err) => {
-                            console.error('HEIC conversion failed:', err);
+                            this.dbg('HEIC ERROR: ' + err.message);
                             alert('Gagal memproses file HEIC. Harap gunakan format JPG/PNG/WEBP.');
                             this.clearPreview();
                         });
 
                     } else {
-                        // If from camera input, copy into gallery input for form submission
-                        if (source === 'camera') {
-                            transferToGallery(f);
-                        }
+                        ensureInGalleryInput(f);
 
                         const r = new FileReader();
-                        r.onload  = (ev) => { this.imagePreview = ev.target.result; };
+                        r.onload  = (ev) => {
+                            this.dbg('FileReader ok, preview set');
+                            this.imagePreview = ev.target.result;
+                        };
                         r.onerror = (err) => {
-                            console.error('FileReader error:', err);
-                            // Allow upload to proceed even without preview
+                            this.dbg('FileReader ERROR: ' + (err ? err.toString() : 'unknown'));
                             this.imagePreview = 'data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEAAAAALAAAAAABAAEAAAI=';
                         };
                         r.readAsDataURL(f);
                     }
                 },
+                onFormSubmit(e){
+                    const gallery = document.getElementById('upload-gallery');
+                    const camera  = document.getElementById('upload-camera');
+                    this.dbg('--- onFormSubmit called ---');
+                    this.dbg('SUBMIT: gallery.files=' + gallery.files.length + ' camera.files=' + (camera ? camera.files.length : 'n/a'));
+                    this.dbg('SUBMIT: gallery.name=' + (gallery.getAttribute('name') || '(null)') + ' camera.name=' + (camera ? (camera.getAttribute('name') || '(null)') : 'n/a'));
+                    if(gallery.files.length > 0){
+                        const f = gallery.files[0];
+                        this.dbg('SUBMIT gallery file: ' + f.name + ' mime=' + f.type + ' size=' + Math.round(f.size/1024) + 'KB');
+                    }
+                    if(camera && camera.files.length > 0){
+                        const f = camera.files[0];
+                        this.dbg('SUBMIT camera file: ' + f.name + ' mime=' + f.type + ' size=' + Math.round(f.size/1024) + 'KB');
+                    }
+                    if(gallery.files.length === 0 && (!camera || camera.files.length === 0)){
+                        this.dbg('SUBMIT: NO FILE attached — upload will be without photo');
+                    }
+                    this.submitting = true;
+                },
                 clearPreview(){
                     this.imagePreview=null;
                     this.isConverting=false;
+                    const galleryInput = document.getElementById('upload-gallery');
+                    const cameraInput  = document.getElementById('upload-camera');
                     const inputs = document.querySelectorAll('input[type="file"]');
                     inputs.forEach(i => { i.value = ''; });
+                    galleryInput.setAttribute('name', 'image');
+                    if(cameraInput) cameraInput.removeAttribute('name');
+                    this.dbg('CLEAR: name="image" reset to gallery input');
                 },
                 openLightbox(url,title){
                     this.lightboxImg=url;

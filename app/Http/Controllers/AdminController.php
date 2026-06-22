@@ -528,6 +528,22 @@ class AdminController extends Controller
     {
         $order = Order::findOrFail($id);
 
+        \Log::info('[addTimeline] === REQUEST RECEIVED ===', [
+            'order_id'     => $id,
+            'method'       => $request->method(),
+            'url'          => $request->fullUrl(),
+            'has_file'     => $request->hasFile('image'),
+            'all_files'    => array_keys($request->allFiles()),
+            'all_keys'     => array_keys($request->all()),
+            'content_type' => $request->header('Content-Type'),
+            'content_len'  => $request->header('Content-Length'),
+            'user_agent'   => $request->header('User-Agent'),
+            'php_upload_max' => ini_get('upload_max_filesize'),
+            'php_post_max'   => ini_get('post_max_size'),
+            'php_memory'     => ini_get('memory_limit'),
+            'php_max_input'  => ini_get('max_input_time'),
+        ]);
+
         $validated = $request->validate([
             'title' => 'required|string|max:255',
             'description' => 'nullable|string',
@@ -535,12 +551,13 @@ class AdminController extends Controller
             'image' => 'nullable|file|max:20480',
         ]);
 
+        \Log::info('[addTimeline] Validation passed', ['validated_keys' => array_keys($validated)]);
+
         if ($request->hasFile('image')) {
             $file = $request->file('image');
             $ext  = strtolower($file->getClientOriginalExtension() ?: '');
             $mime = strtolower($file->getMimeType() ?: '');
 
-            // Debug info — logged to laravel.log, visible at storage/logs/laravel.log
             \Log::info('[addTimeline] File upload received', [
                 'original_name' => $file->getClientOriginalName(),
                 'extension'     => $ext,
@@ -548,6 +565,9 @@ class AdminController extends Controller
                 'size_bytes'    => $file->getSize(),
                 'is_valid'      => $file->isValid(),
                 'error_code'    => $file->getError(),
+                'error_string'  => $this->uploadErrorToString($file->getError()),
+                'real_path'     => $file->getRealPath(),
+                'path'          => $file->getPathname(),
             ]);
 
             // Accept by extension OR by MIME type (covers camera photos with missing/empty extension)
@@ -569,12 +589,10 @@ class AdminController extends Controller
                     'image' => "Format file tidak didukung (ext: {$ext}, mime: {$mime}). Gunakan JPG, PNG, WEBP, atau HEIC."
                 ])->withInput();
             }
-        } elseif ($request->hasFile('image') === false && $request->file('image') !== null) {
-            // File was sent but PHP dropped it — likely exceeded upload_max_filesize / post_max_size
-            \Log::warning('[addTimeline] File present in request but hasFile() is false — likely PHP upload size limit exceeded', [
-                'upload_max_filesize' => ini_get('upload_max_filesize'),
-                'post_max_size'       => ini_get('post_max_size'),
-                'content_length'      => $request->header('Content-Length'),
+        } else {
+            \Log::info('[addTimeline] No file in request — checking if file was dropped', [
+                '$_FILES'       => $_FILES,
+                'file_image_err' => isset($_FILES['image']) ? $_FILES['image']['error'] : 'not_set',
             ]);
         }
 
@@ -585,6 +603,7 @@ class AdminController extends Controller
         $imageError = null;
         if ($request->hasFile('image')) {
             try {
+                \Log::info('[addTimeline] Calling storeImageAsWebp...');
                 $imagePath = $this->storeImageAsWebp($request->file('image'));
                 if ($imagePath) {
                     \Log::info('[addTimeline] Image stored successfully', ['path' => $imagePath]);
@@ -594,10 +613,24 @@ class AdminController extends Controller
                 }
             } catch (\Throwable $e) {
                 report($e);
-                \Log::error('[addTimeline] Exception saat menyimpan foto', ['message' => $e->getMessage()]);
+                \Log::error('[addTimeline] Exception saat menyimpan foto', [
+                    'message' => $e->getMessage(),
+                    'file'    => $e->getFile(),
+                    'line'    => $e->getLine(),
+                    'trace'   => $e->getTraceAsString(),
+                ]);
                 $imageError = 'Foto gagal diproses: ' . $e->getMessage();
             }
+        } else {
+            \Log::info('[addTimeline] No image file to store');
         }
+
+        \Log::info('[addTimeline] Creating OrderTimeline', [
+            'order_id'    => $order->id,
+            'title'       => $validated['title'],
+            'image_path'  => $imagePath,
+            'image_error' => $imageError,
+        ]);
 
         OrderTimeline::create([
             'order_id'   => $order->id,
@@ -605,6 +638,8 @@ class AdminController extends Controller
             'description'=> $validated['description'],
             'image_path' => $imagePath,
         ]);
+
+        \Log::info('[addTimeline] === REQUEST COMPLETE ===');
 
         if ($imageError) {
             return back()->with('success', 'Progres berhasil ditambahkan, tetapi foto gagal diupload.')
@@ -625,37 +660,57 @@ class AdminController extends Controller
             $quality = 80;
             $path    = $file->getRealPath();
 
-            // Build the ImageManager with the best available driver (Imagick preferred over GD).
+            \Log::info('[storeImageAsWebp] Starting conversion', [
+                'real_path'   => $path,
+                'path_exists' => $path && file_exists($path),
+                'file_size'   => $path && file_exists($path) ? filesize($path) : 'N/A',
+                'imagick_ext' => extension_loaded('imagick'),
+                'gd_ext'      => extension_loaded('gd'),
+            ]);
+
             $driver = extension_loaded('imagick')
                 ? new \Intervention\Image\Drivers\Imagick\Driver()
                 : new \Intervention\Image\Drivers\Gd\Driver();
 
             $manager = new \Intervention\Image\ImageManager($driver);
 
-            // decode() is the v4 primary entry-point; it accepts file paths, binary, SplFileInfo …
             $image  = $manager->decode($path);
 
-            // encodeUsingFileExtension() is the v4 API and returns EncodedImageInterface.
             $binary = $image->encodeUsingFileExtension('webp', $quality)->toString();
 
-            Storage::disk('public')->put($name, $binary);
+            \Log::info('[storeImageAsWebp] Encoded to webp', ['binary_size' => strlen($binary)]);
+
+            $stored = Storage::disk('public')->put($name, $binary);
+
+            \Log::info('[storeImageAsWebp] Stored to disk', ['name' => $name, 'stored' => $stored]);
 
             return $name;
         } catch (\Throwable $e) {
             report($e);
 
-            // Fallback: store the original file when WebP conversion is not possible
-            // (e.g. HEIC/HEIF captured directly from an iPhone camera on a GD-only server).
+            \Log::warning('[storeImageAsWebp] WebP conversion failed, trying fallback', [
+                'message' => $e->getMessage(),
+                'file'    => $e->getFile(),
+                'line'    => $e->getLine(),
+            ]);
+
             try {
                 $ext  = strtolower($file->getClientOriginalExtension() ?: 'jpg');
                 $hash = uniqid('', true);
                 $name = 'orders/' . $hash . '.' . $ext;
+
+                \Log::info('[storeImageAsWebp] Fallback: storing original', ['ext' => $ext, 'name' => $name]);
 
                 Storage::disk('public')->putFileAs('orders', $file, $hash . '.' . $ext);
 
                 return $name;
             } catch (\Throwable $e2) {
                 report($e2);
+                \Log::error('[storeImageAsWebp] Fallback also failed', [
+                    'message' => $e2->getMessage(),
+                    'file'    => $e2->getFile(),
+                    'line'    => $e2->getLine(),
+                ]);
                 return null;
             }
         }
@@ -690,5 +745,20 @@ class AdminController extends Controller
         $order->delete();
 
         return redirect()->route('admin.dashboard')->with('success', 'Pesanan berhasil dihapus.');
+    }
+
+    private function uploadErrorToString(int $code): string
+    {
+        return match ($code) {
+            UPLOAD_ERR_OK         => 'OK (no error)',
+            UPLOAD_ERR_INI_SIZE   => 'Exceeded upload_max_filesize',
+            UPLOAD_ERR_FORM_SIZE  => 'Exceeded MAX_FILE_SIZE in form',
+            UPLOAD_ERR_PARTIAL    => 'Partial upload (file only partially received)',
+            UPLOAD_ERR_NO_FILE    => 'No file uploaded',
+            UPLOAD_ERR_NO_TMP_DIR => 'Missing temporary folder',
+            UPLOAD_ERR_CANT_WRITE => 'Failed to write file to disk',
+            UPLOAD_ERR_EXTENSION  => 'Stopped by PHP extension',
+            default               => 'Unknown error code: ' . $code,
+        };
     }
 }
