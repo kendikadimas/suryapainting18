@@ -734,6 +734,10 @@ class AdminController extends Controller
     // Delete an order
     public function deleteOrder($id)
     {
+        if (!Auth::user()->isSuperAdmin()) {
+            abort(403, 'Hanya superadmin yang dapat menghapus pesanan.');
+        }
+
         $order = Order::findOrFail($id);
 
         foreach ($order->timeline as $timeline) {
