@@ -56,7 +56,8 @@ class OrdersExport implements FromCollection, WithHeadings, WithMapping, WithSty
             'Status', 
             'Durasi Pengerjaan', 
             'Update', 
-            'Tanggal Masuk'
+            'Tanggal Masuk',
+            'Tanggal Keluar'
         ];
     }
 
@@ -101,7 +102,10 @@ class OrdersExport implements FromCollection, WithHeadings, WithMapping, WithSty
             $statusLabel,
             $duration,
             $order->timeline_count,
-            $order->created_at->format('d/m/Y H:i')
+            $order->created_at->format('d/m/Y H:i'),
+            in_array($order->status, ['Completed', 'Cancelled'])
+                ? $order->updated_at->format('d/m/Y H:i')
+                : '—'
         ];
     }
 
@@ -120,6 +124,7 @@ class OrdersExport implements FromCollection, WithHeadings, WithMapping, WithSty
             'J' => 20,  // Durasi Pengerjaan
             'K' => 10,  // Update
             'L' => 20,  // Tanggal Masuk
+            'M' => 20,  // Tanggal Keluar
         ];
     }
 
@@ -138,7 +143,7 @@ class OrdersExport implements FromCollection, WithHeadings, WithMapping, WithSty
                 $endRowIndex = 7 + $totalRows;
 
                 // 1. Company Banner Header (Row 1)
-                $sheet->mergeCells('A1:L1');
+                $sheet->mergeCells('A1:M1');
                 $sheet->setCellValue('A1', 'SuryaPainting18');
                 $sheet->getStyle('A1')->applyFromArray([
                     'font' => [
@@ -159,7 +164,7 @@ class OrdersExport implements FromCollection, WithHeadings, WithMapping, WithSty
                 $sheet->getRowDimension(1)->setRowHeight(35);
 
                 // 2. Sub-banner (Row 2)
-                $sheet->mergeCells('A2:L2');
+                $sheet->mergeCells('A2:M2');
                 $sheet->setCellValue('A2', 'Jasa Pengecatan Motor Profesional  ·  suryapainting18indonesia.com');
                 $sheet->getStyle('A2')->applyFromArray([
                     'font' => [
@@ -179,7 +184,7 @@ class OrdersExport implements FromCollection, WithHeadings, WithMapping, WithSty
                 $sheet->getRowDimension(2)->setRowHeight(20);
 
                 // 3. Pink Divider (Row 3) - Now Yellow
-                $sheet->mergeCells('A3:L3');
+                $sheet->mergeCells('A3:M3');
                 $sheet->getStyle('A3')->applyFromArray([
                     'fill' => [
                         'fillType' => Fill::FILL_SOLID,
@@ -192,7 +197,7 @@ class OrdersExport implements FromCollection, WithHeadings, WithMapping, WithSty
                 $sheet->getRowDimension(4)->setRowHeight(12);
 
                 // 5. Meta Information Row (Row 5)
-                $sheet->mergeCells('A5:L5');
+                $sheet->mergeCells('A5:M5');
                 $metaText = 'Laporan: Daftar Pesanan';
                 if ($this->search) $metaText .= ' | Filter: "' . $this->search . '"';
                 if ($this->startDate) $metaText .= ' | Dari: ' . date('d/m/Y', strtotime($this->startDate));
@@ -227,7 +232,7 @@ class OrdersExport implements FromCollection, WithHeadings, WithMapping, WithSty
                 $sheet->getRowDimension(6)->setRowHeight(12);
 
                 // 6. Headers Styling (Row 7)
-                for ($col = 1; $col <= 12; $col++) {
+                for ($col = 1; $col <= 13; $col++) {
                     $colLetter = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($col);
                     $sheet->getStyle($colLetter . '7')->applyFromArray([
                         'font' => [
@@ -277,7 +282,7 @@ class OrdersExport implements FromCollection, WithHeadings, WithMapping, WithSty
                         $statusText = '991B1B';
                     }
 
-                    for ($c = 1; $c <= 12; $c++) {
+                    for ($c = 1; $c <= 13; $c++) {
                         $colLetter = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($c);
                         $cellRef = $colLetter . $r;
 
@@ -301,7 +306,7 @@ class OrdersExport implements FromCollection, WithHeadings, WithMapping, WithSty
                             ],
                         ];
 
-                        if (in_array($c, [1, 2, 5, 6, 10, 11, 12])) {
+                        if (in_array($c, [1, 2, 5, 6, 10, 11, 12, 13])) {
                             $style['alignment']['horizontal'] = Alignment::HORIZONTAL_CENTER;
                         }
                         if ($c === 2) {
@@ -336,6 +341,7 @@ class OrdersExport implements FromCollection, WithHeadings, WithMapping, WithSty
                 $sheet->setCellValue("A{$footRow}", 'Total Pesanan');
                 $sheet->setCellValue("K{$footRow}", $totalRows);
                 $sheet->setCellValue("L{$footRow}", '');
+                $sheet->setCellValue("M{$footRow}", '');
 
                 $footerStyle = [
                     'font' => [
@@ -356,7 +362,7 @@ class OrdersExport implements FromCollection, WithHeadings, WithMapping, WithSty
                     ],
                 ];
 
-                for ($c = 1; $c <= 12; $c++) {
+                for ($c = 1; $c <= 13; $c++) {
                     $colLetter = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($c);
                     $sheet->getStyle($colLetter . $footRow)->applyFromArray($footerStyle);
                 }
@@ -372,7 +378,7 @@ class OrdersExport implements FromCollection, WithHeadings, WithMapping, WithSty
 
                 // 9. Watermark Row (Row endRowIndex + 2)
                 $watermarkRow = $footRow + 1;
-                $sheet->mergeCells("A{$watermarkRow}:L{$watermarkRow}");
+                $sheet->mergeCells("A{$watermarkRow}:M{$watermarkRow}");
                 $sheet->setCellValue("A{$watermarkRow}", '© ' . date('Y') . ' SuryaPainting18  ·  Dokumen ini digenerate otomatis oleh sistem pada ' . now()->format('d/m/Y H:i') . ' WIB');
                 $sheet->getStyle("A{$watermarkRow}")->applyFromArray([
                     'font' => [
