@@ -324,21 +324,45 @@
                         </div>
                         <div class="admin-field">
                             <label class="form-label">Upload Foto Bukti</label>
-                            <div class="upload-zone">
-                                <input type="file" name="image" accept="image/*,.heic,.heif,.HEIC,.HEIF" @change="previewImage($event)">
-                                <div class="upload-placeholder" x-show="!imagePreview && !isConverting">
-                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="m21 15-5-5L5 21"/></svg>
-                                    <p>Pilih foto dari galeri, kamera, atau seret file ke sini</p>
-                                    <small>Maks. 20MB &bull; JPG, PNG, WEBP, GIF, HEIC, BMP, TIFF</small>
-                                </div>
+
+                            {{-- Two separate hidden inputs for gallery vs camera. --}}
+                            {{-- Only the active one has name="image" at submit time to avoid conflict. --}}
+                            <input type="file" id="upload-gallery" name="image" accept="image/*,.heic,.heif" style="display:none" @change="previewImage($event, 'gallery')">
+                            <input type="file" id="upload-camera" accept="image/*" capture="environment" style="display:none" @change="previewImage($event, 'camera')">
+
+                            {{-- Preview zone (shown after file is selected) --}}
+                            <div class="upload-zone" x-show="imagePreview || isConverting" x-cloak style="padding:12px;">
                                 <div class="upload-preview" x-show="imagePreview && !isConverting" x-cloak>
                                     <img :src="imagePreview">
-                                    <button type="button" class="upload-preview-remove" @click.stop="clearPreview()">x</button>
+                                    <button type="button" class="upload-preview-remove" @click.stop="clearPreview()">&#10005;</button>
                                 </div>
-                                <div class="heic-loading" x-show="isConverting" x-cloak style="padding: 10px;">
+                                <div class="heic-loading" x-show="isConverting" x-cloak style="padding:10px;">
                                     <div class="heic-spinner"></div>
                                     <span class="heic-loading-text">Mengonversi HEIC...</span>
                                 </div>
+                            </div>
+
+                            {{-- Upload buttons (shown when no file selected) --}}
+                            <div x-show="!imagePreview && !isConverting" style="display:flex;flex-direction:column;gap:8px;margin-top:4px;">
+                                {{-- Galeri button --}}
+                                <button type="button"
+                                    onclick="document.getElementById('upload-gallery').click()"
+                                    style="display:flex;align-items:center;justify-content:center;gap:10px;width:100%;padding:14px 16px;background:rgba(255,255,255,0.03);border:1.5px dashed rgba(255,255,255,0.15);color:rgba(255,255,255,0.7);font-family:'Inter',sans-serif;font-size:13px;font-weight:500;cursor:pointer;transition:border-color 0.2s,background 0.2s;-webkit-tap-highlight-color:transparent;"
+                                    onmouseover="this.style.borderColor='rgba(238,20,177,0.5)';this.style.background='rgba(238,20,177,0.05)'"
+                                    onmouseout="this.style.borderColor='rgba(255,255,255,0.15)';this.style.background='rgba(255,255,255,0.03)'">
+                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="m21 15-5-5L5 21"/></svg>
+                                    Pilih dari Galeri / File
+                                </button>
+                                {{-- Kamera button --}}
+                                <button type="button"
+                                    onclick="document.getElementById('upload-camera').click()"
+                                    style="display:flex;align-items:center;justify-content:center;gap:10px;width:100%;padding:14px 16px;background:rgba(255,255,255,0.03);border:1.5px dashed rgba(255,255,255,0.15);color:rgba(255,255,255,0.7);font-family:'Inter',sans-serif;font-size:13px;font-weight:500;cursor:pointer;transition:border-color 0.2s,background 0.2s;-webkit-tap-highlight-color:transparent;"
+                                    onmouseover="this.style.borderColor='rgba(238,20,177,0.5)';this.style.background='rgba(238,20,177,0.05)'"
+                                    onmouseout="this.style.borderColor='rgba(255,255,255,0.15)';this.style.background='rgba(255,255,255,0.03)'">
+                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+                                    Ambil Foto dari Kamera
+                                </button>
+                                <p style="font-size:10px;color:#555;text-align:center;margin-top:2px;">Maks. 20MB &bull; JPG, PNG, WEBP, HEIC, GIF, BMP</p>
                             </div>
                         </div>
                         <button type="submit" class="btn-red-sm" style="width:100%;margin-top:8px;" :disabled="submitting">
@@ -498,23 +522,31 @@
                 lightboxTitle:'',
                 editModalOpen:false,
                 sidebarOpen:false,
-                previewImage(e){
-                    const f=e.target.files[0];
+                previewImage(e, source){
+                    const f = e.target.files[0];
                     if(!f) return;
 
-                    const ext  = f.name.includes('.') ? f.name.split('.').pop().toLowerCase() : '';
+                    const ext  = f.name && f.name.includes('.') ? f.name.split('.').pop().toLowerCase() : '';
                     const mime = f.type ? f.type.toLowerCase() : '';
                     const isHeic = ext === 'heic' || ext === 'heif'
                                 || mime === 'image/heic' || mime === 'image/heif'
                                 || mime === 'image/x-heic' || mime === 'image/x-heif';
 
-                    console.log('[previewImage] file:', f.name, 'ext:', ext, 'mime:', mime, 'size:', f.size);
+                    console.log('[previewImage] source:', source, 'file:', f.name, 'ext:', ext, 'mime:', mime, 'size:', f.size);
+
+                    // If the file came from the camera input, copy it into the gallery input
+                    // (which has name="image") so it gets submitted with the form.
+                    const transferToGallery = (file) => {
+                        const galleryInput = document.getElementById('upload-gallery');
+                        const dt = new DataTransfer();
+                        dt.items.add(file);
+                        galleryInput.files = dt.files;
+                    };
 
                     if(isHeic) {
                         this.isConverting = true;
                         this.imagePreview = null;
 
-                        // Dynamically load heic2any if not present
                         const loadLib = window.heic2any ? Promise.resolve() : new Promise((res, rej) => {
                             const s = document.createElement('script');
                             s.src = "https://cdn.jsdelivr.net/npm/heic2any@0.0.4/dist/heic2any.min.js";
@@ -523,35 +555,36 @@
                             document.head.appendChild(s);
                         });
 
-                        loadLib.then(() => {
-                            return heic2any({
-                                blob: f,
-                                toType: 'image/jpeg',
-                                quality: 0.8
-                            });
-                        }).then((jpegBlob) => {
+                        loadLib.then(() => heic2any({ blob: f, toType: 'image/jpeg', quality: 0.8 }))
+                        .then((jpegBlob) => {
                             this.imagePreview = URL.createObjectURL(jpegBlob);
-                            const newName = f.name
-                                ? f.name.replace(/\.heic$/i, '.jpg').replace(/\.heif$/i, '.jpg')
-                                : 'photo.jpg';
-                            const convertedFile = new File([jpegBlob], newName, { type: 'image/jpeg' });
+                            const newName = (f.name || 'photo')
+                                .replace(/\.heic$/i, '.jpg')
+                                .replace(/\.heif$/i, '.jpg');
+                            const converted = new File([jpegBlob], newName, { type: 'image/jpeg' });
+                            // Always put into gallery input
                             const dt = new DataTransfer();
-                            dt.items.add(convertedFile);
-                            e.target.files = dt.files;
+                            dt.items.add(converted);
+                            document.getElementById('upload-gallery').files = dt.files;
                             this.isConverting = false;
                         }).catch((err) => {
                             console.error('HEIC conversion failed:', err);
                             alert('Gagal memproses file HEIC. Harap gunakan format JPG/PNG/WEBP.');
                             this.clearPreview();
                         });
+
                     } else {
-                        // Standard image — use FileReader for preview
+                        // If from camera input, copy into gallery input for form submission
+                        if (source === 'camera') {
+                            transferToGallery(f);
+                        }
+
                         const r = new FileReader();
-                        r.onload = (ev) => { this.imagePreview = ev.target.result; };
+                        r.onload  = (ev) => { this.imagePreview = ev.target.result; };
                         r.onerror = (err) => {
                             console.error('FileReader error:', err);
-                            // Still allow upload even if preview fails
-                            this.imagePreview = null;
+                            // Allow upload to proceed even without preview
+                            this.imagePreview = 'data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEAAAAALAAAAAABAAEAAAI=';
                         };
                         r.readAsDataURL(f);
                     }
@@ -559,7 +592,8 @@
                 clearPreview(){
                     this.imagePreview=null;
                     this.isConverting=false;
-                    document.querySelector('input[type="file"]').value='';
+                    const inputs = document.querySelectorAll('input[type="file"]');
+                    inputs.forEach(i => { i.value = ''; });
                 },
                 openLightbox(url,title){
                     this.lightboxImg=url;
