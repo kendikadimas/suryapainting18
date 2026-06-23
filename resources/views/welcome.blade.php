@@ -2379,6 +2379,10 @@
                                 <span class="track-info-label">Nama Pelanggan</span>
                                 <span class="track-info-val" x-text="orderData?.customer_name"></span>
                             </div>
+                            <div x-show="orderData?.cabang">
+                                <span class="track-info-label">Cabang</span>
+                                <span class="track-info-val" x-text="orderData?.cabang"></span>
+                            </div>
                             <div>
                                 <span class="track-info-label">Produk / Jasa</span>
                                 <span class="track-info-val" x-text="orderData?.product_name"></span>
