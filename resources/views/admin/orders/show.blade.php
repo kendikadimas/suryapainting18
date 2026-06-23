@@ -217,6 +217,14 @@
                         <span class="admin-field-value">{{ $order->nomor_surat }}</span>
                     </div>
                     <div class="admin-field-box">
+                        <span class="admin-field-label">Cabang</span>
+                        @if($order->cabang)
+                            <span class="admin-field-value">{{ $order->cabang }}</span>
+                        @else
+                            <span class="admin-field-value" style="color:#555;font-weight:400;font-size:12px;">—</span>
+                        @endif
+                    </div>
+                    <div class="admin-field-box">
                         <span class="admin-field-label">Nama Pelanggan</span>
                         <span class="admin-field-value">{{ $order->customer_name }}</span>
                     </div>
@@ -450,6 +458,14 @@
                     <div style="margin-bottom:14px;">
                         <label style="display:block;font-size:10px;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:#888;margin-bottom:8px;">Nomor Surat *</label>
                         <input type="text" name="nomor_surat" value="{{ old('nomor_surat', $order->nomor_surat) }}" style="width:100%;padding:12px 16px;background:#0d0d0d;border:1px solid rgba(255,255,255,0.1);color:#fff;font-family:'Inter',sans-serif;font-size:14px;outline:none;" required>
+                    </div>
+                    <div style="margin-bottom:14px;">
+                        <label style="display:block;font-size:10px;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:#888;margin-bottom:8px;">Cabang *</label>
+                        <select name="cabang" required style="width:100%;padding:12px 16px;background:#0d0d0d;border:1px solid rgba(255,255,255,0.1);color:#fff;font-family:'Inter',sans-serif;font-size:14px;outline:none;-webkit-appearance:none;appearance:none;cursor:pointer;background-image:url(&quot;data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%23555' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E&quot;);background-repeat:no-repeat;background-position:right 14px center;padding-right:40px;">
+                            <option value="" @selected(!$order->cabang)>— Pilih Cabang —</option>
+                            <option value="Bekasi" @selected($order->cabang === 'Bekasi')>Bekasi</option>
+                            <option value="Cikarang" @selected($order->cabang === 'Cikarang')>Cikarang</option>
+                        </select>
                     </div>
                     <div style="margin-bottom:14px;">
                         <label style="display:block;font-size:10px;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:#888;margin-bottom:8px;">Nama Pelanggan *</label>

@@ -367,6 +367,7 @@ class AdminController extends Controller
             <tr style=\"background:{$bgColor};\">
                 <td style=\"text-align:center;color:#666;font-size:9pt;\">" . ($index + 1) . "</td>
                 <td style=\"font-weight:bold;color:#3c096c;text-align:center;\">" . e($order->nomor_surat) . "</td>
+                <td style=\"text-align:center;\">" . e($order->cabang ?: '—') . "</td>
                 <td style=\"font-weight:bold;\">" . e($order->customer_name) . "</td>
                 <td style=\"color:#1a7a3a;font-size:9.5pt;\">" . e($order->customer_phone ?: '—') . "</td>
                 <td style=\"text-align:center;\">" . e($order->nomor_plat ?: '—') . "</td>
@@ -404,40 +405,41 @@ class AdminController extends Controller
         <body>
         <table class=\"data-table\">
             <tr>
-                <td colspan=\"13\" class=\"co-banner\" align=\"center\" style=\"text-align:center;border:none;\">🎨 &nbsp; SuryaPainting18</td>
+                <td colspan="14" class="co-banner" align="center" style="text-align:center;border:none;">🎨 &nbsp; SuryaPainting18</td>
             </tr>
             <tr>
-                <td colspan=\"13\" class=\"co-sub\" align=\"center\" style=\"text-align:center;border:none;\">Jasa Pengecatan Motor Profesional &nbsp;·&nbsp; suryapainting18indonesia.com</td>
+                <td colspan="14" class="co-sub" align="center" style="text-align:center;border:none;">Jasa Pengecatan Motor Profesional &nbsp;·&nbsp; suryapainting18indonesia.com</td>
             </tr>
             <tr>
-                <td colspan=\"13\" class=\"co-divider\" style=\"background:#ffd166;height:4px;font-size:1pt;border:none;padding:0;\">&nbsp;</td>
+                <td colspan="14" class="co-divider" style="background:#ffd166;height:4px;font-size:1pt;border:none;padding:0;">&nbsp;</td>
             </tr>
             <tr style=\"height:6px;font-size:1pt;\">
-                <td colspan=\"13\" style=\"border:none;\">&nbsp;</td>
+                <td colspan="14" style="border:none;">&nbsp;</td>
             </tr>
             <tr>
-                <td colspan=\"13\" class=\"meta-row\" align=\"center\" style=\"text-align:center;background:#f6f2fc;font-size:9pt;color:#555;padding:8px 10px;border-bottom:1px solid #e5dcf2;\">
+                <td colspan="14" class="meta-row" align="center" style="text-align:center;background:#f6f2fc;font-size:9pt;color:#555;padding:8px 10px;border-bottom:1px solid #e5dcf2;">
                     {$metaText}
                 </td>
             </tr>
             <tr style=\"height:12px;font-size:1pt;\">
-                <td colspan=\"13\" style=\"border:none;\">&nbsp;</td>
+                <td colspan="14" style="border:none;">&nbsp;</td>
             </tr>
             <thead>
                 <tr>
-                    <th rowspan=\"1\" style=\"width:38px;\" align=\"center\">No.</th>
-                    <th align=\"center\">Nomor Surat</th>
-                    <th align=\"center\">Nama Pelanggan</th>
-                    <th align=\"center\">No. HP / WhatsApp</th>
-                    <th align=\"center\">Nomor Plat</th>
-                    <th align=\"center\">Tipe Motor</th>
-                    <th align=\"center\">Detail Motor</th>
-                    <th align=\"center\">Produk / Jasa</th>
-                    <th style=\"width:90px;\" align=\"center\">Status</th>
-                    <th style=\"width:120px;\" align=\"center\">Durasi Pengerjaan</th>
-                    <th style=\"width:70px;\" align=\"center\">Update</th>
-                    <th style=\"width:110px;\" align=\"center\">Tanggal Masuk</th>
-                    <th style=\"width:110px;\" align=\"center\">Tanggal Keluar</th>
+                    <th rowspan="1" style="width:38px;" align="center">No.</th>
+                    <th align="center">Nomor Surat</th>
+                    <th align="center">Cabang</th>
+                    <th align="center">Nama Pelanggan</th>
+                    <th align="center">No. HP / WhatsApp</th>
+                    <th align="center">Nomor Plat</th>
+                    <th align="center">Tipe Motor</th>
+                    <th align="center">Detail Motor</th>
+                    <th align="center">Produk / Jasa</th>
+                    <th style="width:90px;" align="center">Status</th>
+                    <th style="width:120px;" align="center">Durasi Pengerjaan</th>
+                    <th style="width:70px;" align="center">Update</th>
+                    <th style="width:110px;" align="center">Tanggal Masuk</th>
+                    <th style="width:110px;" align="center">Tanggal Keluar</th>
                 </tr>
             </thead>
             <tbody>
@@ -445,13 +447,13 @@ class AdminController extends Controller
             </tbody>
             <tfoot>
                 <tr>
-                    <td colspan=\"10\" style=\"background:#3c096c;color:#ffffff;font-weight:bold;font-size:10pt;padding:9px 12px;border:1px solid #240046;text-align:right;\">Total Pesanan</td>
-                    <td style=\"background:#3c096c;color:#ffd166;font-weight:bold;font-size:10pt;padding:9px 12px;border:1px solid #240046;text-align:center;\">{$totalCount}</td>
-                    <td style=\"background:#3c096c;color:#ffffff;font-weight:bold;font-size:10pt;padding:9px 12px;border:1px solid #240046;\">&nbsp;</td>
-                    <td style=\"background:#3c096c;color:#ffffff;font-weight:bold;font-size:10pt;padding:9px 12px;border:1px solid #240046;\">&nbsp;</td>
+                    <td colspan="11" style="background:#3c096c;color:#ffffff;font-weight:bold;font-size:10pt;padding:9px 12px;border:1px solid #240046;text-align:right;">Total Pesanan</td>
+                    <td style="background:#3c096c;color:#ffd166;font-weight:bold;font-size:10pt;padding:9px 12px;border:1px solid #240046;text-align:center;">{$totalCount}</td>
+                    <td style="background:#3c096c;color:#ffffff;font-weight:bold;font-size:10pt;padding:9px 12px;border:1px solid #240046;">&nbsp;</td>
+                    <td style="background:#3c096c;color:#ffffff;font-weight:bold;font-size:10pt;padding:9px 12px;border:1px solid #240046;">&nbsp;</td>
                 </tr>
                 <tr>
-                    <td colspan=\"13\" align=\"center\" style=\"text-align:center;font-size:8pt;color:#bbb;padding:16px 6px 6px;border:none;border-top:1px solid #e5dcf2;\">
+                    <td colspan="14" align="center" style="text-align:center;font-size:8pt;color:#bbb;padding:16px 6px 6px;border:none;border-top:1px solid #e5dcf2;">
                         &copy; {$copyrightYear} SuryaPainting18 &nbsp;&mdash;&nbsp; Dokumen ini digenerate otomatis oleh sistem pada " . now()->format('d/m/Y H:i') . " WIB
                     </td>
                 </tr>
@@ -476,6 +478,7 @@ class AdminController extends Controller
     {
         $validated = $request->validate([
             'nomor_surat' => 'required|string|max:100|unique:orders,nomor_surat',
+            'cabang' => 'required|string|in:Bekasi,Cikarang',
             'customer_name' => 'required|string|max:150',
             'customer_phone' => 'nullable|string|max:20',
             'nomor_plat' => 'nullable|string|max:50',
@@ -510,6 +513,7 @@ class AdminController extends Controller
 
         $validated = $request->validate([
             'nomor_surat' => 'required|string|max:100|unique:orders,nomor_surat,' . $order->id,
+            'cabang' => 'required|string|in:Bekasi,Cikarang',
             'customer_name' => 'required|string|max:150',
             'customer_phone' => 'nullable|string|max:20',
             'nomor_plat' => 'nullable|string|max:50',

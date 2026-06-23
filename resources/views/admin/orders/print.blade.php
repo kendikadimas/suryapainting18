@@ -366,6 +366,12 @@
         <div class="section-title">Detail Pelanggan &amp; Kendaraan</div>
         <div class="info-grid">
             <div class="info-cell">
+                <span class="cell-label">Cabang</span>
+                <span class="cell-value {{ $order->cabang ? '' : 'muted' }}">
+                    {{ $order->cabang ?? '—' }}
+                </span>
+            </div>
+            <div class="info-cell">
                 <span class="cell-label">Nama Pelanggan</span>
                 <span class="cell-value">{{ $order->customer_name }}</span>
             </div>
