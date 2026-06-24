@@ -97,7 +97,7 @@ class OrdersExport implements FromCollection, WithHeadings, WithMapping, WithSty
             $order->cabang ?: '—',
             $order->customer_name,
             $order->customer_phone ?: '—',
-            $order->nomor_plat ?: '—',
+            $order->formatted_nomor_plat ?: '—',
             $order->tipe_motor ?: '—',
             $order->detail_motor ?: '—',
             $order->product_name,

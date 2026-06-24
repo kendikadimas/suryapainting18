@@ -201,7 +201,7 @@
         }
     </style>
 </head>
-<body x-data="{ orderModalOpen: false, sidebarOpen: false, platDigits: ['', '', '', ''], platFocused: 0, focusNextPlat(current, idx) { if (current.length === 1 && idx < 3) { this.platFocused = idx + 1; this.$nextTick(() => { const next = document.getElementById('plat-digit-' + (idx + 1)); if (next) next.focus(); }); } }, handlePlatKeydown(e, idx) { if (e.key === 'Backspace' && !this.platDigits[idx] && idx > 0) { this.platFocused = idx - 1; this.$nextTick(() => { const prev = document.getElementById('plat-digit-' + (idx - 1)); if (prev) { prev.focus(); prev.select(); } }); } }, handlePlatPaste(e, startIdx) { e.preventDefault(); const paste = (e.clipboardData.getData('text') || '').replace(/\D/g, '').slice(0, 4); for (let i = 0; i < 4; i++) { this.platDigits[i] = paste[i] || ''; } if (paste.length < 4) { this.platFocused = paste.length; this.$nextTick(() => { const next = document.getElementById('plat-digit-' + paste.length); if (next) next.focus(); }); } } }">
+<body x-data="{ orderModalOpen: false, sidebarOpen: false, platFront: '', platDigits: ['', '', '', ''], platBack: '', platFocused: 0, filterPlatFront() { this.platFront = this.platFront.replace(/[^A-Za-z]/g, '').toUpperCase().slice(0, 2); }, filterPlatBack() { this.platBack = this.platBack.replace(/[^A-Za-z]/g, '').toUpperCase().slice(0, 3); }, focusNextPlat(current, idx) { if (current.length === 1 && idx < 3) { this.platFocused = idx + 1; this.$nextTick(() => { const next = document.getElementById('plat-digit-' + (idx + 1)); if (next) next.focus(); }); } }, handlePlatKeydown(e, idx) { if (e.key === 'Backspace' && !this.platDigits[idx] && idx > 0) { this.platFocused = idx - 1; this.$nextTick(() => { const prev = document.getElementById('plat-digit-' + (idx - 1)); if (prev) { prev.focus(); prev.select(); } }); } }, handlePlatPaste(e, startIdx) { e.preventDefault(); const paste = (e.clipboardData.getData('text') || '').replace(/\D/g, '').slice(0, 4); for (let i = 0; i < 4; i++) { this.platDigits[i] = paste[i] || ''; } if (paste.length < 4) { this.platFocused = paste.length; this.$nextTick(() => { const next = document.getElementById('plat-digit-' + paste.length); if (next) next.focus(); }); } } }">
     @include('admin.partials.navbar')
     <main class="admin-main">
         <div class="admin-header">
@@ -332,10 +332,10 @@
                         <span class="mobile-order-label">Produk</span>
                         <span class="mobile-order-value">{{ $order->product_name }}</span>
                     </div>
-                    @if($order->nomor_plat || $order->tipe_motor)
+                    @if($order->formatted_nomor_plat || $order->tipe_motor)
                     <div class="mobile-order-field">
                         <span class="mobile-order-label">Motor</span>
-                        <span class="mobile-order-value">@if($order->tipe_motor){{ $order->tipe_motor }}@endif @if($order->nomor_plat) &middot; {{ $order->nomor_plat }}@endif</span>
+                        <span class="mobile-order-value">@if($order->tipe_motor){{ $order->tipe_motor }}@endif @if($order->formatted_nomor_plat) &middot; {{ $order->formatted_nomor_plat }}@endif</span>
                     </div>
                     @endif
                     <div class="mobile-order-field">
@@ -415,8 +415,11 @@
                 <div class="modal-field"><label for="customer_name">Nama Pelanggan *</label><input type="text" name="customer_name" id="customer_name" placeholder="Contoh: Budi Santoso" required></div>
                 <div class="modal-field"><label for="customer_phone">No. HP / WhatsApp</label><input type="tel" name="customer_phone" id="customer_phone" placeholder="Contoh: 08123456789"></div>
                 <div class="modal-field"><label for="nomor_plat">Nomor Plat Kendaraan</label>
-                <input type="hidden" name="nomor_plat" :value="platDigits.join('')">
-                <div style="display:flex;gap:10px;">
+                <input type="hidden" name="nomor_plat" :value="platFront + platDigits.join('') + platBack">
+                <div style="display:flex;gap:8px;align-items:stretch;">
+                <input type="text" x-model="platFront" @input="filterPlatFront()" placeholder="AB" maxlength="2" autocomplete="off"
+                       style="width:56px;height:60px;background:#0d0d0d;border:1px solid rgba(255,255,255,0.12);color:#fff;font-family:'Inter',sans-serif;font-size:22px;font-weight:700;text-align:center;outline:none;text-transform:uppercase;"
+                       :style="platFront ? 'border-color:#ee14b1;box-shadow:0 0 0 2px rgba(238,20,177,0.15);' : ''">
                 <template x-for="(digit, idx) in platDigits" :key="idx">
                     <input type="text" :id="'plat-digit-'+idx" inputmode="numeric" maxlength="1" pattern="[0-9]" autocomplete="off"
                            x-model="platDigits[idx]"
@@ -427,6 +430,9 @@
                            style="width:60px;height:60px;background:#0d0d0d;border:1px solid rgba(255,255,255,0.12);color:#fff;font-family:'Inter',sans-serif;font-size:22px;font-weight:700;text-align:center;outline:none;transition:border-color 0.25s;"
                            :style="platFocused === idx ? 'border-color:#ee14b1;box-shadow:0 0 0 2px rgba(238,20,177,0.15);' : ''">
                 </template>
+                <input type="text" x-model="platBack" @input="filterPlatBack()" placeholder="ABC" maxlength="3" autocomplete="off"
+                       style="width:64px;height:60px;background:#0d0d0d;border:1px solid rgba(255,255,255,0.12);color:#fff;font-family:'Inter',sans-serif;font-size:22px;font-weight:700;text-align:center;outline:none;text-transform:uppercase;"
+                       :style="platBack ? 'border-color:#ee14b1;box-shadow:0 0 0 2px rgba(238,20,177,0.15);' : ''">
                 </div></div>
                 <div class="modal-field"><label for="tipe_motor">Tipe Motor</label>
                     <select name="tipe_motor" id="tipe_motor" style="width:100%;padding:12px 16px;background:#0d0d0d;border:1px solid rgba(255,255,255,0.1);color:#fff;font-family:'Inter',sans-serif;font-size:14px;outline:none;transition:border-color 0.25s;-webkit-appearance:none;appearance:none;cursor:pointer;background-image:url(&quot;data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%23555' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E&quot;);background-repeat:no-repeat;background-position:right 14px center;padding-right:40px;">

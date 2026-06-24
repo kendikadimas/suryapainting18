@@ -250,8 +250,8 @@
                     </div>
                     <div class="admin-field-box">
                         <span class="admin-field-label">Nomor Plat</span>
-                        @if($order->nomor_plat)
-                            <span class="admin-field-value">{{ $order->nomor_plat }}</span>
+                        @if($order->formatted_nomor_plat)
+                            <span class="admin-field-value">{{ $order->formatted_nomor_plat }}</span>
                         @else
                             <span class="admin-field-value" style="color:#555;font-weight:400;font-size:12px;">—</span>
                         @endif
@@ -477,8 +477,11 @@
                     </div>
                     <div style="margin-bottom:14px;">
                         <label style="display:block;font-size:10px;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:#888;margin-bottom:8px;">Nomor Plat</label>
-                        <input type="hidden" name="nomor_plat" :value="platDigits.join('')">
-                        <div style="display:flex;gap:10px;">
+                        <input type="hidden" name="nomor_plat" :value="platFront + platDigits.join('') + platBack">
+                        <div style="display:flex;gap:8px;align-items:stretch;">
+                        <input type="text" x-model="platFront" @input="filterPlatFront()" placeholder="AB" maxlength="2" autocomplete="off"
+                               style="width:56px;height:60px;background:#0d0d0d;border:1px solid rgba(255,255,255,0.12);color:#fff;font-family:'Inter',sans-serif;font-size:22px;font-weight:700;text-align:center;outline:none;text-transform:uppercase;"
+                               :style="platFront ? 'border-color:#ee14b1;box-shadow:0 0 0 2px rgba(238,20,177,0.15);' : ''">
                         <template x-for="(digit, idx) in platDigits" :key="idx">
                             <input type="text" :id="'plat-digit-'+idx" inputmode="numeric" maxlength="1" pattern="[0-9]" autocomplete="off"
                                    x-model="platDigits[idx]"
@@ -489,6 +492,9 @@
                                    style="width:60px;height:60px;background:#0d0d0d;border:1px solid rgba(255,255,255,0.12);color:#fff;font-family:'Inter',sans-serif;font-size:22px;font-weight:700;text-align:center;outline:none;transition:border-color 0.25s;"
                                    :style="platFocused === idx ? 'border-color:#ee14b1;box-shadow:0 0 0 2px rgba(238,20,177,0.15);' : ''">
                         </template>
+                        <input type="text" x-model="platBack" @input="filterPlatBack()" placeholder="ABC" maxlength="3" autocomplete="off"
+                               style="width:64px;height:60px;background:#0d0d0d;border:1px solid rgba(255,255,255,0.12);color:#fff;font-family:'Inter',sans-serif;font-size:22px;font-weight:700;text-align:center;outline:none;text-transform:uppercase;"
+                               :style="platBack ? 'border-color:#ee14b1;box-shadow:0 0 0 2px rgba(238,20,177,0.15);' : ''">
                         </div>
                     </div>
                     <div style="margin-bottom:14px;">
@@ -541,9 +547,16 @@
     </style>
     <script>
         function orderManager(){
-            const platRaw = '{{ addslashes(old('nomor_plat', $order->nomor_plat)) }}'.replace(/\D/g, '').slice(0, 4).split('');
+            const raw = '{{ addslashes(old('nomor_plat', $order->nomor_plat)) }}';
+            const clean = raw.replace(/[^A-Za-z0-9]/g, '').toUpperCase();
+            const frontMatch = clean.match(/^([A-Z]{0,2})/);
+            const front = frontMatch ? frontMatch[1] : '';
+            const afterFront = clean.slice(front.length);
+            const digitMatch = afterFront.match(/^(\d{0,4})/);
+            const digits = digitMatch ? digitMatch[1] : '';
+            const back = afterFront.slice(digits.length).slice(0, 3);
             const platInit = ['', '', '', ''];
-            for (let i = 0; i < platRaw.length; i++) platInit[i] = platRaw[i];
+            for (let i = 0; i < digits.length && i < 4; i++) platInit[i] = digits[i];
             return{
                 imagePreview:null,
                 isConverting:false,
@@ -553,8 +566,16 @@
                 lightboxTitle:'',
                 editModalOpen:false,
                 sidebarOpen:false,
+                platFront: front,
                 platDigits: platInit,
+                platBack: back,
                 platFocused: 0,
+                filterPlatFront(){
+                    this.platFront = this.platFront.replace(/[^A-Za-z]/g, '').toUpperCase().slice(0, 2);
+                },
+                filterPlatBack(){
+                    this.platBack = this.platBack.replace(/[^A-Za-z]/g, '').toUpperCase().slice(0, 3);
+                },
                 focusNextPlat(current, idx){
                     if(current.length === 1 && idx < 3){
                         this.platFocused = idx + 1;

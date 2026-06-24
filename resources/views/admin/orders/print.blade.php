@@ -383,8 +383,8 @@
             </div>
             <div class="info-cell">
                 <span class="cell-label">Nomor Plat</span>
-                <span class="cell-value {{ $order->nomor_plat ? '' : 'muted' }}">
-                    {{ $order->nomor_plat ?? '—' }}
+                <span class="cell-value {{ $order->formatted_nomor_plat ? '' : 'muted' }}">
+                    {{ $order->formatted_nomor_plat ?: '—' }}
                 </span>
             </div>
             <div class="info-cell">
