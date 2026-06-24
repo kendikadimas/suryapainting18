@@ -477,7 +477,19 @@
                     </div>
                     <div style="margin-bottom:14px;">
                         <label style="display:block;font-size:10px;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:#888;margin-bottom:8px;">Nomor Plat</label>
-                        <input type="text" name="nomor_plat" value="{{ old('nomor_plat', $order->nomor_plat) }}" style="width:100%;padding:12px 16px;background:#0d0d0d;border:1px solid rgba(255,255,255,0.1);color:#fff;font-family:'Inter',sans-serif;font-size:14px;outline:none;" placeholder="Contoh: B 1234 ABC">
+                        <input type="hidden" name="nomor_plat" :value="platDigits.join('')">
+                        <div style="display:flex;gap:10px;">
+                        <template x-for="(digit, idx) in platDigits" :key="idx">
+                            <input type="text" :id="'plat-digit-'+idx" inputmode="numeric" maxlength="1" pattern="[0-9]" autocomplete="off"
+                                   x-model="platDigits[idx]"
+                                   @input="focusNextPlat(platDigits[idx], idx)"
+                                   @keydown="handlePlatKeydown($event, idx)"
+                                   @paste="handlePlatPaste($event, idx)"
+                                   @focus="platFocused = idx"
+                                   style="width:60px;height:60px;background:#0d0d0d;border:1px solid rgba(255,255,255,0.12);color:#fff;font-family:'Inter',sans-serif;font-size:22px;font-weight:700;text-align:center;outline:none;transition:border-color 0.25s;"
+                                   :style="platFocused === idx ? 'border-color:#ee14b1;box-shadow:0 0 0 2px rgba(238,20,177,0.15);' : ''">
+                        </template>
+                        </div>
                     </div>
                     <div style="margin-bottom:14px;">
                         <label style="display:block;font-size:10px;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:#888;margin-bottom:8px;">Tipe Motor</label>
@@ -529,6 +541,9 @@
     </style>
     <script>
         function orderManager(){
+            const platRaw = '{{ addslashes(old('nomor_plat', $order->nomor_plat)) }}'.replace(/\D/g, '').slice(0, 4).split('');
+            const platInit = ['', '', '', ''];
+            for (let i = 0; i < platRaw.length; i++) platInit[i] = platRaw[i];
             return{
                 imagePreview:null,
                 isConverting:false,
@@ -538,6 +553,38 @@
                 lightboxTitle:'',
                 editModalOpen:false,
                 sidebarOpen:false,
+                platDigits: platInit,
+                platFocused: 0,
+                focusNextPlat(current, idx){
+                    if(current.length === 1 && idx < 3){
+                        this.platFocused = idx + 1;
+                        this.$nextTick(() => {
+                            const next = document.getElementById('plat-digit-'+(idx+1));
+                            if(next) next.focus();
+                        });
+                    }
+                },
+                handlePlatKeydown(e, idx){
+                    if(e.key === 'Backspace' && !this.platDigits[idx] && idx > 0){
+                        this.platFocused = idx - 1;
+                        this.$nextTick(() => {
+                            const prev = document.getElementById('plat-digit-'+(idx-1));
+                            if(prev){ prev.focus(); prev.select(); }
+                        });
+                    }
+                },
+                handlePlatPaste(e, startIdx){
+                    e.preventDefault();
+                    const paste = (e.clipboardData.getData('text') || '').replace(/\D/g, '').slice(0, 4);
+                    for(let i = 0; i < 4; i++){ this.platDigits[i] = paste[i] || ''; }
+                    if(paste.length < 4){
+                        this.platFocused = paste.length;
+                        this.$nextTick(() => {
+                            const next = document.getElementById('plat-digit-'+paste.length);
+                            if(next) next.focus();
+                        });
+                    }
+                },
                 previewImage(e, source){
                     const f = e.target.files[0];
                     if(!f) return;

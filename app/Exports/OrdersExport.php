@@ -267,7 +267,7 @@ class OrdersExport implements FromCollection, WithHeadings, WithMapping, WithSty
                 for ($r = 8; $r <= $endRowIndex; $r++) {
                     $bgColor = (($r - 8) % 2 === 0) ? 'FFFFFF' : 'F6F2FC';
                     
-                    $statusVal = $sheet->getCell("I{$r}")->getValue();
+                    $statusVal = $sheet->getCell("J{$r}")->getValue();
                     $statusBg = 'FFFFFF';
                     $statusText = '000000';
                     
