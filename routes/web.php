@@ -5,7 +5,7 @@ use App\Http\Controllers\AdminController;
 
 // Public tracking portal routes
 Route::get('/', [TrackController::class, 'index'])->name('home');
-Route::post('/track', [TrackController::class, 'search'])->name('track.search')->middleware('throttle:10,1');
+Route::post('/track', [TrackController::class, 'search'])->name('track.search')->middleware('throttle:30,1');
 
 // Auth redirect (handles default auth middleware redirect)
 Route::get('/login', function () {

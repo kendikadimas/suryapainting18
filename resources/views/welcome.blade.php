@@ -2717,7 +2717,7 @@
                 },
 
                 async trackOrder() {
-                    if (!this.orderCode) return;
+                    if (!this.orderCode || this.loading) return;
                     this.loading = true;
                     this.error = false;
                     this.orderData = null;
@@ -2730,6 +2730,11 @@
                             },
                             body: JSON.stringify({ order_code: this.orderCode })
                         });
+                        if (response.status === 429) {
+                            this.error = true;
+                            this.errorMessage = 'Terlalu banyak percobaan. Silakan tunggu beberapa saat sebelum mencoba lagi.';
+                            return;
+                        }
                         const data = await response.json();
                         if (response.ok && data.success) {
                             this.orderData = data.order;
